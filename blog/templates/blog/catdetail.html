@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+{% load jalali_tags %}
+{% block title %}وبلاگ ها{% endblock title %}
+{% block content %}
+
+        <main class="category-blog default space-top-30">
+            <div class="container ">
+               
+                <div class="row">
+                    <div class="col-12">
+                        <nav>
+                            <ul class="breadcrumb">
+                                <a href="{% url 'home:home1' %}">
+                                <li>
+                                    <i class="fa fa-home" aria-hidden="true"></i>
+                                </li>
+                                </a>
+
+                                <li>
+                                    <a href="#"><span>بلاگ</span></a>
+                                </li>
+                                <a href="{% url 'blog:bloglist1' %}">
+                                    <li>
+                                        <span>همه وبلاگ ها  </span>
+                                    </li>
+                                </a>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="single_blog_content cat_blog_content col-12 col-lg-9 mx-auto order-1 order-sm-1 ">
+                        <div class="row listing-items Blog-category">
+                            {% for blog in bloglist %}
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12  ">
+                                <div class="blog_tag">
+                                    <a href="{% url 'blog:blogdetail1' blog.slug %}">
+                                        <img src="{{blog.blog_image.url}}" class="img-fluid" alt="">
+                                    </a>
+                                    <a href="{% url 'blog:blogdetail1' blog.slug %}">
+                                        <h2 class="Blog_title">
+                                            {{blog.blog_description|truncatewords:10}}
+                                        </h2>
+                                    </a>
+                                    <div class="Blog_list">
+                                        <span class="Blog_author">
+                                            <i class="fa fa-user"></i>
+                                            {{blog.username}}
+                                        </span>
+                                        <span class="Blog_Date">
+                                            <i class="fa fa-calendar "></i>
+                                           {{ blog.create_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}         
+                        </div>
+                         <div class="row">
+                                        <div class="col-sm-9 padding-right">
+                                            <ul class="pagination">
+                                                {% if bloglist.paginator.count != 0 %}
+                                                    {% if bloglist.has_previous %}
+                                                        <li class="page-item"> 
+                                                            <a href="?page={{bloglist.previous_page_number}}" class="page-link">&laquo;</a> 
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item disabled"> 
+                                                            <a class="page-link">&laquo;</a> 
+                                                        </li>
+                                                    {% endif %}
+
+                                                    {% for i in bloglist.paginator.page_range %}
+                                                        {% if bloglist.number == i %}
+                                                            <li class="page-item active"> 
+                                                                <a class="page-link">{{i}}</a> 
+                                                            </li>
+                                                        {% else %}
+                                                            <li class="page-item "> 
+                                                                <a href="?page={{i}}" class="page-link">{{i}}</a> 
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if bloglist.has_next %}
+                                                        <li class="page-item"> 
+                                                            <a href="?page={{bloglist.next_page_number}}" class="page-link">&raquo;</a> 
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item disabled"> 
+                                                            <a class="page-link">&raquo;</a> 
+                                                        </li>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <h3 style="color:#46A9AE; padding:200px">وبلاگی وجود ندارد</h3>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                    </div>
+                    <div class="col-12 col-lg-3 ">
+
+                        <div class="sidebar_blog">
+                            <div class="widget_blog">
+                                <div class="widget_blog_headbox">
+                                    <h3> دسته بندی ها </h3>
+                                </div>
+                                                 
+                                <div class="blog_list_widget_blog">
+  
+                                    <div class="widget_blog_groups">
+                                        {% for category in categor_list %}
+                                        <ul class="widget_blog_posts">
+                                            <li><a class="widget_blog_title_link" href="{% url 'blog:category_detail' category.slug_cat %}">{{category.name}}</a></li>
+                                        </ul>
+                                        {% endfor %}
+                                    </div>
+                         
+                                </div><!-- end blog-list -->
+                 
+                            </div>
+                            <div class="widget_blog marg_top20">
+                                <div class="widget_blog_headbox">
+                                    <h3>آخرین مقالات </h3>
+                                </div>
+                                <div class="blog_list_widget_blog">
+                                    <div class="widget_blog_groups">
+                                        <ul class="widget_blog_posts">
+                                            <li><a class="widget_blog_title_link" href=""> این‌ بار هوش مصنوعی، تصاویری از کارخانه تولید عروس دریایی را افشا می‌کند!</a></li>
+                                            <li><a class="widget_blog_title_link" href="">  خط سفید روی نمایشگر گلکسی A71 سامسونگ؛ ماجرا چیست؟</a></li>
+                                            <li><a class="widget_blog_title_link" href="">بهترین گوشی های مناسب عکاسی در بازار ایران</a></li>
+                                            <li><a class="widget_blog_title_link" href="">هزینه ساخت بازی‌های انحصاری پلی استیشن با فیلم‌های بلاک‌باستر برابری می‌کند</a></li>
+                                            <li><a class="widget_blog_title_link" href=""> یک دهه سکوت شکست؛ مایکروسافت آمار فروش ایکس باکس را فاش کرد!</a></li>
+                                            <li><a class="widget_blog_title_link" href="">  بررسی تلویزیون 4K اسنوا؛ ۵۵ اینچی اقتصادی برای فیلم‌بازها!</a></li>
+                                        </ul>
+                                    </div>
+                                </div><!-- end blog-list -->
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+
+{% endblock content %}
+
+                                   

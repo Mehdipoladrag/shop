@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}دسته بندی ها{% endblock title %}
+{% block content %}
+        <main class="main default space-top-10">
+            <div class="container-fluid">
+                <div class="slider_main owl-carousel owl-theme">
+                    <div class="item">
+                        <a href="category-search.html">
+                            <svg xmlns="http://www.w3.org/2000/svg"  class="svg_Masai" width="231" height="75" viewBox="0 0 231 75" fill="none" style="float: right;margin-bottom: -100px;position: relative;z-index: 9;margin-top: 0px;margin-right: 30px;">
+                                <path clip-rule="evenodd" d="M0 0C31.5006 0.949537 50.52 17.872 56.1955 26.4544L55.986 25.8011L82.4924 58.631C99.3032 79.4521 131.038 79.4521 147.849 58.6309L174.356 25.8011L174.146 26.4544C179.822 17.872 198.844 0.949537 230.349 0H0Z" fill="#FCFCFC" fill-rule="" style="fill: #fff;"></path>
+                            </svg>
+                            <img src="{% static 'assets/img/banner_img/02/01.jpg' %}" class="img-fluid imgslider" alt="">
+                        </a>
+                    </div>÷
+                    <div class="item">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="svg_Masai" width="231" height="75" viewBox="0 0 231 75" fill="none" style="float: right;margin-bottom: -100px;position: relative;z-index: 9;margin-top: 0px;margin-right: 30px;">
+                            <path clip-rule="evenodd" d="M0 0C31.5006 0.949537 50.52 17.872 56.1955 26.4544L55.986 25.8011L82.4924 58.631C99.3032 79.4521 131.038 79.4521 147.849 58.6309L174.356 25.8011L174.146 26.4544C179.822 17.872 198.844 0.949537 230.349 0H0Z" fill="#FCFCFC" fill-rule="" style="fill: #fff;"></path>
+                        </svg>
+                        <a href="category-search.html">
+                            <img src="{% static 'assets/img/banner_img/02/02.jpg' %}" class="img-fluid imgslider" alt="">
+                        </a>
+                    </div>
+                    <div class="item">
+                        <svg xmlns="http://www.w3.org/2000/svg"  class="svg_Masai" width="231" height="75" viewBox="0 0 231 75" fill="none" style="float: right;margin-bottom: -100px;position: relative;z-index: 9;margin-top: 0px;margin-right: 30px;">
+                            <path clip-rule="evenodd" d="M0 0C31.5006 0.949537 50.52 17.872 56.1955 26.4544L55.986 25.8011L82.4924 58.631C99.3032 79.4521 131.038 79.4521 147.849 58.6309L174.356 25.8011L174.146 26.4544C179.822 17.872 198.844 0.949537 230.349 0H0Z" fill="#FCFCFC" fill-rule="" style="fill: #fff;"></path>
+                        </svg>
+                        <a href="category-search.html">
+                            <img src="{% static 'assets/img/banner_img/02/03.jpg' %}" class="img-fluid imgslider" alt="">
+                        </a>
+                    </div>
+                </div>
+                
+                
+                </div>
+            <div class="container space-top-50 ">
+                <div class="space-bottom-30 brand-slider card border_all ">
+                    <header class="card-header">
+                        <h3 class="card-title"><span>گران ترین ها</span></h3>
+                    </header>  
+                     
+                        <div class="row">
+                            {% for product in product2|slice:'8' %}
+                            <div class="col-3  contact_category  text-center">
+                                <div class="row">
+                                    <div class="contact_category_left col-12 col-lg-6">
+                                        <a href="{% url 'shop:detailpro' product.slug %}">
+                                     
+                                        <img src="{{ product.pic.url}}" class="sell_category_img">
+                                           </a>
+                                        <span class="hidden-xs hidden-md" >
+                                                            {{ forloop.counter }}
+                                        </span>
+                                    </div>
+                                    <div class="contact_category_right hidden-xs hidden-md col-6 col-lg-6">
+                                        <a href="{% url 'shop:detailpro' product.slug %}"><p class="title_cat1 light-black"> {{product.product_name}} </p></a>
+                                        <p class="title_cat2 light-black">{{product.mini_description}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                     
+                  
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="widget widget-product card border_all  pad_time_prod" id="shegeft_1">
+                                    <header class="card-header">
+                                        <h3 class="card-title">
+                                            <span>
+                                                <img src="{% static 'assets/img/shegeft_1.png' %}" />
+                                            </span>
+                                        </h3>
+                                        <div class="countdown-timer" countdown data-date="09 12 2023 20:20:22">
+                                            <ul class="text_countdown">
+                                                <li data-days class="number_countdown">1</li>
+                                                <li>روز</li>
+                                            </ul>
+                                            <ul class="text_countdown">
+                                                <li data-hours class="number_countdown">2</li>
+                                                <li>ساعت</li>
+                                            </ul>
+                                            <ul class="text_countdown">
+                                                <li data-minutes class="number_countdown">25</li>
+                                                <li>دقیقه</li>
+                                            </ul>
+                                            <ul class="text_countdown">
+                                                <li data-seconds class="number_countdown">54</li>
+                                                <li>ثانیه</li>
+                                            </ul>
+                                        </div>
+                                    </header>
+                            
+                                    <div class="product-carousel-catgory product-carousel owl-carousel owl-theme">
+                                        {% for product in products|slice:'8' %}
+                                        <div class="item">
+                                            <a href="{% url 'shop:detailpro' product.slug %}">
+                                                <img src="{{product.pic.url}}" class="img-fluid" alt="{{product.slug}}">
+                                            </a>
+                                            <h2 class="product_title">
+                                                <a href="{% url 'shop:detailpro' product.slug %}"> {{product.product_name}} </a>
+                                            </h2>
+                                            <div class="price">
+                                            {% if product.offer %}
+                                                <del><span>{{ product.price|floatformat:0|intcomma }}<span>تومان</span></span></del>
+                                                <span class="discount_badge">{{ product.offer|floatformat:0|intcomma }}%</span>
+                                                <ins><span>{{ product.discounted_price|floatformat:0|intcomma }}<span>تومان</span></span></ins>
+                                            {% else %}
+                                            <span>{{ product.price|floatformat:0|intcomma }}<span>تومان</span></span>
+                                            {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <a href="{% url 'shop:shoplist' %}" class="view_more">مشاهده بیشتر</a>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+
+                    <div class="col-12">
+                        <div class="brand-slider brand-slider-cat card border_all ">
+                            <header class="card-header">
+                                <h3 class="card-title"><span>برند ها</span></h3>
+                            </header>
+                     
+                            <div class="owl-carousel">
+                                       {% for item in brand %}
+                                <div class="item borderitem">
+                                    <a href="#"> <img src="{{item.brand_pic.url}}" alt=""> </a>
+                                </div>
+                                 {% endfor %}
+                            </div>
+                      
+                        </div>
+                    </div>
+                  
+                    <div class="col-12">
+                        <div class="brand-slider brand-slider-cat2 card border_all ">
+                            <header class="card-header">
+                                <h3 class="card-title"><span>بر اساس قیمت</span></h3>
+                            </header>
+                            <div class="owl-carousel">
+                                <div class="item borderitem">
+                                    <a href="#"> <img src="{% static 'assets/img/Price/02.jpg' %}" alt=""> </a>
+                                </div>
+                                <div class="item borderitem">
+                                    <a href="#"> <img src="{% static 'assets/img/Price/03.jpg' %}" alt=""> </a>
+                                </div>
+                                <div class="item borderitem">
+                                    <a href="#"> <img src="{% static 'assets/img/Price/04.jpg' %}" alt=""> </a>
+                                </div>
+                                <div class="item borderitem">
+                                    <a href="#"> <img src="{% static 'assets/img/Price/05.jpg' %}" alt=""> </a>
+                                </div>
+                                <div class="item borderitem">
+                                    <a href="#"> <img src="{% static 'assets/img/Price/06.jpg' %}" alt=""> </a>
+                                </div>
+                             
+                                
+                            </div>
+                        </div>
+                    </div> 
+                                
+                           
+                    
+                </div>
+               
+                <div class="row banner-ads">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="widget-banner card border_all">
+                                    <a href="category-search.html" target="_blank">
+                                        <img class="img-fluid" src="{% static 'assets/img/banner_img/img-7.jpg' %}" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="widget-banner card">
+                                    <a href="category-search.html" target="_top">
+                                        <img class="img-fluid" src="{% static 'assets/img/banner_img/img-8.jpg' %}" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="brand-slider card border_all ">
+                            <header class="card-header">
+                                <h3 class="card-title"><span>دسته بندی ها</span></h3>
+                            </header>
+                             <div class="row">
+                                 <div class="col-12">
+                                     <div class="row">
+                                        {% for i in cat %}
+                                         <div class="col-6 col-md-2 contact-bigicon">
+                                             <a href="{% url 'shop:categorydetail1' i.category_slug %}" target="_blank">
+                                                 <img class="img-responsive imgpad" src="{{i.category_pic.url}}" alt="" />
+                                                 <b class="title-3 light-black">{{i.category_name}}</b>
+                                             </a>
+                                         </div>
+                                         {% endfor %}
+                                     </div>
+                                 </div>
+                                  
+                             </div>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+        </main>
+
+{% endblock content %}

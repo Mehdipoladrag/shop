@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+{% load jalali_tags %}
+{% block title %}{{blogdetail.blog_name}}{% endblock title %}
+{% block content %}
+
+        <main class="cart-page default ">
+            <div class="container">
+                <div class="row">
+                    <div class="single_blog_content col-12 col-lg-9 mx-auto order-1 order-sm-1 ">
+                        <header class="card-header">
+                            <h3 class="card-title"><span>{{blogdetail.blog_name}}</span></h3>
+                        </header>
+                        <div class="single_blog_page">
+
+                            <div class="single_blog_box_content">
+                                <form class="form-account">
+                                    <div class="row">
+
+                                        <div class="col-md-12 col-sm-12">
+
+                                            <img src="{{blogdetail.blog_image.url}}" alt="{{blogdetail.blog_name}}" />
+                                            <div class="data_det">
+                                                <span class="publish_date">
+                                                    <i class="fa fa-clock"></i>
+                                                {{blogdetail.create_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}
+                                                </span>
+                                                <span class="author">
+                                                    <i class="fa fa-user-alt"></i>
+                                                    ارسال شده توسط {{blogdetail.username}}
+                                                </span>
+                                                <span class="categoey">
+                                                    <i class="fa fa-folder"></i>
+                                                    {{blogdetail.category}}
+                                                </span>
+                                                <span class="visitors">
+                                                    <i class="fa fa-eye"></i> 1725 بازدید
+                                                </span>
+                                            </div>
+                                            <p>
+                                             
+                                                {{blogdetail.blog_description}}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3">
+
+                        <div class="sidebar_blog">
+                            <div class="widget_blog">
+                                <div class="widget_blog_headbox">
+                                    <h3> دسته بندی ها </h3>
+                                </div>
+                                <div class="blog_list_widget_blog">
+                                    <div class="widget_blog_groups">
+                                        {% for category in categories %}
+                                        <ul class="widget_blog_posts">
+                                            <li><a class="widget_blog_title_link" href="{% url 'blog:category_detail' category.slug_cat %}">{{category.name}}</a></li>
+                                        </ul>
+                                        {% endfor %}
+                                    </div>
+                                </div><!-- end blog-list -->
+                            </div>
+                            <div class="widget_blog marg_top20">
+                                <div class="widget_blog_headbox">
+                                    <h3>آخرین مقالات </h3>
+                                </div>
+                                <div class="blog_list_widget_blog">
+                                    <div class="widget_blog_groups">
+                                        <ul class="widget_blog_posts">
+                                            <li><a class="widget_blog_title_link" href=""> این‌ بار هوش مصنوعی، تصاویری از کارخانه تولید عروس دریایی را افشا می‌کند!</a></li>
+                                            <li><a class="widget_blog_title_link" href="">  خط سفید روی نمایشگر گلکسی A71 سامسونگ؛ ماجرا چیست؟</a></li>
+                                            <li><a class="widget_blog_title_link" href="">بهترین گوشی های مناسب عکاسی در بازار ایران</a></li>
+                                            <li><a class="widget_blog_title_link" href="">هزینه ساخت بازی‌های انحصاری پلی استیشن با فیلم‌های بلاک‌باستر برابری می‌کند</a></li>
+                                            <li><a class="widget_blog_title_link" href=""> یک دهه سکوت شکست؛ مایکروسافت آمار فروش ایکس باکس را فاش کرد!</a></li>
+                                            <li><a class="widget_blog_title_link" href="">  بررسی تلویزیون 4K اسنوا؛ ۵۵ اینچی اقتصادی برای فیلم‌بازها!</a></li>
+                                        </ul>
+                                    </div>
+                                </div><!-- end blog-list -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+{% endblock content %}

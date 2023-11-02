@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ثبت نام{% endblock title %}
+{% block content %}
+
+ <main class="wrapper default ">
+        <div class="container">
+            <div class="row">
+                <div class="main-content login_content  col-12 col-md-7 col-lg-5 mx-auto ">
+                    <header class="card-header">
+                        <h3 class="card-title"><span>ایجاد به حساب کاربری</span></h3>
+                    </header>
+                    <div class="login_box">
+
+
+
+                <form class="" method="POST" action="{% url 'accounts:signup1' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                        {{form.as_p}}
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-account-agree">
+                                <label class="checkbox-form checkbox-primary">
+                                    <input type="checkbox" id="agree" name="agree">
+                                    <span class="checkbox-check"></span>
+      
+                                </label>
+                                <label for="agree">
+                                    تمامی <a href="#">شرایط و قوانین</a> استفاده از سرویس‌های سایت مَسای را به دقت مطالعه کرده و با آنها موافقت کامل دارم 
+                                </label>
+                            </div>
+                        </div>
+                    
+                        <div class="col-12 text--center">
+                            <button type="submit" class="btn big_btn btn-main-masai">عضویت</button>
+                        </div>
+                        <div class="col-12 footer_login_reg text--center">
+                            <p>
+                                <span>قبلا ثبت نام کرده اید؟</span>
+                                <a href="{% url 'accounts:signin1' %}">ورود</a>
+                            </p>
+                        </div>
+                        <div class="col-12 ">
+
+                        </div>
+                    </div>
+                </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock content %}

@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}دسته بندی {{cat.category_name}} ها{% endblock title %}
+{% block content %}
+
+
+    <main class="search-page default space-top-30">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 hidden-xs">
+                        <div class="brand-slider card border_all ">
+                            <header class="card-header">
+                                <h3 class="card-title"><span>دسته بندی ها</span></h3>
+                            </header>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        {% for i in categorlist|slice:'12' %}
+                                        <div class="col-6 col-md-2 contact-bigicon">
+                                            <a href="{% url 'shop:categorydetail1' i.category_slug %}" target="_top">
+                                                <img class="img-responsive imgpad" src="{{i.category_pic.url}}" alt="" />
+                                                <b class="title-3 light-black">{{i.category_name}}</b>
+                                            </a>
+
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                 
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="sidebar-page col-12 col-sm-12 col-md-4 col-lg-3 ">
+                        <div class="box">
+                            <header class="card-header">
+                                <h3 class="card-title"><span class="space-right-10">رنگ</span></h3>
+                            </header>
+                            <div class="box-content">
+                                <div class="collapse show">
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> مشکی</label>
+                                        <span class="color_pro_sel" style=" background-color: #000;"></span>
+                                    </div>
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> قرمز</label>
+                                        <span class="color_pro_sel" style=" background-color: #ff0000;"></span>
+
+                                    </div>
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> زرد</label>
+                                        <span class="color_pro_sel" style=" background-color: #ffd800;"></span>
+
+                                    </div>
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> آبی</label>
+                                        <span class="color_pro_sel" style=" background-color: #0000ff;"></span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box ">
+
+                            <header class="card-header">
+                                <h3 class="card-title"><span class="space-right-10">قیمت</span></h3>
+                            </header>
+                            <div class="box-content space-40 space-right-25 space-left-25">
+                                <div id="slider">
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="box">
+                            <header class="card-header">
+                                <h3 class="card-title"><span class="space-right-10">لیست برند ها</span></h3>
+                            </header>
+                            <div class="box-content">
+                                <div class="collapse show" >
+                                        {% for brand in brand %}
+                                        <div class="form-account-agree">
+                                            <label class="checkbox-form checkbox-primary">
+                                                <input type="checkbox" id="agree">
+                                                <span class="checkbox-check"></span>
+                                            </label>
+                                            <label for="agree">{{brand.brand_name}}</label>  
+                                        </div>
+                                        {% endfor %}
+                                 
+                                    
+                                </div>
+                            </div>
+                        </div>
+                       
+
+                        
+                      
+                        <div class="box">
+                            <div class="box-content">
+                                <input type="checkbox" name="checkbox" class="bootstrap-switch" checked />
+                                <label for="">موجود در انبار مسای</label>
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="box-content">
+                                <input type="checkbox" name="checkbox" class="bootstrap-switch" checked />
+                                <label for="">ارسال فوری</label>
+                            </div>
+                        </div>
+                    </aside>
+                    <div class="col-12 col-sm-12 col-md-8 col-lg-9">
+                       
+                        <div class="listing default ">
+                            <div class="listing-header default marg_all0">
+                                <ul class="Search_list nav nav-tabs " role="tablist" >
+                                    <li>
+                                        <a class="active" data-toggle="tab" href="#suggestion" role="tab"
+                                           aria-expanded="false">پیشنهاد خریداران</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#most-visited" role="tab" aria-expanded="false">پربازدیدترین</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#delivery" role="tab" aria-expanded="true">سریع‌ترین ارسال</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#most-seller" role="tab"
+                                           aria-expanded="false">‌بیشترین فروش‌</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#price" role="tab"
+                                           aria-expanded="false">‌براساس قیمت</a>
+                                    </li>
+                                </ul>
+                                <div class="box_filter_search">
+                                    <ul class="filter_search">
+                                        <li>
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+
+                                            <span>1200 تومن به بالا</span>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+
+                                            <span>مشکی</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                              
+                            </div>
+                            <div class="tab-content default text-center">
+                                <div class="tab-pane active" id="suggestion" role="tabpanel" aria-expanded="true">
+                                  
+                                        <div class="row listing-items">
+                                            {% for product in listpage %}
+                                            <div class="col-xl-4 col-lg-4 col-md-6 col-12 list_search_p ">
+                                                <div class="product-box">
+                                                    <div class="product-seller-details product-seller-details-item-grid">
+                                                        <span class="search_prod_icon">
+                                                            <i class="fa fa-search search_icon_search" aria-hidden="true"></i>
+                                                            <i class="fa fa-heart search_icon_like" aria-hidden="true"></i>
+                                                        </span>
+                                                       
+
+                                                        <span class="search_prod_btn">
+                                                            <i class="fa fa fa-cart-arrow-down search_icon_cart" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                    <a class="product-box-img" href="{% url 'shop:detailpro' product.slug %}">
+                                                        <img src="{{product.pic.url}}" alt="{{product_name}}">
+                                                        <ul>
+                                                            <li class="color_pro" style="background-color: #2fabd3;top: 7px;"></li>
+                                                            <li class="color_pro" style="background-color: #4e1dac;top: 20px;"></li>
+                                                            <li class="color_pro" style="background-color: #ff0075;top: 33px;"></li>
+                                                        </ul>
+                                                    </a>
+                                                    <div class="product-box-content">
+                                                        <div class="product-box-content-row">
+                                                            <div class="product_title">
+                                                                <a href="{% url 'shop:detailpro' product.slug %}">
+                                                                  گوشی موبایل  {{product.product_name}}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-box-row product_price_search">
+                                                            <div class="price">
+                                                             {% if product.offer %}
+                                                                <del><span>{{ product.price|floatformat:0|intcomma }}<span>تومان</span></span></del>
+                                                                <span class="discount_badge">{{ product.offer|floatformat:0|intcomma }}%</span>
+                                                                <ins><span>{{ product.discounted_price|floatformat:0|intcomma }}<span>تومان</span></span></ins>
+                                                            {% else %}
+                                                                <span>{{ product.price|floatformat:0|intcomma }}<span>تومان</span></span>
+                                                            {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% empty %}
+                                            <h3 style="color:#46A9AE; padding:200px">محصولی موجود نیست</h3>
+                                            
+                                            {% endfor %} 
+                                            
+                                        </div>    
+                                        
+
+                                </div>
+                                     <div class="row">
+                                        <div class="col-sm-9 padding-right">
+                                            <ul class="pagination">
+                                                {% if listpage.paginator.count != 0 %}
+                                                    {% if listpage.has_previous %}
+                                                        <li class="page-item"> 
+                                                            <a href="?page={{listpage.previous_page_number}}" class="page-link">&laquo;</a> 
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item disabled"> 
+                                                            <a class="page-link">&laquo;</a> 
+                                                        </li>
+                                                    {% endif %}
+
+                                                    {% for i in listpage.paginator.page_range %}
+                                                        {% if listings.number == i %}
+                                                            <li class="page-item active"> 
+                                                                <a class="page-link">{{i}}</a> 
+                                                            </li>
+                                                        {% else %}
+                                                            <li class="page-item "> 
+                                                                <a href="?page={{i}}" class="page-link">{{i}}</a> 
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if listpage.has_next %}
+                                                        <li class="page-item"> 
+                                                            <a href="?page={{listpage.next_page_number}}" class="page-link">&raquo;</a> 
+                                                        </li>
+                                                    {% else %}
+                                                        <li class="page-item disabled"> 
+                                                            <a class="page-link">&raquo;</a> 
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% comment %} test {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                                  
+            </div>
+        </main>
+        <!-- main -->
+
+{% endblock content %}

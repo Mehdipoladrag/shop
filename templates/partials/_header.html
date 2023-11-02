@@ -1,0 +1,387 @@
+{% load static %}
+<div class="top-section fullscreen-container">
+        <img src="{% static 'assets/img/banner_img/bg_top.jpg' %}" class="h-100">
+    </div>
+    <!--start mobile header -->
+    <nav class="navbar direction-ltr fixed-top header-responsive">
+        <div class="container">
+            <div class="navbar-translate">
+
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                        data-target="#navigation" aria-controls="navigation-index" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-bar bar1"></span>
+                    <span class="navbar-toggler-bar bar2"></span>
+                    <span class="navbar-toggler-bar bar3"></span>
+                </button>
+                <div class="search-nav default">
+                    <form action="">
+                        <input type="text" placeholder="جستجو ...">
+                        <button type="submit"><img src="{% static 'assets/img/search.png' %}" alt=""></button>
+                    </form>
+
+                    <ul>
+                        
+                        {% if not user.is_authenticated %}
+                        <li><a href="{% url 'accounts:signin1' %}"><i class="fa fa-sign-in colormain" aria-hidden="true"></i></a></li>
+                        
+                        {% else %}
+                            <li><a href="{% url 'accounts:profile1' %}"><i class="fa-regular fa-user colormain" aria-hidden="true"></i></a></li>
+                            <li><a href="{% url 'accounts:logout' %}" class="list__link"><i class="fa fa-sign-out icon-icon icon-color-1" aria-hidden="true"></i></a></li>
+                        {% endif %}
+                        {% comment %} <li><a href="#"><i class="fa fa-cart-arrow-down colormain" aria-hidden="true"></i></a></li> {% endcomment %}
+                        
+                    </ul>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                <div class="logo-nav-res default text-center">
+                    <a href="{% url 'home:home1' %}">
+                        <img src="{% static 'assets/img/logo.png' %}"  alt="">
+                    </a>
+                </div>
+                <ul class="navbar-nav default">
+                    <li class="sub-menu">
+                        <a href="#">محصولات</a>
+                        <ul>
+                            <li class="sub-menu">
+                                <a href="#">موبایل</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">برند 1</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">برند 2</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">برند 3</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">برند 4</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="#">برند ترین ها</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">اپل</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">سامسونگ</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">هوآوی</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">شیائومی</a>
+                                    </li>
+                                 
+                                </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="#">سیستم عامل</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">اندروید</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">آی او اس</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">ویندوز</a>
+                                    </li>
+                                   
+                                </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="#">گوشی براساس قیمت</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">گوشی تا 2 میلیون تومان</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 5 میلیون تومان</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 7 میلیون تومان</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 15 میلیون تومان</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی بالای 15 میلیون تومان</a>
+                                    </li>
+
+                                </ul>
+                            </li>
+
+                            <li class="sub-menu">
+                                <a href="#">گوشی براساس حافظه داخلی</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">گوشی تا 16 گیگابایت</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 32 گیگابایت</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 64 گیگابایت</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 128 گیگابایت</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی تا 256 گیگابایت</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="#">رزولوشن عکس</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">تا 13 مگاپیکسل</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">تا 16 مگاپیکسل</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">تا 48 مگاپیکسل</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">تا 64 مگاپیکسل</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">تا 128 مگاپیکسل</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sub-menu">
+                                <a href="#"> گوشی براساس کاربری</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">گوشی اقتصادی</a>
+                                    </li>
+                                    <li>
+                                        <a href="#"> گوشی میان رده</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی دانش آموزی</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی گیمینگ</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">گوشی پرچمدار</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+
+
+
+
+
+
+
+                    <li>
+                        <a href="{% url 'shop:shoplist' %}">فروشگاه</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'shop:categorylist1' %}">تمام دسته بندی ها</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:bloglist1' %}">وبلاگ ها</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'contact:contact1' %}">تماس با ما</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'home:about1' %}">درباره ما</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'accounts:signup1' %}">ثبت نام</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- end mobile header -->
+    <div class="wrapper default">
+
+        <!--start pc header -->
+        <header class="Masai-header default">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-5">
+                        <div class="logo-area default">
+                            <a href="{% url 'home:home1' %}">
+                                <img src="{% static 'assets/img/logo.png' %}" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-5 col-sm-8 col-7">
+                        <div class="search-area default">
+                            <form action="" class="search">
+                                <input type="text" placeholder="جستجو">
+                                <button type="submit"><img src="{% static 'assets/img/search.png' %}" alt=""></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-12">
+                        
+   
+
+                
+                    {% if not user.is_authenticated %}
+                        <div class="user_head">
+                            <a href="{% url 'accounts:signin1' %}" class="iconhead">
+                                <i class="fa fa-sign-in font-20" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="user_head">
+                            <li class="list_style">
+                                <a href="{% url 'accounts:profile1' %}" class="iconhead">           
+                                    <i class="fa fa-user icon-icon icon-color-1" aria-hidden="true">
+                                        <span>پروفایل </span>
+                                    </i> 
+                                </a>
+                            </li>
+                        </div>
+                    {% endif %}
+                    
+
+                        
+                        <div class="cart dropdown masai_dropdown">
+                            <span class="divider"></span>
+
+                            <a href="#" class="dropdown-toggle iconhead" data-toggle="dropdown" id="navbar_a">
+                                <i class="fa fa-cart-arrow-down font-20" aria-hidden="true"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbar_a">
+
+                                
+                                <ul class="m_cart-list">
+                                    <li class="m_cart_li1">
+                                        <a href="single-product.html" class="m_cart-item">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+
+                                         
+                                            <div class="m_cart-item-content">
+                                                <div class="m_cart-item-image">
+                                                    <img src="{% static 'assets/img/product_img/p_6.jpg' %}" />
+                                                </div>
+                                                <div class="m_cart-item-details">
+                                                    <div class="m_cart-item-title">
+                                                        ساعت هوشمند امیزفیت 
+                                                    </div>
+                                                    <div class="m_cart-item-params">
+                                                        <div class="m_cart-item-props">
+                                                            <span>تعداد : 2</span>
+                                                            <span>رنگ: سبز ارتشی</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="m_cart_li2">
+                                        <a href="single-product.html" class="m_cart-item">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+
+
+                                            <div class="m_cart-item-content">
+                                                
+                                                <div class="m_cart-item-details">
+                                                    <div class="m_cart-item-title">
+                                                         شیائومی مدل Poco X4
+                                                    </div>
+                                                    <div class="m_cart-item-params">
+                                                        <div class="m_cart-item-props">
+                                                            <span>تعداد : 1</span>
+                                                            <span>رنگ: مشکی</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="m_cart-item-image">
+                                                    <img src="{% static 'assets/img/product_img/p_9.jpg' %}" />
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                                
+                                <div class="m_cart-header">
+                                    <div class="m_cart-total">
+                                        <span>مجموع سبد:</span>
+                                        <span> ۳۵,۲۵۳,۵۰۰</span>
+                                        <span> تومان</span>
+                                    </div>
+                                </div>
+                                <div class="btn_cart">
+                                    <a href="{% url 'cart:cart_detail' %}" class="btn btn_sabad">مشاهده سبد</a>
+                                    <a href="Final-payment.html" class="btn btn_pardakht btn-main-masai">پرداخت</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+     
+            <nav class="nav_header">
+                <ul class="nav__ullist">
+                    <li class="list_style">
+                        <i class="fa fa-home icon-icon" aria-hidden="true"></i><a href="{% url 'home:home1' %}" class="list__link">صفحه اصلی</a>
+                    </li>
+                    <li class="list_style">
+                        <i class="fa fa-shop icon-icon" aria-hidden="true"></i><a href="{% url 'shop:shoplist' %}" class="list__link">فروشگاه</a>
+                    </li>
+                    <li class="list_style">
+                        <i class="fa fa-list-alt icon-icon" aria-hidden="true"></i><a href="{% url 'shop:categorylist1' %}" class="list__link">
+                            دسته بندی محصولات
+                        </a>
+                    </li>
+                    <li class="list_style">
+                        <i class="fa fa-credit-card icon-icon" aria-hidden="true"></i><a href="shopping-payment.html" class="list__link">صفحه پرداخت</a>
+                    </li>
+                    <li class="list_style">
+                        <i class="fa fa-newspaper icon-icon" aria-hidden="true"></i>
+                        <a href="{% url 'blog:bloglist1' %}" class="list__link">وبلاگ ها</a>
+                    </li>
+                    
+                    <li class="list_style">
+                        <i class="fa fa-phone icon-icon" aria-hidden="true"></i>
+                        <a href="{% url 'contact:contact1' %}" class="list__link">تماس با ما</a>
+                    </li>
+
+                    <li class="list_style">
+                        <i class="fa-solid fa-address-card" style="color:#46A9AE;" aria-hidden="true"></i>
+                        <a href="{% url 'home:about1' %}" class="list__link">درباره ما</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <ul class="nav_header-2">
+                        <li class="list_style">
+                            <a href="{% url 'accounts:logout' %}" class="list__link">
+                            <i class="fa fa-sign-out icon-icon icon-color-1" aria-hidden="true">   <span>خروج</span>   </i>
+                            </a>
+                        </li>
+                    </ul>
+                    {% else %}    
+                     <ul class="nav_header-2">
+                        <li class="list_style">
+                            <a href="{% url 'accounts:signup1' %}" class="list__link">
+                            <i class="fa fa-user-plus icon-icon icon-color-1" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+        <!-- end pc header -->

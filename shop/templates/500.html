@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block title %}SERVER ERROR{% endblock title %}
+{% block content %}
+        <main class="page-404">
+            <div class="container text-center">
+                <div class="flex-container">
+                    <div class="text-center">
+                        <h1>
+                            <span class="fade-in" id="digit1">0</span>
+                            <span class="fade-in" id="digit2">0</span>
+                            <span class="fade-in" id="digit3">5</span>
+                        </h1>
+                        <h6 class="fadeIn">گویا خطایی رخ داده است!</h6>
+                        <a href="{% url 'home:home1' %}" class="btn btn-main-masai">صفحه نخست</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+{% endblock content %}

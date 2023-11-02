@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}سبد خالی{% endblock title %}
+{% block content %}
+        <main class="cart default">
+            <div class="container text-center cart_empty">
+
+                <img src="{% static 'assets/img/empty-cart.png' %}" class="" />
+                <h6>
+                    سبد خرید شما در حال حاضر خالی است.
+
+                </h6>
+                <a href="{% url 'home:home1' %}" class="btn btn-main-masai">صفحه نخست</a>
+
+            </div>
+        </main>
+{% endblock content %}

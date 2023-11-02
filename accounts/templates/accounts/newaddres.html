@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}آدرس ها{% endblock title %}
+{% block content %}
+
+   <main class="order-delivered  default space-top-30">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-9 col-lg-8 col-md-12 order-2">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <header class="card-header">
+                                        <h3 class="card-title"><span>آدرس‌ها</span></h3>
+                                        <div class="text-left">
+                                            <a class="btn btn-main-masai" data-toggle="modal" data-target="#addressModal">آدرس جدید</a>
+                                        </div>
+                                    </header>
+                                    <div class="content-section default">
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 order_delivered_sec">
+                                                    <div class="row">
+
+                                                        <div class="col-10 col-lg-10 col-md-10">
+
+                                                            <h4 class="profile-recent-fav-name">
+                                                                <i class="fa fa-map-pin" aria-hidden="true"></i> 
+                                                                {% if profile.street %}
+                                                                {{profile.address}}
+                                                                {% else %}
+                                                                <span>-</span>
+                                                                {% endif %}
+                                                            </h4>
+                                                            <ul class="order-addres">
+                                                                <li>
+                                                                    <i class="fa fa-map  colormain" aria-hidden="true"></i> {{profile.city}}                                                               </li>
+                                                                <li>
+                                                                    <i class="fa fa-envelope colormain" aria-hidden="true"></i> {{profile.zipcode}}
+                                                                </li>
+                                                                <li>
+                                                                    <i class="fa fa-phone colormain" aria-hidden="true"></i> {{profile.mobile}}
+                                                                </li>
+                                                                <li>
+                                                                    <i class="fa fa-user-large colormain" aria-hidden="true"></i> {{user.profile.user.first_name}}
+
+                                                                </li>
+
+                                                            </ul>
+
+                                                        </div>
+                                              
+                                                    </div>
+                                                 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
+                            <div class="profile-card-1">
+                                <!--image-->
+                                <div class="img">
+
+                                    <img src="assets/img/profile.jpg" />
+                                </div>
+                                <a class="view-more" href="" data-toggle="modal" data-target="#myModal">
+                                    <i class="fa fa-plus-circle"></i>
+                                </a>
+                                <div class="modal-share modal-width-custom modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">تغییر پروفایل</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul class="profile-avatars default text-center">
+                                                    <li>
+                                                        <img class="profile-avatars-item" src="assets/img/profile/1.png" />
+                                                    </li>
+                                                    <li>
+                                                        <img class="profile-avatars-item" src="assets/img/profile/2.png" />
+                                                    </li>
+                                                    <li>
+                                                        <img class="profile-avatars-item" src="assets/img/profile/3.png" />
+                                                    </li>
+                                                    <li>
+                                                        <img class="profile-avatars-item" src="assets/img/profile/4.png" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                
+                                <!--text-->
+                                <div class="mid-section">
+                                    <div class="name">{{profile.user.username}}</div>
+                                    <div class="description">
+
+                                        <a href="#" class="btn btn-main-masai">افزایش موجودی</a>
+                                        <a href="#" class="btn btn-second-masai">مسای کلاب</a>
+                                    </div>
+                                    <div class="line"></div>
+                                    <div class="stats">
+                                        <div class="stat">
+                                            2
+                                            <div class="subtext">سفارش جاری</div>
+                                        </div>
+                                        <div class="stat">
+                                            68
+                                            <div class="subtext">تحویل داده</div>
+                                        </div>
+                                        <div class="stat">
+                                            15
+                                            <div class="subtext">مرجوع شده</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+   
+
+                            <div class="profile-menu ">
+                                {% include "partials/_profile.html" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- main -->
+{% endblock content %}

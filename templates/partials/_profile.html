@@ -1,0 +1,65 @@
+{% load static %}
+
+
+                            <ul class="profile-menu-items">
+                                <li>
+                                    <a href="order-delivered.html" class="dropdown-item ">
+                                        <i class="fa fa-cart-arrow-down colormain" aria-hidden="true"></i>
+                                        تحویل داده شده
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="order-current.html" class="dropdown-item ">
+                                        <i class="fa fa-cart-arrow-down colormain" aria-hidden="true"></i>    سفارش جاری
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="order-cancelled.html" class="dropdown-item">
+                                        <i class="fa fa-times colormain" aria-hidden="true"></i>
+                                        لغو شده
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="orders-return.html" class="dropdown-item">
+                                        <i class="fa fa-thumbs-down colormain" aria-hidden="true"></i>
+                                        مرجوع محصول
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="profile-favorites.html" class="dropdown-item">
+                                        <i class="fa fa-bookmark colormain" aria-hidden="true"></i>
+                                        لیست های من
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'accounts:address1' %}" class="dropdown-item">
+                                        <i class="fa fa-map icon-icon colormain" aria-hidden="true"></i>
+                                        آدرس ها
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="order-message.html" class="dropdown-item">
+                                        <i class="fa fa-bell colormain" aria-hidden="true"></i>
+                                        پیغام ها
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'accounts:profile1' %}" class="dropdown-item active">
+                                        <i class="fa fa-user-large colormain"></i>
+                                        پروفایل
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'accounts:update1' %}" class="dropdown-item">
+                                        <i class="fa fa-pencil colormain" aria-hidden="true"></i>
+                                        ویرایش اطلاعات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'accounts:change1' %}" class="dropdown-item">
+                                        <i class="fa fa-shield colormain" aria-hidden="true"></i>
+                                        امنیت و تغییر رمز
+                                    </a>
+                                </li>
+                               
+                            </ul>

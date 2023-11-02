@@ -14,7 +14,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category_name
-
+    class Meta:
+        verbose_name = 'دسته بندی'
+        verbose_name_plural  = 'دسته بندی ها'
 
 class Brand(models.Model):
 
@@ -27,17 +29,26 @@ class Brand(models.Model):
 
     def __str__(self):
         return self.brand_name
+    class Meta:
+        verbose_name = 'برند'
+        verbose_name_plural  = 'برند ها'
 class Offers(models.Model) :
     offer_name = models.CharField(_("Offer Name"), max_length=50)
     offer_pic = models.ImageField(_("Offer Image"), upload_to='images/offer/%Y/%m/%d', blank=True, null=True)
 
     def __str__(self):
         return self.offer_name
+    class Meta:
+        verbose_name = 'تخفیف'
+        verbose_name_plural  = 'تخفیفات'
 class Info(models.Model) : # اطلاعیه محصول
     product_info = models.TextField(_("Info Product"))
 
     def __str__(self):
         return self.product_info
+    class Meta:
+        verbose_name = 'اطلاعیه'
+        verbose_name_plural  = 'اطلاعیه ها'
 class Product(models.Model):
     bluetooth_choice = (
         ('دارد', 'دارد'),
@@ -86,39 +97,56 @@ class Product(models.Model):
             return self.price
     def __str__(self):
         return self.product_name
-    
+    class Meta:
+        verbose_name = 'محصول'
+        verbose_name_plural  = 'محصولات'
 
 
 class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(_("Order Date"), auto_now_add=True)
+    order_date = models.DateTimeField(_("Order Date"), auto_now_add=True)
+    def total_cost(self):
+        order_items = self.orderitem_set.all()
+        total = sum(item.product_cost for item in order_items)
+        return total
 
     def __str__(self):
-        return str(self.id)
-
+        return f"Order {self.id} - Customer {self.customer.username}"
+    class Meta:
+        verbose_name = 'سفارش'
+        verbose_name_plural  = 'سفارش ها'
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
-    product_price = models.DecimalField(
-        _("Product Price"), max_digits=10, decimal_places=1)
+    product_price = models.DecimalField(_("Product Price"), max_digits=10, decimal_places=1)
     product_count = models.PositiveIntegerField(_("Product Count"))
     product_cost = models.DecimalField(_("Product cost"), max_digits=10, decimal_places=1)
+    discounted_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        if self.discounted_price is None:
+            self.discounted_price = self.product_price  
+        super().save(*args, **kwargs)
     def __str__(self):
         return str(self.id)
-
+    class Meta:
+        verbose_name = 'جزئیات سفارش'
+        verbose_name_plural  = 'جزئیات سفارش ها'
 
 class Invoice(models.Model):  # فاکتور
     order = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL)
     invoice_date = models.DateTimeField(auto_now_add=True)  # تاریخ فاکتور
     authority = models.CharField(
         _("Authority"), max_length=50, blank=True, null=True)
-
+    invoice_date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return str(self.id)
-
+    class Meta:
+        verbose_name = 'صورت حساب'
+        verbose_name_plural  = 'صورت حساب ها'
 
 class Transaction(models.Model):
     STATUS_CHOICE = (
@@ -133,10 +161,12 @@ class Transaction(models.Model):
         _("amount"), max_digits=10, decimal_places=1)  # مقدار
     status = models.CharField(
         _("Status"), max_length=50, choices=STATUS_CHOICE, default='pending')  # وضعیت
-
+    
     def __str__(self):
         return str(self.id)
-
+    class Meta:
+        verbose_name = 'وضعیت سفارش'
+        verbose_name_plural  = 'وضعیت سفارش ها'
 
 class Comment(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -146,7 +176,9 @@ class Comment(models.Model):
     created_date = models.DateTimeField(auto_now_add=False)
     def __str__(self):
         return self.comment
-    
+    class Meta:
+        verbose_name = 'کامنت'
+        verbose_name_plural  = 'کامنت ها'
     
 
 
@@ -158,3 +190,6 @@ class Contact_product(models.Model):
 
     def __str__(self):
         return self.message_product
+    class Meta:
+        verbose_name = 'نظرات در محصولات'
+        verbose_name_plural  = 'نظرات در مورد محصولات'

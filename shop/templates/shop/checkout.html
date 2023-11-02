@@ -100,19 +100,19 @@
                                         </tr>
                                         <tr class="all">
                                             <td>قیمت قابل پرداخت:</td>
-                                            {% for item in cart %}
-                                            <td>{{ cart.get_total_price|floatformat:0|intcomma }} <span>تومان</span></td>
-                                            {% endfor %}
+                         
+                                            <td>{{ cart.discounted_price|floatformat:0|intcomma }}</td>
+         
                                         </tr>
                                         
                                         <tr>
                                             <td>
-                                            <form action="." method="post">
-                                                {% csrf_token %}
-                                  
-                                                <input class="btn btn-main-masai big_btn" type="submit" value="پرداخت">
-                                            </form>
-                                        </td>
+                                                <form action="." method="post">
+                                                    {% csrf_token %}
+                                    
+                                                    <input class="btn btn-main-masai big_btn" type="submit" value="پرداخت">
+                                                </form>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

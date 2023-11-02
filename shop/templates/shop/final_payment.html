@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ثبت سفارش{% endblock title %}
+{% block content %}
+
+        <!-- main-shopping -->
+        <main class="cart-page default">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <ul class="order-steps">
+                            <li>
+                                <a href="cart.html" class="active">
+                                    <span>سبدخرید</span>
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="shopping-payment.html" class="active active2">
+                                    <span>روش پرداخت</span>
+                                </a>
+                            </li>
+                            <li class="active">
+                                <a href="successful-payment.html" class="active active3">
+                                    <span>پایان خرید</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                   
+                    <main class="cart default">
+                        <div class="container text-center cart_empty">
+
+                            <img src="{% static 'assets/img/successful-cart.png' %}" class="" />
+                            <h6>
+                               تریک، سفارش با موفقیت دریافت شد 
+                               
+                            </h6>
+                            <p>
+                                این اطمینان را به شما میدهیم که بزودی محصول خریداری شده شما را ارسال خواهیم کرد.
+                              
+                               
+                            </p>
+                            <p>
+                                کد سفارش: <b>2569854</b>
+                            </p>
+                            <a href="order-current.html" class="btn btn-main-masai">مشاهده وضعیت سفارش</a>
+
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </main>
+        <!-- main-shopping -->
+{% endblock content %}

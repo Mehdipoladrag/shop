@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 
 from django.db.models.signals import post_save
+
 # Create your models here.
 class PROFILE(models.Model):
     GENDER_CHOICES = (
@@ -31,7 +32,9 @@ class PROFILE(models.Model):
         _("User Image"), upload_to='images/profile/%Y/%m/%d', blank=True, null=True)
     def __str__(self):
         return self.user.username
-    
+    class Meta:
+        verbose_name = 'پروفایل'
+        verbose_name_plural  = 'پروفایل ها'
 def  save_profile_user(sender, **kwargs):
     if kwargs ['created']:
           profile_user=PROFILE(user=kwargs['instance'])
@@ -39,3 +42,6 @@ def  save_profile_user(sender, **kwargs):
 
 
 post_save.connect(save_profile_user,sender=User) 
+
+
+

@@ -9,7 +9,9 @@ class Category_blog(models.Model):
     slug_cat = models.SlugField(_("Slug"))
     def __str__(self):
         return self.name
-
+    class Meta:
+        verbose_name = 'دسته بندی وبلاگ'
+        verbose_name_plural  = 'دسته بندی وبلاگ ها'
 
 class Blogs(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -23,7 +25,9 @@ class Blogs(models.Model):
 
     def __str__(self):
         return self.blog_name
-
+    class Meta:
+        verbose_name = 'وبلاگ'
+        verbose_name_plural  = 'وبلاگ ها'
 
 class Visitor(models.Model):
     post = models.ForeignKey(Blogs, on_delete=models.CASCADE)
@@ -32,3 +36,6 @@ class Visitor(models.Model):
 
     def __str__(self):
         return f"Visitor: {self.blogs_details}"
+    class Meta:
+        verbose_name = 'بازدید کننده '
+        verbose_name_plural  = 'بازدید کنندگان'

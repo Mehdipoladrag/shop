@@ -6,6 +6,8 @@ from django.shortcuts import render, get_object_or_404
 from cart.forms import CartAddProductForm
 from cart.cart import Cart
 from decimal import Decimal
+
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -91,23 +93,42 @@ def categor_detail(request, category_slug):
 
 
 
+
+
 @login_required
 def checkout(request):
     cart = Cart(request)
     if request.method == 'POST':
         order = Order.objects.create(customer=request.user)
+        
+        # ایجاد فاکتور
+        invoice = Invoice.objects.create(order=order, invoice_date=timezone.now())
+        
+        order_total_cost = Decimal('0')  # مقدار اولیه هزینه کل سفارش
+        
         for item in cart:
             product = item['product']
             product_count = item['product_count']
             product_price = item['price']
-            product_cost = item['cost']
+            
+            product_cost = Decimal(product_count) * Decimal(product_price)
+            item['cost'] = product_cost
+            order_total_cost += product_cost  # افزودن هزینه هر محصول به هزینه کل سفارش
             
             OrderItem.objects.create(order=order,
-                                     customer=request.user,
-                                     product=product,
-                                     product_price=product_price,
-                                     product_count=product_count,
-                                     product_cost=product_cost)
+                                    customer=request.user,
+                                    product=product,
+                                    product_price=product_price,
+                                    product_count=product_count,
+                                    product_cost=product_cost)
+        
+        # ایجاد تراکنش
+        Transaction.objects.create(invoice=invoice,
+                                   transaction_date=timezone.now(),
+                                   amount=order_total_cost,  # استفاده از متغیر برای مقدار amount
+                                   status='pending')
+        
         cart.clear()
-        return render(request, 'shop/order_detail.html', {'order': order})
+        return render(request, 'shop/final_payment.html', {'order': order})
+    
     return render(request, 'shop/checkout.html', {'cart': cart})

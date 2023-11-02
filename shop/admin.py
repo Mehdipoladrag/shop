@@ -21,16 +21,24 @@ class ProductAdmin(admin.ModelAdmin):
 
     discounted_price.short_description = 'Discounted Price'
 
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'order_date')
+    readonly_fields = ('order_date',) 
+
+
+
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'product')
+
 
 admin.site.register(Product, ProductAdmin)
-
 admin.site.register(Category)
 admin.site.register(Brand)
 admin.site.register(Offers)
 admin.site.register(Info)
 admin.site.register(Invoice)
-admin.site.register(Order)
-admin.site.register(OrderItem)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem,OrderItemAdmin)
 admin.site.register(Transaction)
 admin.site.register(Contact_product)
 admin.site.register(Comment)

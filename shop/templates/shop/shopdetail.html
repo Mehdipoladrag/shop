@@ -155,14 +155,14 @@
                                                             {% endif %}
                                                             </div>
                                                             <div class="col-12 timer-title text--center">
-                                        <form action="{% url 'cart:cart_add' products.id %}" method="post">
-                                        <div class="tedad">
-                                         <p> {{ cart_add_product_form }} </p>
-                                        </div>
+                                                                <form action="{% url 'cart:cart_add' products.id %}" method="post">
+                                                                    <div class="tedad">
+                                                                    <p> {{ cart_add_product_form }} </p>
+                                                                    </div>
 
-                                        {% csrf_token %}
-                                        <input type="submit" class="btn btn-main-masai big_btn" value="افزودن به سبد خرید">
-                                    </form>
+                                                                    {% csrf_token %}
+                                                                    <input type="submit" class="btn big_btn btn-main-masai" value="افزودن به سبد خرید">
+                                                                </form>
                                                                 
                                                             </div>
                                                         </div>

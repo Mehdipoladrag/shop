@@ -1,6 +1,6 @@
 from django.contrib import admin
 import locale
-from shop.models import Customer, Product, Category, Contact_product, Brand, Offers , Info, Invoice, Order , OrderItem, Comment, Transaction
+from shop.models import Product, Category, Contact_product, Brand, Offers , Info, Invoice, Order , OrderItem, Comment, Transaction
 # Register your models here.
 
 
@@ -23,7 +23,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Customer)
+
 admin.site.register(Category)
 admin.site.register(Brand)
 admin.site.register(Offers)

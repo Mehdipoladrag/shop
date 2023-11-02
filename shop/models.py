@@ -3,28 +3,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from decimal import Decimal
 
-class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    user_code = models.IntegerField(_("Code"))
-    first_name = models.CharField(_("Name"), max_length=20)
-    last_name = models.CharField(_("last name"), max_length=20)
-    address = models.TextField(_("Address"))
-    zipcode = models.CharField(_("Zip Code"), max_length=20)
-    state = models.CharField(_("State"), max_length=20)
-    city = models.CharField(_("City"), max_length=20)
-    mobile = models.CharField(_("Mobile"), max_length=20)
-    email = models.EmailField(_("Email"), max_length=254)
-    age = models.PositiveIntegerField(_("Age"))
-    gender = models.BooleanField(_("Gender"), default=False)
-    shomare_shaba = models.IntegerField(_("shomare_shaba"))
-    shomare_cart = models.IntegerField(_("shomare_cart"))
-    back_money = models.CharField(
-        _("Back money"), max_length=50, default='شماره شبا')
-    customer_image = models.ImageField(
-        _("User Image"), upload_to='images/userimage/%Y/%m/%d', blank=True, null=True)  # عکس یوزر
 
-    def __str__(self):
-        return self.user.username
 
 
 class Category(models.Model):
@@ -119,14 +98,13 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(User, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
     product_price = models.DecimalField(
         _("Product Price"), max_digits=10, decimal_places=1)
     product_count = models.PositiveIntegerField(_("Product Count"))
-    product_cost = models.DecimalField(
-        _("Product cost"), max_digits=10, decimal_places=1)
+    product_cost = models.DecimalField(_("Product cost"), max_digits=10, decimal_places=1)
 
     def __str__(self):
         return str(self.id)

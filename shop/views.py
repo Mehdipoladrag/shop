@@ -97,13 +97,17 @@ def checkout(request):
     if request.method == 'POST':
         order = Order.objects.create(customer=request.user)
         for item in cart:
+            product = item['product']
+            product_count = item['product_count']
+            product_price = item['price']
+            product_cost = item['cost']
+            
             OrderItem.objects.create(order=order,
-                                     Product=item['product'],
-                                     product_price=item['price'],
-                                     product_count=item['product_count'],
-                                     product_cost=Decimal(item['product_count']) * Decimal(item['price']))
-        order.customer = request.user
-        order.save()
+                                     customer=request.user,
+                                     product=product,
+                                     product_price=product_price,
+                                     product_count=product_count,
+                                     product_cost=product_cost)
         cart.clear()
         return render(request, 'shop/order_detail.html', {'order': order})
     return render(request, 'shop/checkout.html', {'cart': cart})

@@ -54,7 +54,7 @@ class Product(models.Model):
         ('ندارد', 'ندارد'),
     )
     product_code = models.IntegerField(_("کد محصول"))  # کد محصول
-    product_name = models.CharField(_("نام محصول"), max_length=20)  # نام محصول
+    product_name = models.CharField(_("نام محصول"), max_length=50)  # نام محصول
     product_color = models.CharField(_("رنگ"), max_length=20)  # رنگ محصول
     product_category = models.ForeignKey(Category, verbose_name='دسته بندی', on_delete=models.CASCADE)  # دسته بندی محصول
     product_brand = models.ForeignKey(Brand, verbose_name='برند', on_delete=models.CASCADE)  # برند محصول

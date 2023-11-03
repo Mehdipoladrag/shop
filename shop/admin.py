@@ -5,11 +5,38 @@ from shop.models import Product, Category, Contact_product, Brand, Offers , Info
 
 
 class ProductAdmin(admin.ModelAdmin):
-    # فیلدهایی که می‌خواهید در صفحه ادمین نمایش داده شوند
-    # فیلدهایی که می‌خواهید در صفحه ادمین نمایش داده شوند
-    list_display = ('product_name', 'product_brand',
-                    'formatted_price', 'offer', 'discounted_price', 'slug')
-
+    
+    list_display = ['product_name', 'product_brand','formatted_price', 'offer', 'discounted_price', 'slug']
+    search_fields = ['product_name']
+    list_display_links = ['product_name', 'product_brand']
+    list_filter = ['product_brand','product_category']
+    readonly_fields = ['create_date', 'update_date']
+    list_per_page = 10
+    fieldsets = (
+        ("مشخصات محصول", {
+            "fields": (
+                'product_code' , 'product_name' , 'product_brand', 'product_category', 'product_color',
+                'product_number', 'technology', 'resolution', 'capability', 'platform_os', 'bluetooth','product_rate',
+                'slug','time_send', 'product_offer', 'product_inf'
+            ), 
+        }),
+        ("قیمت محصول", {
+            "fields": (
+                'price' , 'offer' ,
+            ),
+        }),
+        ("توضیحات محصول", {
+            "fields": (
+                'mini_description' , 'product_description' , 'specifications', 'create_date', 'update_date'
+            ),
+        }),
+        ("عکس های محصول", {
+            "fields": (
+                'pic' , 'pic2' , 'pic3', 'pic4', 'pic5',
+            ),
+        }),
+    )
+    
     def formatted_price(self, obj):
         return '{:,.2f}'.format(obj.price)
 
@@ -28,17 +55,34 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'product')
-
+    list_display = ['id', 'customer', 'product']
+    list_display_links = ['id','product']
+    list_per_page = 15
+    search_fields = ["product__product_name"]
+    fieldsets = (
+        ("سفارش توسط", {
+            "classes":["extrapretty"],
+            "fields": (
+                "order", "customer", "product"
+            ),
+        }),
+        ("اطلاعات قیمت محصول", {
+            "fields": (
+                "product_count","product_price" , "product_cost" 
+            ),
+        }),
+    )
+    
 
 admin.site.register(Product, ProductAdmin)
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem,OrderItemAdmin)
 admin.site.register(Category)
 admin.site.register(Brand)
 admin.site.register(Offers)
 admin.site.register(Info)
 admin.site.register(Invoice)
-admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderItem,OrderItemAdmin)
+
 admin.site.register(Transaction)
 admin.site.register(Contact_product)
 admin.site.register(Comment)

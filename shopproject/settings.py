@@ -31,7 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin', # Custom-admin
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -148,14 +149,36 @@ STATICFILES_DIRS = [
 CART_SESSION_ID = 'cart'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-########## 
-JAZZMIN_SETTINGS = { 
-    "site_logo": "assets/img/logo.png",
-    "site_title": "پنل ادمین فروشگاه",
-    "welcome_sign": "به پنل ادمین خوش آمدید",
-    "copyright": "این سایت تحت پشتیبانی مهدی پولادرگ است",
-}
-JAZZMIN_UI_TWEAKS = { 
-    "theme": "flatly", #تغییر تم ادمین # https://django-jazzmin.readthedocs.io/ui_customisation/
-    "dark_mode_theme": "darkly",
-}
+# Django jet ADmin
+JET_THEMES = [
+    {
+        'theme': 'default', # theme folder name
+        'color': '#47bac1', # color of the theme's button in user menu
+        'title': 'Default' # theme title
+    },
+    {
+        'theme': 'green',
+        'color': '#44b78b',
+        'title': 'Green'
+    },
+    {
+        'theme': 'light-green',
+        'color': '#2faa60',
+        'title': 'Light Green'
+    },
+    {
+        'theme': 'light-violet',
+        'color': '#a464c4',
+        'title': 'Light Violet'
+    },
+    {
+        'theme': 'light-blue',
+        'color': '#5EADDE',
+        'title': 'Light Blue'
+    },
+    {
+        'theme': 'light-gray',
+        'color': '#222',
+        'title': 'Light Gray'
+    }
+]

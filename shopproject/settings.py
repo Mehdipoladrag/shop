@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin', # Custom-admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -146,3 +147,15 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 CART_SESSION_ID = 'cart'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+########## 
+JAZZMIN_SETTINGS = { 
+    "site_logo": "assets/img/logo.png",
+    "site_title": "پنل ادمین فروشگاه",
+    "welcome_sign": "به پنل ادمین خوش آمدید",
+    "copyright": "این سایت تحت پشتیبانی مهدی پولادرگ است",
+}
+JAZZMIN_UI_TWEAKS = { 
+    "theme": "flatly", #تغییر تم ادمین # https://django-jazzmin.readthedocs.io/ui_customisation/
+    "dark_mode_theme": "darkly",
+}

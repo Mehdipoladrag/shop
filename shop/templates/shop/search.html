@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}جست و جو محصول{% endblock title %}
+{% block content %}
+
+
+
+
+ <main class="search-page default space-top-30">
+            <div class="container">
+                <div class="row">
+                    <aside class="sidebar-page col-12 col-sm-12 col-md-4 col-lg-3 ">
+                        <div class="box">
+                            <header class="card-header">
+                                <h3 class="card-title"><span class="space-right-10">رنگ</span></h3>
+                            </header>
+                            <div class="box-content">
+                                <div class="collapse show">
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> مشکی</label>
+                                        <span class="color_pro_sel" style=" background-color: #000;"></span>
+                                    </div>
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> قرمز</label>
+                                        <span class="color_pro_sel" style=" background-color: #ff0000;"></span>
+
+                                    </div>
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> زرد</label>
+                                        <span class="color_pro_sel" style=" background-color: #ffd800;"></span>
+
+                                    </div>
+                                    <div class="form-account-agree">
+                                        <label class="checkbox-form checkbox-primary">
+                                            <input type="checkbox" id="agree">
+                                            <span class="checkbox-check"></span>
+                                        </label>
+                                        <label for="agree"> آبی</label>
+                                        <span class="color_pro_sel" style=" background-color: #0000ff;"></span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box ">
+
+                            <header class="card-header">
+                                <h3 class="card-title"><span class="space-right-10">قیمت</span></h3>
+                            </header>
+                            <div class="box-content space-40 space-right-25 space-left-25">
+                                <div id="slider">
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="box">
+                            <header class="card-header">
+                                <h3 class="card-title"><span class="space-right-10">لیست برند ها</span></h3>
+                            </header>
+                            <div class="box-content">
+                                <div class="collapse show" >
+                                        {% for brand in brands %}
+                                        <div class="form-account-agree">
+                                            <label class="checkbox-form checkbox-primary">
+                                                <input type="checkbox" id="agree">
+                                                <span class="checkbox-check"></span>
+                                            </label>
+                                            <label for="agree">{{brand.brand_name}}</label>  
+                                        </div>
+                                        {% endfor %}
+                                 
+                                    
+                                </div>
+                            </div>
+                        </div>
+                       
+
+                        
+                      
+                        <div class="box">
+                            <div class="box-content">
+                                <input type="checkbox" name="checkbox" class="bootstrap-switch" checked />
+                                <label for="">موجود در انبار مسای</label>
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="box-content">
+                                <input type="checkbox" name="checkbox" class="bootstrap-switch" checked />
+                                <label for="">ارسال فوری</label>
+                            </div>
+                        </div>
+                    </aside>
+                    <div class="col-12 col-sm-12 col-md-8 col-lg-9">
+                       
+                        <div class="listing default ">
+                            <div class="listing-header default marg_all0">
+                                <ul class="Search_list nav nav-tabs " role="tablist" >
+                                    <li>
+                                        <a class="active" data-toggle="tab" href="#suggestion" role="tab"
+                                           aria-expanded="false">پیشنهاد خریداران</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#most-visited" role="tab" aria-expanded="false">پربازدیدترین</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#delivery" role="tab" aria-expanded="true">سریع‌ترین ارسال</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#most-seller" role="tab"
+                                           aria-expanded="false">‌بیشترین فروش‌</a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#price" role="tab"
+                                           aria-expanded="false">‌براساس قیمت</a>
+                                    </li>
+                                </ul>
+                                <div class="box_filter_search">
+                                    <ul class="filter_search">
+                                        <li>
+                                            <span>نتایج برای جست و جو : {{q}}</span>
+                                        </li> 
+                                    </ul>
+                                </div>
+                              
+                            </div>
+                            <div class="tab-content default text-center">
+                                <div class="tab-pane active" id="suggestion" role="tabpanel" aria-expanded="true">
+                       
+                                        <div class="row listing-items">
+                                            {% if products %}
+                                            {% for i in products %}
+                                            <div class="col-xl-4 col-lg-4 col-md-6 col-12 list_search_p ">
+                                                <div class="product-box">
+                                                    <div class="product-seller-details product-seller-details-item-grid">
+                                                        <span class="search_prod_icon">
+                                                            <i class="fa fa-search search_icon_search" aria-hidden="true"></i>
+                                                            <i class="fa fa-heart search_icon_like" aria-hidden="true"></i>
+                                                        </span>
+                                                       
+
+                                                        <span class="search_prod_btn">
+                                                            <i class="fa fa fa-cart-arrow-down search_icon_cart" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
+                                                    <a class="product-box-img" href="{% url 'shop:detailpro' i.slug %}">
+                                                        <img src="{{i.pic.url}}" alt="{{i.product_name}}">
+                                                        <ul>
+                                                            <li class="color_pro" style="background-color: #2fabd3;top: 7px;"></li>
+                                                            <li class="color_pro" style="background-color: #4e1dac;top: 20px;"></li>
+                                                            <li class="color_pro" style="background-color: #ff0075;top: 33px;"></li>
+                                                        </ul>
+                                                    </a>
+                                                    <div class="product-box-content">
+                                                        <div class="product-box-content-row">
+                                                            <div class="product_title">
+                                                                <a href="{% url 'shop:detailpro' i.slug %}">
+                                                                   {{i.product_name}}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-box-row product_price_search">
+                                                            <div class="price">
+                                                             {% if i.offer %}
+                                                                <del><span>{{ i.price|floatformat:0|intcomma }}<span>تومان</span></span></del>
+                                                                <span class="discount_badge">{{ i.offer|floatformat:0|intcomma }}%</span>
+                                                                <ins><span>{{ i.discounted_price|floatformat:0|intcomma }}<span>تومان</span></span></ins>
+                                                            {% else %}
+                                                                <span>{{ i.price|floatformat:0|intcomma }}<span>تومان</span></span>
+                                                            {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {% endfor %}
+                                            {% else %} 
+                                                <h3 style="color:#46A9AE; padding:200px">محصولی وجود ندارد</h3>
+                                            {% endif %}
+                                        </div>    
+                                        
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- main -->
+
+{% endblock content %}

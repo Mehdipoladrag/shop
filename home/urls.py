@@ -9,7 +9,4 @@ app_name = 'home'
 urlpatterns = [
     path('', home_page, name='home1'),
     path('about-us', about_page, name='about1'),
-
-
-
 ]

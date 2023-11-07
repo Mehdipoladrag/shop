@@ -1,118 +1,66 @@
-{% comment %} <style>
-  div {
-    margin-bottom: 8px;
-    padding: 4px 12px;
-  }
-
-.success { 
-  background: #a5de5c;
-  background-image: initial;
-  background-position-x: initial;
-  background-position-y: initial;
-  background-size: initial;
-  background-repeat-x: initial;
-  background-repeat-y: initial;
-  background-attachment: initial;
-  background-origin: initial;
-  background-clip: initial;
-  background-color: rgb(165, 222, 92);
-  color: #fff;
-  font-size: 10px;
-  padding: 8px 16px;
-  max-width: 300px;
-  text-align: center; 
-}
-
-  .error-message {
-    color: red;
-    background-color: #FFCDD2;
-    border-left: 6px solid red;
-    display: inline-block;
-    max-width: 100%;
-  }
-</style> {% endcomment %}
-
 <style>
-.alert {
-  padding: 20px;
-  background-color: #f44336;
-  color: white;
-  opacity: 1;
-  transition: opacity 0.6s;
-  margin-bottom: 15px;
-  text-align: right;
-  max-width: 100%;
-  border : 10px 
-
+.success-msg,
+.error-msg {
+    display: inline-block;
+    margin: 0.5em 0;
+    padding: 0.5em;
+    border-radius: 3px;
 }
 
-.alert.success {background-color: #04AA6D;}
-.alert.info {background-color: #2196F3;}
-.alert.warning {background-color: #ff9800;}
-
-.closebtn {
-  margin-left: 15px;
-  color: white;
-  font-weight: bold;
-  float: right;
-  font-size: 22px;
-  line-height: 20px;
-  cursor: pointer;
-  transition: 0.3s;
+.success-msg {
+    color: #270;
+    background-color: #DFF2BF;
 }
 
-.closebtn:hover {
-  color: black;
+.error-msg {
+    color: #D8000C;
+    background-color: #FFBABA;
 }
 </style>
-{% comment %} {% if messages %}
-<div class="">
-  {% for msg in messages %}
-    {% if msg.tags == 'error' %}
-    <h3 class="error-message">{{ msg }}</h3>
-    {% else %}
-    <div class="success">
-      <h3>{{ msg }}</h3>
-    </div>
-    {% endif %}
-  {% endfor %}
-</div>
-{% endif %} {% endcomment %}
 {% if messages %}
-
     {% for msg in messages %}
       {% if msg.tags == 'error' %}
-    <div class="alert">
-      <span class="closebtn">&times;</span>  
-       <p>{{ msg }}</p>
-    </div>
-    {% else %}
-
-  <div class="alert success">
-    <span class="closebtn">&times;</span>  
-      <p>{{ msg }}</p>
-  </div>
+      <div class="error-msg">
+        <i class="fa fa-times-circle"></i>
+        {{ msg }}
+      </div>
+      {% else %}
+      <div class="success-msg">
+        <i class="fa fa-check"></i>
+          {{ msg }}
+      </div>
     {% endif %}
   {% endfor %}
 {% endif %}
+
+
 <script>
-  setTimeout(function() {
-    var successMessageBox = document.querySelector(".success");
-    var errorMessageBox = document.querySelector(".alert");
+setTimeout(function() {
+  var successMessageBox = document.querySelector(".success-msg");
+  var errorMessageBox = document.querySelector(".error-msg");
 
-    if (successMessageBox) {
-      successMessageBox.style.opacity = "0";
-      setTimeout(function() {
-        successMessageBox.style.display = "none";
-      }, 5000);
-    }
+  if (successMessageBox) {
+    successMessageBox.style.opacity = "0";
+    setTimeout(function() {
+      successMessageBox.style.display = "none";
+    }, 5000);
+  }
 
-    if (errorMessageBox) {
-      errorMessageBox.style.opacity = "0";
-      setTimeout(function() {
-        errorMessageBox.style.display = "none";
-      }, 5000);
-    }
-  }, 2000);
+  if (errorMessageBox) {
+    errorMessageBox.style.opacity = "0";
+    setTimeout(function() {
+      errorMessageBox.style.display = "none";
+    }, 5000);
+  }
+}, 2000);
 </script>
-                            
+{% if form.errors %}
+  <div class="error-msg">
+    <i class="fa fa-times-circle"></i>
+    {% for field in form %}
+      {% for error in field.errors %}
+        {{ error }}
+      {% endfor %}
+    {% endfor %}
+  </div>
+{% endif %}

@@ -1,21 +1,43 @@
 from django import forms
 from django.contrib.auth.models import User
 from accounts.models import PROFILE
-from django.forms import ClearableFileInput
-
 class UserRegisterForm(forms.Form):
-    user_name = forms.CharField(max_length=25, label='نام کاربری', widget=forms.TextInput(
-        attrs={'placeholder': 'لطفا نام کاربری را وارد کنید', 'class': 'input_second input_all'}))
-    email = forms.EmailField(label='ایمیل', widget=forms.EmailInput(
-        attrs={'placeholder': 'لطفا ایمیل خود را وارد کنید', 'class': 'input_second input_all'}))
-    first_name = forms.CharField(max_length=25, label='نام', widget=forms.TextInput(
-        attrs={'placeholder': 'لطفا نام  را وارد کنید', 'class': 'input_second input_all'}))
-    last_name = forms.CharField(max_length=25, label='نام خانوادگی', widget=forms.TextInput(
-        attrs={'placeholder': 'لطفا نام خانوادگی را وارد کنید', 'class': 'input_second input_all'}))
-    password1 = forms.CharField(max_length=25, label='رمزعبور', widget=forms.PasswordInput(
-        attrs={'placeholder': 'لطفا رمز عبور را وارد کنید', 'class': 'input_second input_all'}))
-    password2 = forms.CharField(max_length=25, label='تکرار رمز عبور', widget=forms.PasswordInput(
-        attrs={'placeholder': 'لطفا رمز را دوباره  وارد کنید', 'class': 'input_second input_all'}))
+    user_name = forms.CharField(
+        max_length=25,
+        label='نام کاربری',
+        widget=forms.TextInput(attrs={'placeholder': 'لطفا نام کاربری را وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    email = forms.EmailField(
+        label='ایمیل',
+        widget=forms.EmailInput(attrs={'placeholder': 'لطفا ایمیل خود را وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید', 'invalid': 'لطفاً یک ایمیل معتبر وارد کنید'}
+    )
+    first_name = forms.CharField(
+        max_length=25,
+        label='نام',
+        widget=forms.TextInput(attrs={'placeholder': 'لطفا نام را وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    last_name = forms.CharField(
+        max_length=25,
+        label='نام خانوادگی',
+        widget=forms.TextInput(attrs={'placeholder': 'لطفا نام خانوادگی را وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    password1 = forms.CharField(
+        max_length=25,
+        label='رمزعبور',
+        widget=forms.PasswordInput(attrs={'placeholder': 'لطفا رمز عبور را وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    password2 = forms.CharField(
+        max_length=25,
+        label='تکرار رمز عبور',
+        widget=forms.PasswordInput(attrs={'placeholder': 'لطفا رمز را دوباره وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+
 
     def clean_user_name(self):
         user = self.cleaned_data['user_name']
@@ -23,13 +45,15 @@ class UserRegisterForm(forms.Form):
             raise forms.ValidationError(' نام کاربری تکراری است ')
         elif not user.isascii():
             raise forms.ValidationError('نام کاربری باید به زبان انگلیسی باشد')
+        elif not user.isdigit() :
+            raise forms.ValidationError('نام کاربری با عدد یا فاصله شروع نشود')
         return user
+
 
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('ایمیل تکراری است')
-
         return email
 
     def clean_password2(self):

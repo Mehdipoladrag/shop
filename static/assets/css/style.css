@@ -214,9 +214,6 @@
     display: block;
     
 }
-.run:hover{
-    
-}
 
 /* شروع مگا منو ها */
 .main_meno-drobdown .mega_meno{
@@ -290,8 +287,7 @@ flex-direction: row;
 }
 .mega_link--link:hover
 {
-     background: -webkit-linear-gradient(#2ec4b1, #82ccc3);
-  -webkit-background-clip: text;
+    background: -webkit-linear-gradient(#2ec4b1, #82ccc3);
   -webkit-text-fill-color: transparent;
 }
 .list__mega--link:hover{
@@ -1170,4 +1166,3 @@ button:focus{
         outline:none; 
   
 }
- 

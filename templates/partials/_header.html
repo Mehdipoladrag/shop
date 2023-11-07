@@ -15,11 +15,12 @@
                     <span class="navbar-toggler-bar bar3"></span>
                 </button>
                 <div class="search-nav default">
-                    <form action="">
-                        <input type="text" placeholder="جستجو ...">
-                        <button type="submit"><img src="{% static 'assets/img/search.png' %}" alt=""></button>
+                    <form method="GET" action="{% url 'shop:search1' %}">
+                        <input type="text" name="q" placeholder="جستجو ...">
+                        <button type="submit">
+                            <img src="{% static 'assets/img/search.png' %}" alt="جستجو">
+                        </button>
                     </form>
-
                     <ul>
                         
                         {% if not user.is_authenticated %}
@@ -225,10 +226,12 @@
                     </div>
                     <div class="col-lg-8 col-md-5 col-sm-8 col-7">
                         <div class="search-area default">
-                            <form action="" class="search">
-                                <input type="text" placeholder="جستجو">
-                                <button type="submit"><img src="{% static 'assets/img/search.png' %}" alt=""></button>
-                            </form>
+                            <form method="GET" action="{% url 'shop:search1' %}" class="search"> 
+                            <input type="text" name="q" placeholder="جستجو ...">
+                            <button type="submit">
+                            <img src="{% static 'assets/img/search.png' %}" alt="جستجو">
+                            </button>
+                        </form>
                         </div>
                     </div>
                     <div class="col-md-2 col-sm-12">
@@ -314,7 +317,6 @@
                                         </a>
                                     </li>
                                 </ul>
-                                
                                 <div class="m_cart-header">
                                     <div class="m_cart-total">
                                         <span>مجموع سبد:</span>
@@ -331,9 +333,6 @@
                     </div>
                 </div>
             </div>
-
-
-     
             <nav class="nav_header">
                 <ul class="nav__ullist">
                     <li class="list_style">
@@ -346,9 +345,6 @@
                         <i class="fa fa-list-alt icon-icon" aria-hidden="true"></i><a href="{% url 'shop:categorylist1' %}" class="list__link">
                             دسته بندی محصولات
                         </a>
-                    </li>
-                    <li class="list_style">
-                        <i class="fa fa-credit-card icon-icon" aria-hidden="true"></i><a href="shopping-payment.html" class="list__link">صفحه پرداخت</a>
                     </li>
                     <li class="list_style">
                         <i class="fa fa-newspaper icon-icon" aria-hidden="true"></i>

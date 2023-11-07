@@ -9,7 +9,7 @@ from decimal import Decimal
 
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-
+from django.db.models import Q
 # Create your views here.
 
 
@@ -20,7 +20,6 @@ def shop_list(request) :
     paginator = Paginator(product_list, 9)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-   
     brands = Brand.objects.all()
     context = {
         'product_list': product_list,
@@ -54,8 +53,20 @@ def shop_detail(request, slug) :
     }
     return render(request, 'shop/shopdetail.html', context)
 
-
-
+def SEARCH(request):
+    brands = Brand.objects.all()
+    products2 = Product.objects.all()
+    q = request.GET.get('q')
+    if q:
+        products = Product.objects.filter(Q(product_name__icontains=q))
+        context = {
+            'q': q,
+            'products': products,
+            'products2': products2,
+            'brands' : brands,
+        }
+        return render(request, 'shop/search.html', context)
+    return render(request, 'shop/search.html')
 
 # http://127.0.0.1:8000/shop/all-categories/
 def categor_list(request):
@@ -98,6 +109,8 @@ def categor_detail(request, category_slug):
 @login_required
 def checkout(request):
     cart = Cart(request)
+    if not cart:
+        return render(request, 'cart/emptycart.html')
     if request.method == 'POST':
         order = Order.objects.create(customer=request.user)
         

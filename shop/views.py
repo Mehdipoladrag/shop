@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from cart.forms import CartAddProductForm
 from cart.cart import Cart
 from decimal import Decimal
-
+from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -111,22 +111,23 @@ def checkout(request):
     cart = Cart(request)
     if not cart:
         return render(request, 'cart/emptycart.html')
+    
+    order = None
     if request.method == 'POST':
         order = Order.objects.create(customer=request.user)
-        
-        # ایجاد فاکتور
         invoice = Invoice.objects.create(order=order, invoice_date=timezone.now())
         
-        order_total_cost = Decimal('0')  # مقدار اولیه هزینه کل سفارش
+        order_total_cost = Decimal('0')
         
         for item in cart:
             product = item['product']
             product_count = item['product_count']
             product_price = item['price']
+            discounted_price = item['discounted_price']
             
-            product_cost = Decimal(product_count) * Decimal(product_price)
+            product_cost = Decimal(product_count) * Decimal(discounted_price)
             item['cost'] = product_cost
-            order_total_cost += product_cost  # افزودن هزینه هر محصول به هزینه کل سفارش
+            order_total_cost += product_cost
             
             OrderItem.objects.create(order=order,
                                     customer=request.user,
@@ -135,13 +136,12 @@ def checkout(request):
                                     product_count=product_count,
                                     product_cost=product_cost)
         
-        # ایجاد تراکنش
         Transaction.objects.create(invoice=invoice,
                                    transaction_date=timezone.now(),
-                                   amount=order_total_cost,  # استفاده از متغیر برای مقدار amount
+                                   amount=order_total_cost,
                                    status='pending')
         
         cart.clear()
-        return render(request, 'shop/final_payment.html', {'order': order})
+        return render(request, 'shop/final_payment.html', {'order': order, 'total_cost': order_total_cost})
     
     return render(request, 'shop/checkout.html', {'cart': cart})

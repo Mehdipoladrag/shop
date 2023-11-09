@@ -12,17 +12,17 @@
                     <div class="col-12 text-center">
                         <ul class="order-steps">
                             <li>
-                                <a href="cart.html"  class="active">
+                                <a href="#"  class="active">
                                     <span>سبدخرید</span>
                                 </a>
                             </li>
                             <li  class="active">
-                                <a href="shopping-payment.html"  class="active active2">
+                                <a href="#"  class="active active2">
                                     <span>روش پرداخت</span>
                                 </a>
                             </li>
                             <li >
-                                <a href="successful-payment.html" >
+                                <a href="#" >
                                     <span>پایان خرید</span>
                                 </a>
                             </li>
@@ -91,8 +91,8 @@
                                 <table class="table table_details">
                                     <tbody>
                                         <tr>
-                                            <td>قیمت کل سفارش:</td>
-                                            <td>5,398,000 <span>تومان</span></td>
+                                            <td> مالیات:</td>
+                                            <td>5,000 <span>تومان</span></td>
                                         </tr>
                                         <tr>
                                             <td>بسته‌بندی و ارسال:</td>
@@ -101,7 +101,7 @@
                                         <tr class="all">
                                             <td>قیمت قابل پرداخت:</td>
                          
-                                            <td>{{ cart.discounted_price|floatformat:0|intcomma }}</td>
+                                            <td>{{ total_cost|floatformat:0|intcomma }}</td>
          
                                         </tr>
                                         

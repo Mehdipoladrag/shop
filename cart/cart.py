@@ -37,28 +37,30 @@ class Cart(object):
             self.save()
     
     def __iter__(self):
-        product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids)
-        for product in products:
-            self.cart[str(product.id)]['product'] = product
+            product_ids = self.cart.keys()
+            products = Product.objects.filter(id__in=product_ids)
+            for product in products:
+                item = self.cart[str(product.id)]
+                item['product'] = product
+                item['price'] = Decimal(item['price'])
+                
+                if product.offer:
+                    discount_percent = Decimal(product.offer) / 100
+                    discount_amount = item['price'] * discount_percent
+                    item['discounted_price'] = item['price'] - discount_amount
+                else:
+                    item['discounted_price'] = item['price']
+                
+                item['total_price'] = item['discounted_price'] * item['product_count']
+                yield item
 
-        for item in self.cart.values():
-            item['price'] = Decimal(item['price'])
-            if item['product'].offer:
-                discount_percent = Decimal(item['product'].offer) / 100
-                discount_amount = item['price'] * discount_percent
-                item['discounted_price'] = item['price'] - discount_amount
-            else:
-                item['discounted_price'] = item['price']
-            item['total_price'] = item['discounted_price'] * item['product_count']
-            yield item
 
     def __len__(self):
         return sum(item['product_count'] for item in self.cart.values())
 
     def get_total_price(self):
         total_price = sum(Decimal(item['discounted_price']) * item['product_count'] for item in self.cart.values())
-        return total_price
+        return total_price  
 
     def clear(self):
         self.session[settings.CART_SESSION_ID] = {}

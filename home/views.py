@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from shop.models import Product, Brand, Category
 from blog.models import Blogs 
+from django.contrib.admin.views.decorators import staff_member_required
 # Create your views here.
 def home_page(request) :
     productoffer = Product.objects.filter(offer__gt=0).order_by('create_date')
@@ -18,7 +19,7 @@ def home_page(request) :
 
     
     return render(request, 'home/homepage.html', context)
-
+#@staff_member_required
 def about_page(request) :
     return render(request, 'home/about.html')
 

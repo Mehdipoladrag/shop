@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'jalali_date',  # برای تبدیل تاریخ به فارسی {% load jdatetime_tags %}
     'home', 'shop', 'accounts',
     'contact', 'blog', 'cart',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -79,16 +80,6 @@ WSGI_APPLICATION = 'shopproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'test',
-#         'USER': '   ',
-#         'PASSWORD': '3JpL8S5Vsn5XXtibGENVJpQv',
-#         'HOST': 'resome-database',
-#         'PORT': 5432,
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -98,6 +89,15 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT' : 5432,
     }
+}
+
+#REST_FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 1,
 }
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

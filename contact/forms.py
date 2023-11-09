@@ -16,7 +16,7 @@ class ContactUsForm(forms.ModelForm) :
         'class': 'input_second input_all',
     }), label='ایمیل',)
 
-    phone = forms.IntegerField(widget=NumberInput(attrs={
+    phone = forms.IntegerField(widget=TextInput(attrs={
         'placeholder': 'شماره تماس',
         'class': 'input_second input_all',
     }), label='شماره تماس')

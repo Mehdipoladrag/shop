@@ -44,5 +44,5 @@ class ContactDetailMixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mix
     def put(self,request,pk) :
         return self.update(request,pk)
     def delete(self, request, pk) :
-        return self.delete(request, pk)
+        return self.destroy(request, pk)
     

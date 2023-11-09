@@ -10,6 +10,6 @@ app_name = 'contact'
 
 urlpatterns = [
     path('', contact_page, name='contact1'),
-    path('api-contact/', ContactListMixin.as_view(), name="contact_api_list"),
-    path('api-contact/<pk>/', ContactDetailMixin.as_view()),
+    path('api/contact/', ContactListMixin.as_view(), name="contact_api_list"),
+    path('api/contact/<pk>/', ContactDetailMixin.as_view()),
 ]

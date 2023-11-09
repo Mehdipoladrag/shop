@@ -8,8 +8,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from rest_framework import generics, mixins
+from accounts.serializers import ProfileSerializer,UserSerializer
+from rest_framework.permissions import IsAdminUser
+from django.contrib.auth import get_user_model 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 # Create your views here.
-
+User = get_user_model()
 
 
 def signup_page(request):
@@ -102,3 +108,48 @@ def change_password(request):
 def new_address(request) :
     profile = PROFILE.objects.get(user_id=request.user.id)
     return render(request, 'accounts/newaddres.html',{'profile': profile})
+
+
+## API
+class ProfilePermission(IsAdminUser) : 
+    pass 
+class ProfileUSerlistmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ProfilePermission) :
+    queryset = PROFILE.objects.all()
+    serializer_class = ProfileSerializer
+    def get(self, request) : 
+        return self.list(request) 
+    def post(self, request) :
+        return self.create(request)
+class ProfileDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView,ProfilePermission) :
+    queryset = PROFILE.objects.all()
+    serializer_class = ProfileSerializer
+    def get(self, request, pk) :
+        return self.retrieve(request, pk) 
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self, request, pk) :
+         return self.destroy(request,pk)
+    
+###### User 
+class UserListmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ProfilePermission) :
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['username']
+    search_fields = ['username']
+    ordering_fields = ['username', 'email']
+    ordering_fields = '__all__'
+    def get(self, request) : 
+        return self.list(request) 
+    def post(self, request) :
+        return self.create(request)
+class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView,ProfilePermission) :
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    def get(self, request, pk) :
+        return self.retrieve(request, pk) 
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self, request, pk) :
+         return self.destroy(request,pk)
+    

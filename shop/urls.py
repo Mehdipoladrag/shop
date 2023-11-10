@@ -7,6 +7,8 @@ from shop.views import (
     Categorymixinlist, CategoryDetailmixin,
     ##
     Brandmixinlist, BrandDetailmixin,
+    ##
+    Productmixinlist, ProductDetailmixin,
 )
 app_name = 'shop'
 
@@ -21,7 +23,8 @@ urlpatterns = [
     path('api/category-detail/<pk>/', CategoryDetailmixin.as_view()),
     path('api/brand-list/', Brandmixinlist.as_view()),
     path('api/brand-detail/<pk>/', BrandDetailmixin.as_view()),
-
+    path('api/product-list/', Productmixinlist.as_view()),
+    path('api/product-detail/<pk>/', ProductDetailmixin.as_view()),
 
 
 

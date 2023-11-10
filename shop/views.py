@@ -203,4 +203,25 @@ class BrandDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins
     def delete(self,request,pk) :
         return self.destroy(request, pk)
     
+class Productmixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Product.objects.all().order_by('-create_date')
+    serializer_class = ProductSerializer 
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['product_name']
+    search_fields = ['product_name',]
+    ordering_fields = ['create_date']
+    ordering_fields = '__all__'
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
     
+class ProductDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer 
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)

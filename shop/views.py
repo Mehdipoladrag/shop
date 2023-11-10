@@ -10,6 +10,11 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from rest_framework.permissions import IsAdminUser
+from rest_framework import generics,mixins
+from shop.serializers import * 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 # Create your views here.
 
 
@@ -145,3 +150,57 @@ def checkout(request):
         return render(request, 'shop/final_payment.html', {'order': order, 'total_cost': order_total_cost})
     
     return render(request, 'shop/checkout.html', {'cart': cart})
+
+
+
+########## API 
+class ShopPermission(IsAdminUser) :
+    pass 
+### Category API 
+class Categorymixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer 
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['category_name']
+    search_fields = ['category_name']
+    ordering_fields = ['category_name']
+    ordering_fields = '__all__'
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
+    
+class CategoryDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer 
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)
+
+class Brandmixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer 
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['brand_name']
+    search_fields = ['brand_name',]
+    ordering_fields = ['brand_name']
+    ordering_fields = '__all__'
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
+    
+class BrandDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer 
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)
+    
+    

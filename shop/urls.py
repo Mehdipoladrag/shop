@@ -10,6 +10,10 @@ from shop.views import (
     OrderItemmixinlist, OrderItemDetailmixin, 
     TransactionDetailmixin, Transactionmixinlist,
     Invoicemixinlist, InvoiceDetailmixin,
+    offermixinlist, OfferDetailmixin,
+    infoDetailmixin,infomixinlist,
+    Commentxinlist, CommentDetailmixin, 
+    ContactproductDetailmixin, Contactproductmixinlist
 )
 app_name = 'shop'
 
@@ -34,6 +38,14 @@ urlpatterns = [
     path('api/Transaction-detail/<pk>/', TransactionDetailmixin.as_view()),
     path('api/invoice-list/', Invoicemixinlist.as_view()),
     path('api/invoice-detail/<pk>/', InvoiceDetailmixin.as_view()),
+    path('api/offer-list/', offermixinlist.as_view()),
+    path('api/offer-detail/<pk>/', OfferDetailmixin.as_view()),
+    path('api/info-list/', infomixinlist.as_view()),
+    path('api/info-detail/<pk>/', infoDetailmixin.as_view()),
+    path('api/comment-list/', Commentxinlist.as_view()),
+    path('api/comment-detail/<pk>/', CommentDetailmixin.as_view()),
+    path('api/contact-product-list/', Contactproductmixinlist.as_view()),
+    path('api/contact-product-detail/<pk>/', ContactproductDetailmixin.as_view()),
 
 ]
 

@@ -317,5 +317,77 @@ class InvoiceDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixi
         return self.update(request,pk)
     def delete(self,request,pk) :
         return self.destroy(request, pk)
+     
+#API OFFER < INFO < COMMENT < CONTACT_PRODUCT
+
+class offermixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Offers.objects.all()
+    serializer_class = OffersSerializer
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
     
-   
+class OfferDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Offers.objects.all()
+    serializer_class = OffersSerializer
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)
+#API info 
+class infomixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Info.objects.all()
+    serializer_class = InfoSerializer
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
+    
+class infoDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Info.objects.all()
+    serializer_class = InfoSerializer
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)
+#API Comment 
+class Commentxinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
+    
+class CommentDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)
+# Contact_product 
+class Contactproductmixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Contact_product.objects.all()
+    serializer_class = ContactProductSerializer
+    def get(self,request) :
+        return self.list(request)
+    def post(self, request) :
+        return self.create(request) 
+    
+class ContactproductDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin, generics.GenericAPIView,ShopPermission) :
+    queryset = Contact_product.objects.all()
+    serializer_class = ContactProductSerializer
+    def get(self, request, pk) :
+        return self.retrieve(request,pk)
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self,request,pk) :
+        return self.destroy(request, pk)

@@ -13,12 +13,7 @@
                                         <i class="fa fa-cart-arrow-down colormain" aria-hidden="true"></i>    سفارش جاری
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="order-cancelled.html" class="dropdown-item">
-                                        <i class="fa fa-times colormain" aria-hidden="true"></i>
-                                        لغو شده
-                                    </a>
-                                </li>
+
                                 <li>
                                     <a href="orders-return.html" class="dropdown-item">
                                         <i class="fa fa-thumbs-down colormain" aria-hidden="true"></i>
@@ -26,9 +21,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="profile-favorites.html" class="dropdown-item">
-                                        <i class="fa fa-bookmark colormain" aria-hidden="true"></i>
-                                        لیست های من
+                                    <a href="{% url 'accounts:order1' %}" class="dropdown-item">
+                                        <i class="fa fa-cart-arrow-down colormain" aria-hidden="true"></i>
+                                        لیست سفارشات من
                                     </a>
                                 </li>
                                 <li>
@@ -38,7 +33,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="order-message.html" class="dropdown-item">
+                                    <a href="{% url 'accounts:message1' %}" class="dropdown-item">
                                         <i class="fa fa-bell colormain" aria-hidden="true"></i>
                                         پیغام ها
                                     </a>

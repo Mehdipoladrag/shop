@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% load jalali_tags %}
+{% block title %}تاریخچه سفارشات شما{% endblock title %}
+{% block content %}
+            <main class="order-delivered default space-top-30">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-9 col-lg-8 col-md-12 order-2">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <header class="card-header">
+                                        <h3 class="card-title"><span>سفارشات در جریان</span></h3>
+                                    </header>
+                                    {% for order in orders %}
+                                        <div class="content-section default">
+                                            <div class="row">
+                                                <div class="col-md-12 col-sm-12 order_delivered_sec">
+                                                    <div class="profile-recent-fav-row">
+                                                        <div class="col-12">
+                                                            <h4 class="profile-recent-fav-name">
+                                                                <i class="fa fa-spinner" aria-hidden="true"></i> پردازش انبار
+                                                            </h4>
+                                                            <ul>
+                                                                <li>
+                                                                    {{ order.order.order_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}
+                                                                </li>
+                                                                <li>
+                                                                    کد سفارش: <b>{{ order.id }}</b>
+                                                                </li>
+                                                                <li>
+                                                                    قیمت محصول: <b>{{order.product_price|floatformat:0|intcomma }} تومان</b>
+                                                                </li>
+                                                                <li>
+                                                                    مجموع سبد: <b>{{order.order.total_cost|floatformat:0|intcomma }} تومان</b>
+                                                                </li>
+                                                            </ul>
+                                                            <h4 class="profile-recent-Club">
+                                                                <i class="fa fa-gift" aria-hidden="true"></i> امتیاز مسای‌کلاب <b>{{order.product.product_rate}}</b>
+                                                            </h4>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <div class="row">
+                                      
+                                                                    <div class="col-4 col-lg-1 col-md-1">
+                                                                        <img src="{{ order.product.pic.url }}">
+                                                                    </div>          
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 text-left">
+                                                            <a class="btn btn-error-masai">لغو سبد</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
+                            <div class="profile-card-1">
+                                <!--image-->
+                                <div class="img">
+
+                                    <img src="{% static 'assets/img/profile.jpg' %}" />
+                                </div>
+
+                                <div class="modal-share modal-width-custom modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">تغییر پروفایل</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--text-->
+                                <div class="mid-section">
+                                {% include "partials/_profile2.html" %}
+                                </div>
+
+                            </div>
+                            <div class="responsive-profile-menu show-md location_me">
+                                {% include "partials/_profile.html" %}
+                            </div>
+                            <div class="profile-menu ">
+                                {% include "partials/_profile.html" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+
+{% endblock content %}

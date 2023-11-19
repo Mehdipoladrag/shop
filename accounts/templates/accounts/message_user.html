@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+{% load jalali_tags %}
+{% block title %}پیام ها{% endblock title %}
+{% block content %}
+        <main class="order-delivered  default space-top-30">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-9 col-lg-8 col-md-12 order-2">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <header class="card-header">
+                                    <h3 class="card-title"><span>پیغام‌ها‌</span></h3>
+                                   
+                                </header>
+                                <div class="content-section default">
+                                    <div class="row">
+                                        {% for message in message_user %}
+                                        <div class="col-md-6 col-sm-6 order_delivered_sec">
+                                            <div class="row">
+                                   
+                                                <div class="col-12 col-lg-12 col-md-12">
+
+                                                    <h4 class="profile-recent-fav-name">
+                                                        <i class="fa fa-bell " aria-hidden="true"></i> {{message.description}}
+                                                    </h4>
+                                                    <span class="span-sub-bel">{{message.message_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}</span>
+                                                </div>
+                               
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
+                        <div class="profile-card-1">
+                            <!--image-->
+                            <div class="img">
+
+                                <img src="assets/img/profile.jpg" />
+                            </div>
+                            <a class="view-more" href="" data-toggle="modal" data-target="#myModal">
+                                <i class="fa fa-plus-circle"></i>
+                            </a>
+
+                            <!--text-->
+                            <div class="mid-section">
+                                {% include "partials/_profile2.html" %}
+                            </div>
+
+                        </div>
+                            <div class="responsive-profile-menu show-md location_me">
+                                {% include "partials/_profile.html" %}
+                            </div>
+                            <div class="profile-menu ">
+                                {% include "partials/_profile.html" %}
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+{% endblock content %}

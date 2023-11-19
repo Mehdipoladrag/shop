@@ -203,7 +203,7 @@ class BrandDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins
     def delete(self,request,pk) :
         return self.destroy(request, pk)
 ### Product    
-class Productmixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ShopPermission) :
+class Productmixinlist(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,) :
     queryset = Product.objects.all().order_by('-create_date')
     serializer_class = ProductSerializer 
     filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from accounts.models import PROFILE
+from accounts.models import PROFILE, Message
 from django.contrib.auth.models import User
 from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm,UserUpdateForm
 from django.contrib.auth.models import User
@@ -10,10 +10,11 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from rest_framework import generics, mixins
 from accounts.serializers import ProfileSerializer,UserSerializer
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth import get_user_model 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from shop.models import Order, OrderItem
 # Create your views here.
 User = get_user_model()
 
@@ -68,11 +69,11 @@ def user_profile(request):
 
 
 @login_required(login_url='accounts:signin1')
+# views.py
 def user_update(request):
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(
-            request.POST, instance=request.user.profile)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
@@ -86,7 +87,6 @@ def user_update(request):
         'profile_form': profile_form
     }
     return render(request, 'accounts/updateuser.html', context)
-
 
 @login_required(login_url='accounts:signin1')
 def change_password(request):
@@ -107,8 +107,36 @@ def change_password(request):
 
 def new_address(request) :
     profile = PROFILE.objects.get(user_id=request.user.id)
-    return render(request, 'accounts/newaddres.html',{'profile': profile})
+    context = {
+        'profile': profile,
+    }
+    return render(request, 'accounts/newaddres.html',context)
 
+def order_list(request):
+    user = request.user
+    orders = OrderItem.objects.filter(customer=user)
+    context =  {
+        'orders': orders,
+    }
+    return render(request, 'accounts/order_list.html',context)
+
+def user_message_info(request) :
+    user = request.user  # یا هر روش دیگری برای دریافت کاربر جاری
+    messages = Message.objects.filter(user=user)
+    context = {
+        'message_user' : messages,
+    }
+    return render(request,'accounts/message_user.html', context)
+
+def profile2(request):
+    user = request.user
+    message_count = Message.objects.filter(user=user).count()
+    order_count = Order.objects.filter(user=user).count()
+    context = {
+        'order_count': order_count,
+        'message_count': message_count,
+    }
+    return render(request, 'partials/_profile2.html', context)
 
 ## API
 class ProfilePermission(IsAdminUser) : 
@@ -152,4 +180,3 @@ class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
         return self.update(request,pk)
     def delete(self, request, pk) :
          return self.destroy(request,pk)
-    

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}بروزرسانی پروفایل{% endblock title %}
 {% block content %}
             <main class="profile-user-page default space-top-30">
                 <div class="container">
@@ -14,7 +15,7 @@
 
 
 
-                                        <form class="" method="post" action="">
+                                        <form class="" method="post" action="" enctype="multipart/form-data">
                                             
                                             {{profile_form.as_p}}
 

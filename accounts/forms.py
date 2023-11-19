@@ -45,8 +45,6 @@ class UserRegisterForm(forms.Form):
             raise forms.ValidationError(' نام کاربری تکراری است ')
         elif not user.isascii():
             raise forms.ValidationError('نام کاربری باید به زبان انگلیسی باشد')
-        elif not user.isdigit() :
-            raise forms.ValidationError('نام کاربری با عدد یا فاصله شروع نشود')
         return user
 
 
@@ -136,8 +134,8 @@ class ProfileUpdateForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'input_second input_all'}), label='شماره کارت',)
     iban = forms.CharField(widget=forms.TextInput(
         attrs={'class': 'input_second input_all'}), label='شماره شبا',)
-
+    customer_image = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'input_second input_all'}), label='تصویر مشتری')
     class Meta:
         model = PROFILE
         fields = ('national_code', 'address', 'zipcode',
-                  'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban')
+                  'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban','customer_image')

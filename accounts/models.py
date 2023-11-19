@@ -42,6 +42,12 @@ def  save_profile_user(sender, **kwargs):
 
 
 post_save.connect(save_profile_user,sender=User) 
+class Message(models.Model):
+    user = models.ForeignKey(User, verbose_name=_("کاربر"), on_delete=models.CASCADE)
+    subject = models.CharField(_("موضوع"), max_length=50)
+    description = models.TextField(_("پیام به کاربر"))
+    message_date = models.DateTimeField(_("تاریخ ارسال پیام"), auto_now_add=True)
 
-
-
+    class Meta:
+        verbose_name = 'پیام به کاربر'
+        verbose_name_plural = 'پیام به کاربر ها'

@@ -4,7 +4,6 @@ from accounts.views import(
     user_logout, user_profile,
     user_update, change_password,
     new_address, user_message_info,
-    profile2,
     ###
     ProfileUSerlistmixin, ProfileDetailmixin,
     UserListmixin,UserDetailmixin, order_list
@@ -27,8 +26,6 @@ urlpatterns = [
     path('address/', new_address, name='address1'),
     path('orders/', order_list, name='order1'),   
     path('messages/', user_message_info, name='message1'),
-    path('profile2/', profile2, name='profile2'),
-    
     path('api/profile-list/', ProfileUSerlistmixin.as_view()),
     path('api/profile-detail/<pk>/', ProfileDetailmixin.as_view()),
     path('api/user-list/', UserListmixin.as_view()),

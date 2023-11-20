@@ -65,7 +65,7 @@
                                 <!--image-->
                                 <div class="img">
 
-                                    <img src="{% static 'assets/img/profile.jpg' %}" />
+                                    <img src="{{user.profile.customer_image.url}}" />
                                 </div>
 
                                 <div class="modal-share modal-width-custom modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -80,12 +80,27 @@
                                 </div>
                                 <!--text-->
                                 <div class="mid-section">
-                                {% include "partials/_profile2.html" %}
+                                    <div class="name">{{ profile.user.username }}</div>
+                                        <div class="description">
+                                            <a href="#" class="btn btn-main-masai">افزایش موجودی</a>
+                                            <a href="#" class="btn btn-second-masai">مسای کلاب</a>
+                                        </div>
+                                        <div class="line"></div>
+                                        <div class="stats">
+                                            <div class="stat">
+                                                {{ orders.count }}
+                                                <div class="subtext">سفارش‌ها</div>
+                                            </div>
+                                            <div class="stat">
+                                                68
+                                                <div class="subtext">تحویل داده</div>
+                                            </div>
+                                            <div class="stat">
+                                                {{ message_count }}
+                                                <div class="subtext">پیام‌های شما</div>
+                                            </div>
+                                        </div>
                                 </div>
-
-                            </div>
-                            <div class="responsive-profile-menu show-md location_me">
-                                {% include "partials/_profile.html" %}
                             </div>
                             <div class="profile-menu ">
                                 {% include "partials/_profile.html" %}

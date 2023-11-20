@@ -48,41 +48,22 @@ class ProductAdmin(admin.ModelAdmin):
 
     discounted_price.short_description = 'Discounted Price'
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer', 'order_date')
     readonly_fields = ('order_date',) 
-
-
-
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['id', 'customer', 'product']
-    list_display_links = ['id','product']
-    list_per_page = 15
-    search_fields = ["product__product_name"]
-    fieldsets = (
-        ("سفارش توسط", {
-            "classes":["extrapretty"],
-            "fields": (
-                "order", "customer", "product"
-            ),
-        }),
-        ("اطلاعات قیمت محصول", {
-            "fields": (
-                "product_count","product_price" , "product_cost" 
-            ),
-        }),
-    )
-    
-
-admin.site.register(Product, ProductAdmin)
+    inlines = [OrderItemInline]
+    verbose_name = 'عمومی'
 admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderItem,OrderItemAdmin)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)
 admin.site.register(Brand)
 admin.site.register(Offers)
 admin.site.register(Info)
 admin.site.register(Invoice)
-
 admin.site.register(Transaction)
 admin.site.register(Contact_product)
 admin.site.register(Comment)

@@ -110,7 +110,6 @@ def categor_detail(request, category_slug):
 
 
 
-
 @login_required
 def checkout(request):
     cart = Cart(request)
@@ -118,11 +117,12 @@ def checkout(request):
         return render(request, 'cart/emptycart.html')
     
     order = None
+    order_total_cost = Decimal('0')
+    order_items = []  # لیستی برای ذخیره آیتم‌های سفارش
+    
     if request.method == 'POST':
         order = Order.objects.create(customer=request.user)
         invoice = Invoice.objects.create(order=order, invoice_date=timezone.now())
-        
-        order_total_cost = Decimal('0')
         
         for item in cart:
             product = item['product']
@@ -134,23 +134,24 @@ def checkout(request):
             item['cost'] = product_cost
             order_total_cost += product_cost
             
-            OrderItem.objects.create(order=order,
-                                    customer=request.user,
-                                    product=product,
-                                    product_price=product_price,
-                                    product_count=product_count,
-                                    product_cost=product_cost)
+            order_items.append(OrderItem(order=order,
+                                         customer=request.user,
+                                         product=product,
+                                         product_price=product_price,
+                                         product_count=product_count,
+                                         product_cost=product_cost))
         
         Transaction.objects.create(invoice=invoice,
                                    transaction_date=timezone.now(),
                                    amount=order_total_cost,
                                    status='pending')
         
+        OrderItem.objects.bulk_create(order_items)  # ایجاد همه آیتم‌های سفارش در یک بار
+        
         cart.clear()
         return render(request, 'shop/final_payment.html', {'order': order, 'total_cost': order_total_cost})
     
     return render(request, 'shop/checkout.html', {'cart': cart})
-
 
 
 ########## API 

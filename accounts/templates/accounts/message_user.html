@@ -48,13 +48,30 @@
 
                             <!--text-->
                             <div class="mid-section">
-                                {% include "partials/_profile2.html" %}
-                            </div>
+                                    <div class="name">{{ profile.user.username }}</div>
+                                        <div class="description">
+                                            <a href="#" class="btn btn-main-masai">افزایش موجودی</a>
+                                            <a href="#" class="btn btn-second-masai">مسای کلاب</a>
+                                        </div>
+                                        <div class="line"></div>
+                                        <div class="stats">
+                                            <div class="stat">
+                                                {{ orders }}
+                                                <div class="subtext">سفارش‌ها</div>
+                                            </div>
+                                            <div class="stat">
+                                                68
+                                                <div class="subtext">تحویل داده</div>
+                                            </div>
+                                            <div class="stat">
+                                                {{ message_user.count }}
+                                                <div class="subtext">پیام‌های شما</div>
+                                            </div>
+                                        </div>
+                                </div>
 
                         </div>
-                            <div class="responsive-profile-menu show-md location_me">
-                                {% include "partials/_profile.html" %}
-                            </div>
+
                             <div class="profile-menu ">
                                 {% include "partials/_profile.html" %}
                             </div>

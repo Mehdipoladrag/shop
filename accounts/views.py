@@ -99,7 +99,7 @@ def change_password(request):
             return redirect('accounts:profile1')
         else:
             messages.error(request, 'رمز اشتباه است')
-            return redirect('accounts:change1')
+            return redirect('accounts:profile1')
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'accounts/Changepass.html', {'form': form})
@@ -107,36 +107,35 @@ def change_password(request):
 
 def new_address(request) :
     profile = PROFILE.objects.get(user_id=request.user.id)
+    user = request.user
+    message_count = Message.objects.filter(user=user).count()
+    orders = OrderItem.objects.filter(customer=user).count()
     context = {
         'profile': profile,
+        'orders': orders,
+        'message_count': message_count,
     }
     return render(request, 'accounts/newaddres.html',context)
 
 def order_list(request):
     user = request.user
+    message_count = Message.objects.filter(user=user).count()
     orders = OrderItem.objects.filter(customer=user)
     context =  {
         'orders': orders,
+        'message_count': message_count,
     }
     return render(request, 'accounts/order_list.html',context)
 
 def user_message_info(request) :
-    user = request.user  # یا هر روش دیگری برای دریافت کاربر جاری
+    user = request.user 
     messages = Message.objects.filter(user=user)
+    orders = OrderItem.objects.filter(customer=user).count()
     context = {
         'message_user' : messages,
+        'orders': orders,
     }
     return render(request,'accounts/message_user.html', context)
-
-def profile2(request):
-    user = request.user
-    message_count = Message.objects.filter(user=user).count()
-    order_count = Order.objects.filter(user=user).count()
-    context = {
-        'order_count': order_count,
-        'message_count': message_count,
-    }
-    return render(request, 'partials/_profile2.html', context)
 
 ## API
 class ProfilePermission(IsAdminUser) : 

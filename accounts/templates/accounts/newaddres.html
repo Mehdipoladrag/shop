@@ -76,16 +76,9 @@
                                             <div class="modal-body">
                                                 <ul class="profile-avatars default text-center">
                                                     <li>
-                                                        <img class="profile-avatars-item" src="assets/img/profile/1.png" />
-                                                    </li>
-                                                    <li>
-                                                        <img class="profile-avatars-item" src="assets/img/profile/2.png" />
-                                                    </li>
-                                                    <li>
-                                                        <img class="profile-avatars-item" src="assets/img/profile/3.png" />
-                                                    </li>
-                                                    <li>
-                                                        <img class="profile-avatars-item" src="assets/img/profile/4.png" />
+                                                        {% if profile.customer_image %}
+                                                        <img src="{{user.profile.customer_image.url}}" />
+                                                        {% endif %}
                                                     </li>
                                                 </ul>
                                             </div>
@@ -106,8 +99,8 @@
                                     <div class="line"></div>
                                     <div class="stats">
                                         <div class="stat">
-                                            2
-                                            <div class="subtext">سفارش جاری</div>
+                                            {{  orders  }}
+                                            <div class="subtext">سفارش ها </div>
                                         </div>
                                         <div class="stat">
                                             68
@@ -122,7 +115,6 @@
 
                             </div>
    
-
                             <div class="profile-menu ">
                                 {% include "partials/_profile.html" %}
                             </div>

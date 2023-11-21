@@ -136,6 +136,7 @@ class OrderItem(models.Model):
         verbose_name_plural  = 'جزئیات سفارش ها'
 
 class Invoice(models.Model):  # فاکتور
+    
     order = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL, verbose_name='اطلاعیه')
     invoice_date = models.DateTimeField(_("تاریخ فاکتور"),auto_now_add=True)  # تاریخ فاکتور
     authority = models.CharField(_("Authority"), max_length=50, blank=True, null=True)

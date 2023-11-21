@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model 
+
 user=get_user_model()
 # Create your models here.
 class PROFILE(models.Model):
@@ -51,3 +52,8 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'پیام به کاربر'
         verbose_name_plural = 'پیام به کاربر ها'
+
+
+
+
+

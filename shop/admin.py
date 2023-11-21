@@ -52,11 +52,22 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
 
+class InvoiceInline(admin.TabularInline):
+    model = Invoice
+    extra = 0
+    readonly_fields = ('custom_pk', 'invoice_date')
+
+    def custom_pk(self, obj):
+        return obj.pk
+
+    custom_pk.short_description = 'شماره صورت حساب'
+
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer', 'order_date')
-    readonly_fields = ('order_date',) 
-    inlines = [OrderItemInline]
-    verbose_name = 'عمومی'
+    readonly_fields = ('order_date',)
+    inlines = [OrderItemInline, InvoiceInline]
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)

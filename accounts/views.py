@@ -65,7 +65,15 @@ def user_logout(request):
 @login_required(login_url='accounts:signin1')
 def user_profile(request):
     profile = PROFILE.objects.get(user_id=request.user.id)
-    return render(request, 'accounts/profile.html', {'profile': profile})
+    user = request.user
+    message_user = Message.objects.filter(user=user).count()
+    orders = Order.objects.filter(customer=user).count()
+    context =  {
+        'profile': profile,
+        'message_user' : message_user,
+        'orders' : orders,
+    }
+    return render(request, 'accounts/profile.html',context)
 
 
 @login_required(login_url='accounts:signin1')
@@ -109,7 +117,7 @@ def new_address(request) :
     profile = PROFILE.objects.get(user_id=request.user.id)
     user = request.user
     message_count = Message.objects.filter(user=user).count()
-    orders = OrderItem.objects.filter(customer=user).count()
+    orders = Order.objects.filter(customer=user).count()
     context = {
         'profile': profile,
         'orders': orders,
@@ -120,7 +128,8 @@ def new_address(request) :
 def order_list(request):
     user = request.user
     message_count = Message.objects.filter(user=user).count()
-    orders = OrderItem.objects.filter(customer=user)
+    orders = Order.objects.filter(customer=user).prefetch_related('orderitem_set__product')
+    
     context =  {
         'orders': orders,
         'message_count': message_count,
@@ -130,7 +139,7 @@ def order_list(request):
 def user_message_info(request) :
     user = request.user 
     messages = Message.objects.filter(user=user)
-    orders = OrderItem.objects.filter(customer=user).count()
+    orders = Order.objects.filter(customer=user).count()
     context = {
         'message_user' : messages,
         'orders': orders,

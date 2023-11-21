@@ -13,50 +13,51 @@
                                     <header class="card-header">
                                         <h3 class="card-title"><span>سفارشات در جریان</span></h3>
                                     </header>
-                                    {% for order in orders %}
-                                        <div class="content-section default">
-                                            <div class="row">
-                                                <div class="col-md-12 col-sm-12 order_delivered_sec">
-                                                    <div class="profile-recent-fav-row">
-                                                        <div class="col-12">
-                                                            <h4 class="profile-recent-fav-name">
-                                                                <i class="fa fa-spinner" aria-hidden="true"></i> پردازش انبار
-                                                            </h4>
-                                                            <ul>
-                                                                <li>
-                                                                    {{ order.order.order_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}
-                                                                </li>
-                                                                <li>
-                                                                    کد سفارش: <b>{{ order.id }}</b>
-                                                                </li>
-                                                                <li>
-                                                                    قیمت محصول: <b>{{order.product_price|floatformat:0|intcomma }} تومان</b>
-                                                                </li>
-                                                                <li>
-                                                                    مجموع سبد: <b>{{order.order.total_cost|floatformat:0|intcomma }} تومان</b>
-                                                                </li>
-                                                            </ul>
-                                                            <h4 class="profile-recent-Club">
-                                                                <i class="fa fa-gift" aria-hidden="true"></i> امتیاز مسای‌کلاب <b>{{order.product.product_rate}}</b>
-                                                            </h4>
+                                {% for order in orders %}
+                                <div class="content-section default">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12 order_delivered_sec">
+                                            <div class="profile-recent-fav-row">
+                                                <div class="col-12">
+                                                    <h4 class="profile-recent-fav-name">
+                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> تحویل داده شده
+                                                    </h4>
+                                                    <ul>
+                                                        <li>
+                                                            {{ order.order_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}
+                                                        </li>
+                                                        <li>
+                                                            کد سفارش <b>{{ order.id }}</b>
+                                                        </li>
+                                                        <li>
+                                                            مجموع سبد <b>{{ order.total_cost|intcomma }} تومان</b>
+                                                        </li>
+                                                    </ul>
+                                                    <h4 class="profile-recent-Club">
+                                                        <i class="fa fa-gift" aria-hidden="true"></i> امتیاز مسای‌کلاب <b>10</b>
+                                                    </h4>
+                                                </div>
+                                                <div class="col-12">
+                                        
+                                                    <div class="row">
+                                              
+                                                        {% for order_item in order.orderitem_set.all %}
+                                                            <a href="{% url 'shop:detailpro' order_item.product.slug %}">
+                                                                <img src="{{ order_item.product.pic.url }}" alt="عکس محصول">
+                                                            </a>
+                                                       {% endfor %}
+                                                     
                                                         </div>
-
-                                                        <div class="col-12">
-                                                            <div class="row">
-                                      
-                                                                    <div class="col-4 col-lg-1 col-md-1">
-                                                                        <img src="{{ order.product.pic.url }}">
-                                                                    </div>          
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 text-left">
-                                                            <a class="btn btn-error-masai">لغو سبد</a>
-                                                        </div>
-                                                    </div>
+                                                 
+                                                </div>
+                                                <div class="col-12 text-left">
+                                                    <a class="btn btn-main-masai">مشاهده فاکتور</a>
                                                 </div>
                                             </div>
                                         </div>
-                                    {% endfor %}
+                                    </div>
+                                </div>
+                                {% endfor %}
                                 </div>
                             </div>
                         </div>
@@ -66,17 +67,6 @@
                                 <div class="img">
 
                                     <img src="{{user.profile.customer_image.url}}" />
-                                </div>
-
-                                <div class="modal-share modal-width-custom modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                <h4 class="modal-title" id="myModalLabel">تغییر پروفایل</h4>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <!--text-->
                                 <div class="mid-section">

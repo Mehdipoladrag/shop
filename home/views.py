@@ -1,26 +1,33 @@
+from typing import Any
 from django.shortcuts import render
 from shop.models import Product, Brand, Category
 from blog.models import Blogs 
-from django.contrib.admin.views.decorators import staff_member_required
+from django.views.generic import TemplateView, ListView
 # Create your views here.
-def home_page(request) :
-    productoffer = Product.objects.filter(offer__gt=0).order_by('create_date')
-    productlist = Product.objects.all().exclude(pk__in=productoffer)
-    categories = Category.objects.all()
-    brands = Brand.objects.all()
-    blog_list = Blogs.objects.all().order_by('create_date') # نمایش وبلاگ ها
-    context = {
-        'blogs' : blog_list,
-        'brand' : brands,
-        'category' : categories,
-        'products': productlist,
-        'productoffer': productoffer,
-    }
 
-    
-    return render(request, 'home/homepage.html', context)
-#@staff_member_required
-def about_page(request) :
-    return render(request, 'home/about.html')
+# Class Base Views
+
+class Homepage(ListView):
+    template_name = 'home/homepage.html'
+    model = Product
+    def get_queryset(self):
+        productoffer = Product.objects.filter(offer__gt=0).order_by('create_date')
+        productlist = Product.objects.all().exclude(pk__in=productoffer)
+        return productlist
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        productoffer = Product.objects.filter(offer__gt=0).order_by('create_date')
+        productlist = self.get_queryset()  
+        context['products'] = productlist 
+        context['productoffer'] = productoffer
+        context['category'] = Category.objects.all()
+        context['brand'] = Brand.objects.all()
+        context['blogs'] = Blogs.objects.all().order_by('create_date')
+        return context
+
+
+
+class AboutPage(TemplateView) :
+    template_name = 'home/about.html'
 
 

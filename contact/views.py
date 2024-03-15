@@ -4,26 +4,24 @@ from contact.models import Contact
 from contact.serializers import ContactSerializer
 from rest_framework import mixins, generics
 from rest_framework.permissions import IsAdminUser
-
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy
+from django.contrib import messages
 # Create your views here.
-def contact_page(request) :
-    if request.method == 'POST':
-        form = ContactUsForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
-            subject = form.cleaned_data['subject']
-            desc = form.cleaned_data['desc']
-            contact = Contact(name=name, email=email,phone=phone, subject=subject, desc=desc)
-            contact.save() 
-            return redirect('home:home1')
-    else:
-        form = ContactUsForm()
-
-    return render(request, 'contact/contactpage.html',{'form': form})
-
-
+class ContactPageView(FormView):
+    template_name = 'contact/contactpage.html'
+    form_class = ContactUsForm
+    success_url = reverse_lazy('home:home1')
+    def form_valid(self, form):
+        form.save()
+        success_message = 'با موفقیت ارسال شد'
+        error_message = 'مشکلی در ارسال پیام شما به وجود آماده است'
+        if form.errors:
+            messages.error(self.request, error_message)
+        else:
+            messages.success(self.request, success_message)
+        return super().form_valid(form)
+        
 
 #################################  API CONTACT 
 class ContactPermisson(IsAdminUser) : 

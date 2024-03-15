@@ -5,7 +5,7 @@ from django.views.generic import TemplateView, ListView
 
 # Class Base Views
 
-class HomePage(ListView):
+class HomePageView(ListView):
     template_name = 'home/homepage.html'
     model = Product
     def get_queryset(self):
@@ -28,7 +28,7 @@ class HomePage(ListView):
 
 
 
-class AboutPage(TemplateView) :
+class AboutPageView(TemplateView) :
     template_name = 'home/about.html'
 
 

@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 # Create your views here.
 
 # Class Base View
-class BlogPage(ListView) : 
+class BlogPageView(ListView) : 
     template_name = 'blog/blogpage.html'
     paginate_by = 1
     model = Blogs
@@ -21,7 +21,7 @@ class BlogPage(ListView) :
         return context 
 
 
-class BlogDetail(DetailView) : 
+class BlogDetailView(DetailView) : 
     model = Blogs
     template_name = 'blog/blogdetail.html'
     slug_url_kwarg = 'slug'
@@ -44,7 +44,7 @@ class BlogDetail(DetailView) :
 #         context ['blog_list'] = Blogs.objects.filter(category=categor)
 #         context ['categor_list'] = Category_blog.objects.all()
     
-class CategoryDetail(View):
+class CategoryDetailView(View):
     template_name = 'blog/catdetail.html'
     def get(self , request, slug_cat):
         categor = get_object_or_404(Category_blog, slug_cat=slug_cat)

@@ -83,14 +83,20 @@ WSGI_APPLICATION = 'shopproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'test',
+#         'USER': 'postgres',
+#         'PASSWORD': 'mehdi4363',
+#         'HOST': 'localhost',
+#         'PORT' : 5432,
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'test',
-        'USER': 'postgres',
-        'PASSWORD': 'mehdi4363',
-        'HOST': 'localhost',
-        'PORT' : 5432,
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "mydatabase",
     }
 }
 
@@ -135,6 +141,8 @@ TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 
 USE_TZ = True
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Static files (CSS, JavaScript, Images)

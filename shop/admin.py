@@ -1,5 +1,4 @@
 from django.contrib import admin
-import locale
 from shop.models import Product, Category, Contact_product, Brand, Offers , Info, Invoice, Order , OrderItem, Comment, Transaction
 # Register your models here.
 

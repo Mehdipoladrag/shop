@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from django.contrib.auth.models import User
 from decimal import Decimal
+from accounts.models import CustomUser
 
 
 
@@ -102,7 +102,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='نام کاربری مشتری')
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='نام کاربری مشتری')
     order_date = models.DateTimeField(_("زمان سفارش"), auto_now_add=True)
 
     def total_cost(self):
@@ -118,7 +118,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='سفارش')
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='نام کاربری مشتری')
+    customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='نام کاربری مشتری')
     product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL, verbose_name='محصول')
     product_price = models.DecimalField(_("قیمت محصول"), max_digits=10, decimal_places=1)
     product_count = models.PositiveIntegerField(_("تعداد محصول"))
@@ -164,7 +164,7 @@ class Transaction(models.Model):
         verbose_name_plural  = 'وضعیت سفارش ها'
 
 class Comment(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='نام کاربری')
+    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='نام کاربری')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='محصول')
     comment = models.TextField(_("کامنت"))
     rate = models.PositiveIntegerField(_("امتیاز به محصول"),default=False)
@@ -179,7 +179,7 @@ class Comment(models.Model):
 
 
 class Contact_product(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='نام کاربری')
+    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='نام کاربری')
     message_product = models.TextField(_("نظر در مورد محصول"))
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='محصول')
 

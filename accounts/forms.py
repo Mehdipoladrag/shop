@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from accounts.models import PROFILE
+#from accounts.models import PROFILE
 class UserRegisterForm(forms.Form):
     user_name = forms.CharField(
         max_length=25,
@@ -136,6 +136,6 @@ class ProfileUpdateForm(forms.ModelForm):
         attrs={'class': 'input_second input_all'}), label='شماره شبا',)
     customer_image = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'input_second input_all'}), label='تصویر مشتری')
     class Meta:
-        model = PROFILE
+        #model = PROFILE
         fields = ('national_code', 'address', 'zipcode',
                   'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban','customer_image')

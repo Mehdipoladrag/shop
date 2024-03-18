@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from accounts.models import CustomUser
 
 
 class Category_blog(models.Model):
@@ -14,7 +14,7 @@ class Category_blog(models.Model):
         verbose_name_plural  = 'دسته بندی وبلاگ ها'
 
 class Blogs(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='نام کاربری')
+    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE,verbose_name='نام کاربری')
     blog_name = models.CharField(_("نام وبلاگ"),max_length=100)
     blog_image = models.ImageField(_("عکس وبلاگ"),upload_to='blog_images/')
     category = models.ForeignKey(Category_blog, on_delete=models.CASCADE, verbose_name='دسته بندی وبلاگ')
@@ -31,7 +31,7 @@ class Blogs(models.Model):
 
 class Visitor(models.Model):
     post = models.ForeignKey(Blogs, on_delete=models.CASCADE,verbose_name='وبلاگ')
-    user = models.ForeignKey(User, on_delete=models.CASCADE,verbose_name='نشر دهنده توسط')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,verbose_name='نشر دهنده توسط')
     timestamp = models.DateTimeField(_("تاریخ ساخت"),auto_now_add=True)
 
     def __str__(self):

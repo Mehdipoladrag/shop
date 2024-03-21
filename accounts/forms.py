@@ -1,15 +1,20 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from accounts.models import CustomUser
+from django.core.exceptions import ValidationError
+from accounts.validators import UserRegisterValidators
 #from accounts.models import PROFILE
-class UserRegisterForm(forms.Form):
-    user_name = forms.CharField(
+class UserRegisterForm(UserCreationForm):
+    username = forms.CharField(
         max_length=25,
+        validators=[UserRegisterValidators.validate_username],
         label='نام کاربری',
-        widget=forms.TextInput(attrs={'placeholder': 'لطفا نام کاربری را وارد کنید', 'class': 'input_second input_all'}),
+        widget=forms.TextInput(attrs={'placeholder': 'لطفا ایمیل خود را وارد کنید', 'class': 'input_second input_all'}),
         error_messages={'required': 'لطفاً این فیلد را پر کنید'}
     )
     email = forms.EmailField(
         label='ایمیل',
+        validators=[UserRegisterValidators.validate_email],
         widget=forms.EmailInput(attrs={'placeholder': 'لطفا ایمیل خود را وارد کنید', 'class': 'input_second input_all'}),
         error_messages={'required': 'لطفاً این فیلد را پر کنید', 'invalid': 'لطفاً یک ایمیل معتبر وارد کنید'}
     )
@@ -32,64 +37,44 @@ class UserRegisterForm(forms.Form):
         error_messages={'required': 'لطفاً این فیلد را پر کنید'}
     )
     password2 = forms.CharField(
+        #validators=[UserRegisterValidators.validate_password2],
         max_length=25,
         label='تکرار رمز عبور',
         widget=forms.PasswordInput(attrs={'placeholder': 'لطفا رمز را دوباره وارد کنید', 'class': 'input_second input_all'}),
         error_messages={'required': 'لطفاً این فیلد را پر کنید'}
     )
+    class Meta :
+        model = CustomUser
+        fields = ('username','email', 'first_name', 'last_name', 'password1')
 
+    
 
-    def clean_user_name(self):
-        user = self.cleaned_data['user_name']
-        if User.objects.filter(username=user).exists():
-            raise forms.ValidationError(' نام کاربری تکراری است ')
-        elif not user.isascii():
-            raise forms.ValidationError('نام کاربری باید به زبان انگلیسی باشد')
-        return user
-
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('ایمیل تکراری است')
-        return email
-
-    def clean_password2(self):
-        pass1 = self.cleaned_data['password1']
-        pass2 = self.cleaned_data['password2']
-        if pass1 != pass2:
-            raise forms.ValidationError('رمز با تکرار آن برابر نیست')
-        elif len(pass2) < 8:
-            raise forms.ValidationError(
-                ' رمز عبور شما باید بیشتر از 8 حرف باشد ')
-        elif not any(x.isupper() for x in pass2):
-            raise forms.ValidationError(
-                ' رمز عبور شما باید شامل یک حرف بزرگ داشته باشد ')
-        return pass2
-
-
-class UserLoginForm(forms.Form):
-    user_name = forms.CharField(max_length=25, label='نام کاربری', widget=forms.TextInput(
+class UserLoginForm(AuthenticationForm):
+    #validators=[UserLoginValidator.clean_username], 
+    username = forms.CharField(max_length=25,label='نام کاربری', widget=forms.TextInput(
         attrs={'placeholder': 'لطفا نام کاربری را وارد کنید', 'class': 'input_second input_all'}))
-    password1 = forms.CharField(max_length=25, label='رمزعبور', widget=forms.PasswordInput(
+    # validators=[UserLoginValidator.clean_password],
+    password = forms.CharField(max_length=25, label='رمزعبور', widget=forms.PasswordInput(
         attrs={'placeholder': 'لطفا رمز را وارد کنید', 'class':'input_second input_all'}))
-
-    def clean_user_name(self):
-        user_name = self.cleaned_data['user_name']
-        if User.objects.filter(username=user_name).exists():
-            return user_name
+    class Meta : 
+        model = CustomUser
+        fields = ('username', 'password')
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if CustomUser.objects.filter(username=username).exists():
+            return username
         else:
-            raise forms.ValidationError('نام کاربری اشتباه است')
+            raise ValidationError('نام کاربری اشتباه است')
 
     def clean_password(self):
-        password = self.cleaned_data['password1']
-        user_name = self.cleaned_data.get('user_name')
-        if user_name:
-            user = User.objects.filter(username=user_name).first()
+        password = self.cleaned_data.get('password')
+        username = self.cleaned_data.get('username')
+        if username:
+            user = CustomUser.objects.filter(username=username).first()
             if user and not user.check_password(password):
-                raise forms.ValidationError('رمز عبور اشتباه است')
+                raise ValidationError('رمز عبور اشتباه است')
         return password
-
 
 class UserUpdateForm(forms.ModelForm):
 
@@ -104,7 +89,7 @@ class UserUpdateForm(forms.ModelForm):
         error_messages={'required': 'لطفاً ایمیل خود را وارد کنید.'})
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ('email', 'first_name', 'last_name')
 
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser, Group, Permission
+import uuid
 
 
 # Create your models here.
@@ -57,7 +58,11 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
 class CustomUser(AbstractUser):
-    pass
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    username = models.CharField(max_length=150, unique=True)
+    class Meta:
+        verbose_name = 'کاربر'
+        verbose_name_plural = 'کاربر ها'
     
 
 class CustomProfileModel(models.Model):

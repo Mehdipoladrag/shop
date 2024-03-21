@@ -1,11 +1,14 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 #from accounts.models import PROFILE, Message
-from django.contrib.auth.models import User
 #from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm,UserUpdateForm
-from django.contrib.auth import authenticate, login, logout
+from accounts.forms import UserRegisterForm, UserLoginForm
+from django.urls import reverse_lazy
+from django.views import generic
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from rest_framework import generics, mixins
 #from accounts.serializers import ProfileSerializer,UserSerializer
@@ -15,23 +18,30 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from shop.models import Order, OrderItem
 # Create your views here.
-User = get_user_model()
 
+class SignUpView(generic.CreateView):
+    form_class = UserRegisterForm
+    success_url = reverse_lazy('accounts:signin1')
+    template_name = 'accounts/signuppage.html'
+    success_message = 'حساب کاربری با موفقیت ساخته شد'
 
-def signup_page(request):
-    # if request.method == 'POST':
-    #     #form = UserRegisterForm(request.POST)
-    #     if form.is_valid():
-    #         data = form.cleaned_data
-    #         User.objects.create_user(username=data['user_name'], email=data['email'], first_name=data['first_name'],
-    #                                  last_name=data['last_name'], password=data['password2'])
-    #         messages.success(request, 'ثبت نام شما با موفقیت انجام شد')
-    #         return redirect('accounts:signin1')
-    # else:
-    #     #form = UserRegisterForm()
-    return render(request, 'accounts/signuppage.html', )#{'form': form})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, self.success_message)
+        return response
 
-
+class LoginUserView(LoginView) : 
+    template_name = 'accounts/login.html'
+    form_class = UserLoginForm
+    success_message = 'با موفقیت وارد شدید'
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, self.success_message)
+        return response
+    
+    def get_success_url(self):
+        return reverse_lazy('home:home1')
+    
 def signin_page(request):
     # if request.method == 'POST':
     #     form = UserLoginForm(request.POST)
@@ -54,11 +64,13 @@ def signin_page(request):
     #     form = UserLoginForm()
     return render(request, 'accounts/login.html') #{'form': form})
 
+class UserLogOutView(LogoutView):
+    next_page = reverse_lazy('accounts:signin1')
 
-def user_logout(request):
-    logout(request)
-    messages.success(request, 'با موفقیت خارج شدید')
-    return redirect('accounts:signin1')
+# def user_logout(request):
+#     logout(request)
+#     messages.success(request, 'با موفقیت خارج شدید')
+#     return redirect('accounts:signin1')
 
 
 @login_required(login_url='accounts:signin1')

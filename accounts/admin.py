@@ -37,5 +37,8 @@ admin.site.register(CustomProfileModel)
 
 # admin.site.unregister(User)
 # admin.site.register(User, CustomUserAdmin)
-
-admin.site.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined')
+    list_display_links = ('username', 'email')
+    
+admin.site.register(CustomUser, CustomUserAdmin)

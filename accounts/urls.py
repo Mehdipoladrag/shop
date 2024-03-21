@@ -1,7 +1,8 @@
 from django.urls import path
 from accounts.views import(
-    signup_page, signin_page,
-    user_logout, user_profile,
+    SignUpView,
+    LoginUserView, UserLogOutView,
+    user_profile,
     user_update, change_password,
     new_address, user_message_info,
     ###
@@ -18,9 +19,10 @@ from rest_framework_simplejwt.views import (
 app_name = 'accounts'
 
 urlpatterns = [
-    path('register/', signup_page, name='signup1'),
-    path('login/', signin_page, name='signin1'),
-    path('logout/', user_logout, name='logout'),
+    
+    path('register/', SignUpView.as_view(), name='signup1'),
+    path('login/', LoginUserView.as_view(), name='signin1'),
+    path('logout/', UserLogOutView.as_view(), name='logout'),
     path('profile/', user_profile, name="profile1"),
     path('profile/update/', user_update, name='update1'),
     path('change-password/', change_password, name='change1'),

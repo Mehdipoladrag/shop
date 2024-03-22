@@ -1,8 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from accounts.models import CustomUser
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetPasswordForm
+from accounts.models import CustomUser, CustomProfileModel
 from django.core.exceptions import ValidationError
 from accounts.validators import UserRegisterValidators
+from django.contrib.auth import password_validation
+
 #from accounts.models import PROFILE
 class UserRegisterForm(UserCreationForm):
     username = forms.CharField(
@@ -76,23 +78,14 @@ class UserLoginForm(AuthenticationForm):
                 raise ValidationError('رمز عبور اشتباه است')
         return password
 
-class UserUpdateForm(forms.ModelForm):
 
-    first_name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input_second input_all'}), label='نام', required=True,
-        error_messages={'required': 'لطفاً نام خود را وارد کنید.'})
-    last_name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input_second input_all'}), label='نام خانوادگی', required=True,
-        error_messages={'required': 'لطفاً نام خانوادگی خود را وارد کنید.'})
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'input_second input_all'}), label='ایمیل', required=True,
-        error_messages={'required': 'لطفاً ایمیل خود را وارد کنید.'})
-
-    class Meta:
-        model = CustomUser
-        fields = ('email', 'first_name', 'last_name')
-
-
+class UserChangePassForm(SetPasswordForm):
+    password1 = forms.CharField(
+        max_length=25,
+        label='رمزعبور',
+        widget=forms.PasswordInput(attrs={'placeholder': 'لطفا رمز عبور را وارد کنید', 'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
 class ProfileUpdateForm(forms.ModelForm):
     GENDER_CHOICES = (
         (False, 'مرد'),
@@ -121,6 +114,10 @@ class ProfileUpdateForm(forms.ModelForm):
         attrs={'class': 'input_second input_all'}), label='شماره شبا',)
     customer_image = forms.ImageField(widget=forms.ClearableFileInput(attrs={'class': 'input_second input_all'}), label='تصویر مشتری')
     class Meta:
-        #model = PROFILE
+        model = CustomProfileModel
         fields = ('national_code', 'address', 'zipcode',
                   'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban','customer_image')
+class ProfileUpdateModelForm(forms.ModelForm):
+    class Meta:
+        model = CustomProfileModel
+        fields = ['national_code', 'address', 'zipcode', 'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban', 'customer_image']

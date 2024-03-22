@@ -3,7 +3,8 @@ from django.utils.translation import gettext as _
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser, Group, Permission
 import uuid
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 # class PROFILE(models.Model):
@@ -71,7 +72,6 @@ class CustomProfileModel(models.Model):
         (True, 'زن'),
     )
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, verbose_name='نام کاربری')
-    user_code = models.IntegerField(_("کد کاربر"), blank=True, null=True)
     national_code = models.CharField(_("کد ملی"), max_length=10)
     address = models.TextField(_("آدرس"), blank=True, null=True)
     zipcode = models.CharField(
@@ -90,6 +90,8 @@ class CustomProfileModel(models.Model):
         _("روش بازگشت پول"), max_length=50, default='شماره شبا', blank=True, null=True)
     customer_image = models.ImageField(
         _("عکس کاربر"), upload_to='images/profile/%Y/%m/%d', blank=True, null=True)
+    is_complete = models.BooleanField(default=False)
+
     def __str__(self):
         return self.user.username
     class Meta:

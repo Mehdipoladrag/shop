@@ -16,7 +16,7 @@
                                         <div class="col-sm-12 col-md-6">
                                             <p>
                                                 <span class="title">نام  :</span>
-                                                <span>{{ user.profile.user.first_name }}
+                                                <span>{{ profile.user.first_name }}
                                                 </span>
                                             </p>
                                         </div>
@@ -24,14 +24,14 @@
                                             <p>
                                                 <span class="title"> نام خانوادگی :</span>
                                                 <span>
-                                                     {{user.profile.user.last_name}} 
+                                                    {{profile.user.last_name}} 
                                                 </span>
                                             </p>
                                         </div>
                                         <div class="col-sm-12 col-md-6">
                                             <p>
                                                 <span class="title">پست الکترونیک :</span>
-                                                <span>{{user.profile.user.email}}</span>
+                                                <span>{{profile.user.email}}</span>
                                             </p>
                                         </div>
                                         <div class="col-sm-12 col-md-6">
@@ -47,7 +47,7 @@
                                         <div class="col-sm-12 col-md-6">
                                             <p>
                                                 <span class="title">کد پستی :</span>
-                                            {% if user.profile.zipcode %}
+                                            {% if profile.zipcode %}
                                                 <span>{{profile.zipcode}}</span>
                                             {% else %}
                                             <span>-</span>

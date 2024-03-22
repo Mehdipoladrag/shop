@@ -2,53 +2,41 @@
 {% load static %}
 {% block title %}بروزرسانی پروفایل{% endblock title %}
 {% block content %}
-            <main class="profile-user-page default space-top-30">
-                <div class="container">
-                    <div class="row">
-                        <div class="main-content login_content col-xl-9 col-lg-8 col-md-8 order-2 mx-auto">
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6">
-                                    <header class="card-header">
-                                        <h3 class="card-title"><span>اطلاعات حساب شخصی</span></h3>
-                                    </header>
-                                    <div class="login_box">
-
-
-
-                                        <form class="" method="post" action="" enctype="multipart/form-data">
-                                            
-                                            {{profile_form.as_p}}
-
-                                        
+<main class="profile-user-page default space-top-30">
+    <div class="container">
+        <div class="row">
+            <div class="main-content login_content col-xl-9 col-lg-8 col-md-8 order-2 mx-auto">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <header class="card-header">
+                            <h3 class="card-title"><span>اطلاعات حساب شخصی</span></h3>
+                        </header>
+                        <div class="login_box">
+                            <form class="" method="post" action="" enctype="multipart/form-data">
+                                {% comment %} {{form_profile.as_p}} {% endcomment %}
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <header class="card-header">
+                            <h3 class="card-title"><span>اطلاعات حساب ضرروی</span></h3>
+                        </header>
+                        <div class="login_box">
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        {{form.as_p}}
                                     </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6">
-                                    <header class="card-header">
-                                        <h3 class="card-title"><span>اطلاعات حساب ضرروی</span></h3>
-                                    </header>
-                                    <div class="login_box">
-                                        
-                                            <div class="row">
-                                                <div class="col-md-12 col-sm-12">
-                                                    {{user_form.as_p}}
-                                                </div>
-                                            </div>
-                                            <div class="col-12 text--center">
-                                                <button type="submit" class="btn big_btn btn-main-masai">ثبت اطلاعات کاربری  </button>
-                                            </div>
-                                            {% csrf_token %}
-                                        </form>
-                                        
-
-
-                                    </div>
+                                <div class="col-12 text--center">
+                                    <button type="submit" class="btn big_btn btn-main-masai">ثبت اطلاعات کاربری  </button>
                                 </div>
-
-                            </div>
+                                {% csrf_token %}
+                            </form>
                         </div>
                     </div>
                 </div>
-                <br>
-            </main>
-
+            </div>
+        </div>
+    </div>
+    <br>
+</main>
 {% endblock content %}

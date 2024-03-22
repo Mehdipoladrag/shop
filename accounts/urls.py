@@ -2,8 +2,8 @@ from django.urls import path
 from accounts.views import(
     SignUpView,
     LoginUserView, UserLogOutView,
-    user_profile,
-    user_update, change_password,
+    UserProfileView, ProfileUpdateView,
+     UserChangePasswordView,
     new_address, user_message_info,
     ###
     #ProfileUSerlistmixin, ProfileDetailmixin,
@@ -23,9 +23,9 @@ urlpatterns = [
     path('register/', SignUpView.as_view(), name='signup1'),
     path('login/', LoginUserView.as_view(), name='signin1'),
     path('logout/', UserLogOutView.as_view(), name='logout'),
-    path('profile/', user_profile, name="profile1"),
-    path('profile/update/', user_update, name='update1'),
-    path('change-password/', change_password, name='change1'),
+    path('profile/', UserProfileView.as_view(), name="profile1"),
+    path('profile/update/', ProfileUpdateView.as_view(), name='update1'),
+    path('change-password/', UserChangePasswordView.as_view(), name='change1'),
     path('address/', new_address, name='address1'),
     path('orders/', order_list, name='order1'),   
     path('messages/', user_message_info, name='message1'),

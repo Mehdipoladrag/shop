@@ -5,7 +5,6 @@ from django.contrib.auth.admin import GroupAdmin, UserAdmin
 
 from django.contrib.auth.models import Group, User
 from django.utils.translation import gettext_lazy as _
-admin.site.register(CustomProfileModel)
 
 # class CustomGroupAdmin(GroupAdmin):
 #     verbose_name = _('گروه‌ها')
@@ -39,6 +38,12 @@ admin.site.register(CustomProfileModel)
 # admin.site.register(User, CustomUserAdmin)
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('uuid', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined')
-    list_display_links = ('username', 'email')
+    list_display_links = ('username', 'email',)
+    
+
+class CustomProfileAdmin(admin.ModelAdmin) :
+    list_display = ('user', 'national_code','is_complete',) 
+    list_display_links = ('user',)
     
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CustomProfileModel,CustomProfileAdmin)

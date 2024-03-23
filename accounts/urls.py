@@ -3,7 +3,7 @@ from accounts.views import(
     SignUpView,
     LoginUserView, UserLogOutView,
     UserProfileView, ProfileUpdateView,
-     UserChangePasswordView,
+    UserChangePasswordView,
     new_address, user_message_info,
     ###
     #ProfileUSerlistmixin, ProfileDetailmixin,

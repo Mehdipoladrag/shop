@@ -13,7 +13,7 @@
                         </header>
                         <div class="login_box">
                             <form class="" method="post" action="" enctype="multipart/form-data">
-                                {% comment %} {{form_profile.as_p}} {% endcomment %}
+                                {{user_form.as_p}}
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6">
@@ -23,7 +23,7 @@
                         <div class="login_box">
                                 <div class="row">
                                     <div class="col-md-12 col-sm-12">
-                                        {{form.as_p}}
+                                        {{profile_form.as_p}}
                                     </div>
                                 </div>
                                 <div class="col-12 text--center">

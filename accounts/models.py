@@ -90,7 +90,7 @@ class CustomProfileModel(models.Model):
         _("روش بازگشت پول"), max_length=50, default='شماره شبا', blank=True, null=True)
     customer_image = models.ImageField(
         _("عکس کاربر"), upload_to='images/profile/%Y/%m/%d', blank=True, null=True)
-    is_complete = models.BooleanField(default=False)
+    is_complete = models.BooleanField(_('پروفایل تکمیل شده؟'),default=False)
 
     def __str__(self):
         return self.user.username

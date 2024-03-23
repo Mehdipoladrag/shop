@@ -2,195 +2,196 @@
 {% load static %}
 {% block title %}پروفایل شما{% endblock title %}
 {% block content %}
-        <main class="profile-user-page default space-top-30">
-            <div class="container">
+<main class="profile-user-page default space-top-30">
+    <div class="container">
+        <div class="row">
+            <div class="profile-page col-xl-9 col-lg-8 col-md-12 order-2">
                 <div class="row">
-                    <div class="profile-page col-xl-9 col-lg-8 col-md-12 order-2">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <header class="card-header">
-                                    <h3 class="card-title"><span>اطلاعات حساب کاربری</span></h3>
-                                </header>
-                                <div class="content-section default">
-                                    <div class="row">
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title">نام  :</span>
-                                                <span>{{ profile.user.first_name }}
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title"> نام خانوادگی :</span>
-                                                <span>
-                                                    {{profile.user.last_name}} 
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title">پست الکترونیک :</span>
-                                                <span>{{profile.user.email}}</span>
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title">شماره تلفن همراه:</span>
-                                            {% if profile.mobile %}
-                                                <span>{{profile.mobile}}</span>
-                                            {% else %}
-                                            <span>-</span>
-                                            {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title">کد پستی :</span>
-                                            {% if profile.zipcode %}
-                                                <span>{{profile.zipcode}}</span>
-                                            {% else %}
-                                            <span>-</span>
-                                            {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title">روش بازگرداندن پول من :</span>
-                                                {% if profile.back_money %}
-                                                <span>{{profile.back_money}}</span>
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                <span class="title">سن  :</span>
-                                                {% if profile.age %}
-                                                <span>{{profile.age}}</span>
-                                                {% else %}
-                                                <span>-</span>
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                
-                                                <span class="title">کد ملی :</span>
-                                                {% if profile.national_code %}
-                                                <span>{{profile.national_code}}</span>
-                                                {% else %}
-                                                <span>-</span>
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                
-                                                <span class="title">شماره کارت   :</span>
-                                                {% if profile.card_number %}
-                                                <span>{{profile.card_number}}</span>
-                                                {% else %}
-                                                <span>-</span>
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-sm-12 col-md-6">
-                                            <p>
-                                                
-                                                <span class="title"> شماره شبا :</span>
-                                                {% if profile.iban %}
-                                                <span>{{profile.iban}}</span>
-                                                {% else %}
-                                                <span>-</span>
-                                                {% endif %}
-                                            </p>
-                                        </div>
-                                        <div class="col-12 text-center">
-                                            <a href="{% url 'accounts:update1' %}" class="btn btn-main-masai big_btn">
-                                                ویرایش
-                                            </a>
-                                        </div>
-                                    </div>
+                    <div class="col-lg-12">
+                        <header class="card-header">
+                            <h3 class="card-title"><span>اطلاعات حساب کاربری</span></h3>
+                        </header>
+                        <div class="content-section default">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title">نام  :</span>
+                                        <span>{{ profile.user.first_name }}
+                                        </span>
+                                    </p>
                                 </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <header class="card-header">
-                                    <h3 class="card-title"><span>اطلاعات حقوقی</span></h3>
-                                </header>
-                                <div class="content-section default">
-                                    <div class="row">
-                                      <div class="col-lg-12">
-                                          <p>این گزینه برای کسانی است که نیاز به خرید سازمانی (با فاکتور رسمی و گواهی ارزش‌افزوده) دارند.</p>
-                                      </div>
-                                        <div class="col-12 text-center">
-                                            <a href="edit-profile.html" class="btn btn-main-masai big_btn">
-                                                ویرایش اطلاعات حقوقی
-                                            </a>
-                                        </div>
-                                    </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title"> نام خانوادگی :</span>
+                                        <span>
+                                            {{profile.user.last_name}} 
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title">پست الکترونیک :</span>
+                                        <span>{{profile.user.email}}</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title">شماره تلفن همراه:</span>
+                                    {% if profile.mobile %}
+                                        <span>{{profile.mobile}}</span>
+                                    {% else %}
+                                    <span>-</span>
+                                    {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title">کد پستی :</span>
+                                    {% if profile.zipcode %}
+                                        <span>{{profile.zipcode}}</span>
+                                    {% else %}
+                                    <span>-</span>
+                                    {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title">روش بازگرداندن پول من :</span>
+                                        {% if profile.back_money %}
+                                        <span>{{profile.back_money}}</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        <span class="title">سن  :</span>
+                                        {% if profile.age %}
+                                        <span>{{profile.age}}</span>
+                                        {% else %}
+                                        <span>-</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        
+                                        <span class="title">کد ملی :</span>
+                                        {% if profile.national_code %}
+                                        <span>{{profile.national_code}}</span>
+                                        {% else %}
+                                        <span>-</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        
+                                        <span class="title">شماره کارت   :</span>
+                                        {% if profile.card_number %}
+                                        <span>{{profile.card_number}}</span>
+                                        {% else %}
+                                        <span>-</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <p>
+                                        
+                                        <span class="title"> شماره شبا :</span>
+                                        {% if profile.iban %}
+                                        <span>{{profile.iban}}</span>
+                                        {% else %}
+                                        <span>-</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <a href="{% url 'accounts:update1' %}" class="btn btn-main-masai big_btn">
+                                        ویرایش
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                      
                     </div>
-                    <div class="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
-                        <div class="profile-card-1">
-                            <!--image-->
-                            <div class="img">
-                                {% if profile.customer_image %}
-                                <img src="{{profile.customer_image.url}}" />
-                                {% endif %}
-                            </div>
-                            <a class="view-more" href="" data-toggle="modal" data-target="#myModal">
-                                <i class="fa fa-plus-circle"></i>
-                            </a>
-                            <div class="modal-share modal-width-custom modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title" id="myModalLabel">تغییر پروفایل</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <ul class="profile-avatars default text-center">
-                                                <li>
-                                                    <img class="profile-avatars-item" src="{% static 'assets/img/profile/1.png'%}" />
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                    <div class="col-lg-12">
+                        <header class="card-header">
+                            <h3 class="card-title"><span>اطلاعات حقوقی</span></h3>
+                        </header>
+                        <div class="content-section default">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <p>این گزینه برای کسانی است که نیاز به خرید سازمانی (با فاکتور رسمی و گواهی ارزش‌افزوده) دارند.</p>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <a href="edit-profile.html" class="btn btn-main-masai big_btn">
+                                        ویرایش اطلاعات حقوقی
+                                    </a>
                                 </div>
                             </div>
-                            <!--text-->
-                            <div class="mid-section">
-                                <div class="name">{{profile.user.username}}</div>
-                                <div class="description">
-                                    <a href="#" class="btn btn-main-masai">افزایش موجودی</a>
-                                    <a href="#" class="btn btn-second-masai">مسای کلاب</a>
-                                </div>
-                                <div class="line"></div>
-                                <div class="stats">
-                                    <div class="stat">
-                                        {{orders}}
-                                        <div class="subtext">سفارش جاری</div>
-                                    </div>
-                                    <div class="stat">
-                                        68
-                                        <div class="subtext">تحویل داده</div>
-                                    </div>
-                                    <div class="stat">
-                                        {{message_user}}
-                                        <div class="subtext">پیام های شما</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="profile-menu ">
-                            {% include "partials/_profile.html" %}
                         </div>
                     </div>
                 </div>
+                
             </div>
-        </main>
+            <div class="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
+                <div class="profile-card-1">
+                    <!--image-->
+                    <div class="img">
+                        {% if profile.customer_image %}
+                        <img src="{{profile.customer_image.url}}" />
+                        {% endif %}
+                    </div>
+                    <a class="view-more" href="" data-toggle="modal" data-target="#myModal">
+                        <i class="fa fa-plus-circle"></i>
+                    </a>
+                    <div class="modal-share modal-width-custom modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">تغییر پروفایل</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <ul class="profile-avatars default text-center">
+                                        <li>
+                                            <img class="profile-avatars-item" src="{% static 'assets/img/profile/1.png'%}" />
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--text-->
+                    <div class="mid-section">
+                        <div class="name">{{profile.user.username}}</div>
+                        <div class="name">{{profile.user.uuid}}</div>
+                        <div class="description">
+                            <a href="#" class="btn btn-main-masai">افزایش موجودی</a>
+                            <a href="#" class="btn btn-second-masai">مسای کلاب</a>
+                        </div>
+                        <div class="line"></div>
+                        <div class="stats">
+                            <div class="stat">
+                                {{orders}}
+                                <div class="subtext">سفارش جاری</div>
+                            </div>
+                            <div class="stat">
+                                68
+                                <div class="subtext">تحویل داده</div>
+                            </div>
+                            <div class="stat">
+                                {{message_user}}
+                                <div class="subtext">پیام های شما</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-menu ">
+                    {% include "partials/_profile.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock content %}

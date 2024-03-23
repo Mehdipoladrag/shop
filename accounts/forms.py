@@ -3,15 +3,14 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetP
 from accounts.models import CustomUser, CustomProfileModel
 from django.core.exceptions import ValidationError
 from accounts.validators import UserRegisterValidators
-from django.contrib.auth import password_validation
 
-#from accounts.models import PROFILE
+#Signup Form
 class UserRegisterForm(UserCreationForm):
     username = forms.CharField(
         max_length=25,
         validators=[UserRegisterValidators.validate_username],
         label='نام کاربری',
-        widget=forms.TextInput(attrs={'placeholder': 'لطفا ایمیل خود را وارد کنید', 'class': 'input_second input_all'}),
+        widget=forms.TextInput(attrs={'placeholder': 'لطفا نام کاربری مورد نظر خود را وارد کنید', 'class': 'input_second input_all'}),
         error_messages={'required': 'لطفاً این فیلد را پر کنید'}
     )
     email = forms.EmailField(
@@ -50,7 +49,7 @@ class UserRegisterForm(UserCreationForm):
         fields = ('username','email', 'first_name', 'last_name', 'password1')
 
     
-
+#LoginForm 
 class UserLoginForm(AuthenticationForm):
     #validators=[UserLoginValidator.clean_username], 
     username = forms.CharField(max_length=25,label='نام کاربری', widget=forms.TextInput(
@@ -78,14 +77,15 @@ class UserLoginForm(AuthenticationForm):
                 raise ValidationError('رمز عبور اشتباه است')
         return password
 
-
+#Change Password Form
 class UserChangePassForm(SetPasswordForm):
-    password1 = forms.CharField(
-        max_length=25,
-        label='رمزعبور',
-        widget=forms.PasswordInput(attrs={'placeholder': 'لطفا رمز عبور را وارد کنید', 'class': 'input_second input_all'}),
-        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
-    )
+    old_password = forms.CharField(label='Old Password', widget=forms.PasswordInput)
+    class Meta:
+        model = CustomUser
+        fields = ['old_password', 'new_password1', 'new_password2']
+        
+
+# Profile Form        
 class ProfileUpdateForm(forms.ModelForm):
     GENDER_CHOICES = (
         (False, 'مرد'),
@@ -117,7 +117,33 @@ class ProfileUpdateForm(forms.ModelForm):
         model = CustomProfileModel
         fields = ('national_code', 'address', 'zipcode',
                   'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban','customer_image')
-class ProfileUpdateModelForm(forms.ModelForm):
-    class Meta:
-        model = CustomProfileModel
-        fields = ['national_code', 'address', 'zipcode', 'street', 'city', 'mobile', 'age', 'gender', 'card_number', 'iban', 'customer_image']
+
+
+#CustomUser Form       
+class CustomUserForm(forms.ModelForm) :
+    username = forms.CharField(
+        max_length=25,
+        label='نام کاربری',
+        widget=forms.TextInput(attrs={'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    email = forms.EmailField(
+        label='ایمیل',
+        widget=forms.EmailInput(attrs={'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید', 'invalid': 'لطفاً یک ایمیل معتبر وارد کنید'}
+    )
+    first_name = forms.CharField(
+        max_length=25,
+        label='نام',
+        widget=forms.TextInput(attrs={'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    last_name = forms.CharField(
+        max_length=25,
+        label='نام خانوادگی',
+        widget=forms.TextInput(attrs={'class': 'input_second input_all'}),
+        error_messages={'required': 'لطفاً این فیلد را پر کنید'}
+    )
+    class Meta : 
+        model = CustomUser
+        fields = ('username', 'email', 'first_name', 'last_name')

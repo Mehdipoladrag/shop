@@ -1,17 +1,16 @@
 from django.shortcuts import render, redirect
 from accounts.models import CustomProfileModel, CustomUser
-from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm
+from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
 from django.urls import reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import views as auth_views
 from rest_framework import generics, mixins
 #from accounts.serializers import ProfileSerializer,UserSerializer
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -33,6 +32,8 @@ class SignUpView(generic.CreateView):
         messages.success(self.request, self.success_message)
         return response
 #Login
+# Manage Login with username 
+    # add Email for Login Users
 class LoginUserView(LoginView) : 
     template_name = 'accounts/login.html'
     form_class = UserLoginForm
@@ -49,7 +50,6 @@ class LoginUserView(LoginView) :
     
 # LogOut
 class UserLogOutView(LoginRequiredMixin,LogoutView):
-    login_required = True 
     next_page = reverse_lazy('accounts:signin1')
 
 
@@ -71,44 +71,39 @@ class UserProfileView(LoginRequiredMixin,View) :
         return render(request, self.template_name, context)
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-    model = CustomProfileModel
-    form_class = ProfileUpdateForm
     template_name = 'accounts/updateuser.html'
     success_url = reverse_lazy('accounts:profile1')
 
-    def get_object(self):
-        return self.request.user.customprofilemodel
+    def get(self, request, *args, **kwargs):
+        user_form = CustomUserForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.customprofilemodel)
+        return render(request, self.template_name, {
+            'user_form': user_form,
+            'profile_form': profile_form
+        })
 
-    def form_valid(self, form):
-        # بررسی تکمیل بودن پروفایل و ذخیره تغییرات
-        profile = form.save(commit=False)
-        if profile.is_complete:
-            profile.is_complete = True
-        profile.save()
-        messages.success(self.request, 'اطلاعات شما با موفقیت ذخیره شد')
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        user_form = CustomUserForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.customprofilemodel)
 
+        if user_form.is_valid() and profile_form.is_valid():
+            profile_instance = profile_form.save(commit=False)
+            profile_instance.is_complete = True
+            profile_instance.save()
+            messages.success(request, 'اطلاعات شما با موفقیت ذخیره شد')
+            return redirect(self.success_url)
+        else:
+            return render(request, self.template_name, {
+                'user_form': user_form,
+                'profile_form': profile_form
+            })
 
-class UserChangePasswordView(PasswordChangeView) : 
+class UserChangePasswordView(LoginRequiredMixin ,auth_views.PasswordChangeView) : 
     form_class = UserChangePassForm
     template_name = 'accounts/Changepass.html'
-    login_required = True
-    
-@login_required(login_url='accounts:signin1')
-def change_password(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
-            messages.success(request, 'رمز تغییر یافت')
-            return redirect('accounts:profile1')
-        else:
-            messages.error(request, 'رمز اشتباه است')
-            return redirect('accounts:profile1')
-    else:
-        form = PasswordChangeForm(request.user)
-    return render(request, 'accounts/Changepass.html', {'form': form})
+    login_url = ('accounts:signin1')
+    success_url = reverse_lazy('accounts:profile1')
+
 
 
 def new_address(request) :

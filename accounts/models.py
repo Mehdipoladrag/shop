@@ -80,7 +80,7 @@ class CustomProfileModel(models.Model):
         _("خیابان"), max_length=50, blank=True, null=True)
     city = models.CharField(_("شهر"), max_length=20, blank=True, null=True)
     mobile = models.CharField(
-        _("Mobile"), max_length=11, blank=True, null=True)
+        _("موبایل"), max_length=11, blank=True, null=True)
     age = models.PositiveIntegerField(_("سن"), blank=True, null=True)
     gender = models.BooleanField(
         _("جنسیت"), choices=GENDER_CHOICES, default=False)

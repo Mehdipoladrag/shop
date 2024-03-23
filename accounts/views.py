@@ -1,19 +1,24 @@
 from django.shortcuts import render, redirect
+# Model
 from accounts.models import CustomProfileModel, CustomUser
+# Form
 from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
+# Serializers
+from accounts.serializers import ProfileSerializer, UserSerializer
+#
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+
 from django.urls import reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.views import LoginView, LogoutView
+from accounts.permissions import IsSuperUser
 from django.contrib import messages
 from django.http import Http404
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
+
 from django.contrib.auth import views as auth_views
 from rest_framework import generics, mixins
-#from accounts.serializers import ProfileSerializer,UserSerializer
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth import get_user_model 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -139,45 +144,49 @@ def user_message_info(request) :
     }
     return render(request,'accounts/message_user.html', context)
 
-## API
-# class ProfilePermission(IsAdminUser) : 
-#     pass 
-# class ProfileUSerlistmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ProfilePermission) :
-#     queryset = PROFILE.objects.all()
-#     serializer_class = ProfileSerializer
-#     def get(self, request) : 
-#         return self.list(request) 
-#     def post(self, request) :
-#         return self.create(request)
-# class ProfileDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView,ProfilePermission) :
-#     queryset = PROFILE.objects.all()
-#     serializer_class = ProfileSerializer
-#     def get(self, request, pk) :
-#         return self.retrieve(request, pk) 
-#     def put(self, request, pk) :
-#         return self.update(request,pk)
-#     def delete(self, request, pk) :
-#          return self.destroy(request,pk)
+## API Custom Profile
+class ProfileUSerlistmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView) :
+    queryset = CustomProfileModel.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsSuperUser]
+    def get(self, request) : 
+        return self.list(request) 
+    def post(self, request) :
+        return self.create(request)
+class ProfileDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView) :
+    queryset = CustomProfileModel.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsSuperUser]
+    def get(self, request, pk) :
+        return self.retrieve(request, pk) 
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self, request, pk) :
+         return self.destroy(request,pk)
     
-# ###### User 
-# class UserListmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView,ProfilePermission) :
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
-#     filterset_fields = ['username']
-#     search_fields = ['username']
-#     ordering_fields = ['username', 'email']
-#     ordering_fields = '__all__'
-#     def get(self, request) : 
-#         return self.list(request) 
-#     def post(self, request) :
-#         return self.create(request)
-# class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView,ProfilePermission) :
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     def get(self, request, pk) :
-#         return self.retrieve(request, pk) 
-#     def put(self, request, pk) :
-#         return self.update(request,pk)
-#     def delete(self, request, pk) :
-#          return self.destroy(request,pk)
+# User API 
+class UserListmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView) :
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsSuperUser]
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['username']
+    search_fields = ['username']
+    ordering_fields = ['username', 'email']
+    ordering_fields = '__all__'
+    def get(self, request) : 
+        return self.list(request) 
+    def post(self, request) :
+        return self.create(request)
+    
+class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView) :
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsSuperUser]
+
+    def get(self, request, pk) :
+        return self.retrieve(request, pk) 
+    def put(self, request, pk) :
+        return self.update(request,pk)
+    def delete(self, request, pk) :
+         return self.destroy(request,pk)

@@ -111,17 +111,15 @@ class UserChangePasswordView(LoginRequiredMixin ,auth_views.PasswordChangeView) 
 
 
 
-def new_address(request) :
-    #profile = PROFILE.objects.get(user_id=request.user.id)
-    user = request.user
-    #message_count = Message.objects.filter(user=user).count()
-    orders = Order.objects.filter(customer=user).count()
-    context = {
-    #    'profile': profile,
-        'orders': orders,
-   #     'message_count': message_count,
-    }
-    return render(request, 'accounts/newaddres.html',context)
+
+class UserAddressView(LoginRequiredMixin, View) : 
+    def get(self, request) : 
+        user = request.user
+        user_info_address = CustomProfileModel.objects.get(user_id = user)
+        context = {
+            'profile' : user_info_address,
+        }
+        return render(request, 'accounts/newaddres.html',context)
 
 def order_list(request):
     user = request.user

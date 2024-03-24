@@ -1,5 +1,12 @@
+from typing import Any
 from django.shortcuts import render
+# Models
 from shop.models import Product, Category, Brand, Comment, OrderItem, Order, Transaction, Invoice
+# Serializers
+from shop.serializers import * 
+
+#
+from django.views.generic import ListView, DetailView, View 
 from django.core.paginator import Paginator
 from shop.forms import ContactProductForm
 from django.shortcuts import render, get_object_or_404
@@ -9,33 +16,39 @@ from decimal import Decimal
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+# For APIS
 from rest_framework.permissions import IsAdminUser
 from rest_framework import generics,mixins
-from shop.serializers import * 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 # Create your views here.
 
 
-# SHOP LISt http://127.0.0.1:8000/shop/
-def shop_list(request) :
-    cat = Category.objects.all()
-    product_list = Product.objects.all()
-    paginator = Paginator(product_list, 9)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    brands = Brand.objects.all()
-    context = {
-        'product_list': product_list,
-        'listpage': page_obj,
-        'categori': cat,
-        'brands': brands,
-
-    }
-    return render(request, 'shop/shoplist.html', context)
+class ShopListView(ListView) : 
+    template_name = 'shop/shoplist.html'
+    model = Product
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product_list'] = Product.objects.all()
+        context['categori'] = Category.objects.all()
+        context['brands'] = Brand.objects.all()
+        return context
 
 
-# PRODUCT DETAIL
+class ShopDetailView(DetailView):
+    model = Product  # مدل مربوطه را تعیین می‌کنیم
+    template_name = 'shop/shopdetail.html'
+    slug_url_kwarg = 'slug'  
+    def get_context_data(self, **kwargs):
+        slug = self.kwargs.get(self.pk_url_kwarg)
+        context = super().get_context_data(**kwargs)
+        product_detail = self.get_object()  # مدل محصول در اینجا قابل دسترس است
+        context['products'] = product_detail
+        context['cart_add_product_form'] = CartAddProductForm()
+        #context['comments'] = Comment.objects.filter(product=product_detail)
+        return context
+
+
 def shop_detail(request, slug) :
     if request.method == 'POST':
         productform = ContactProductForm(request.POST)

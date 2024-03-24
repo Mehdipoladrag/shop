@@ -1,312 +1,294 @@
-{% extends "base.html" %}
-{% load static %}
-{% load humanize %}
-{% load jalali_tags %}
-{% block title %}خرید {{products.product_name}}{% endblock title %}
-{% block content %}
-        <main class="single-product default">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <nav>
-                            <ul class="breadcrumb">
-                                <a href="{% url 'home:home1' %}">
-                                    <li>
-                                        <i class="fa fa-home" aria-hidden="true"></i>
-                                    </li>
-                                </a>
-                                <li>
-                                    <a href="#"><span>{{ products.product_category }}</span></a>
-                                </li>
-                                <li>
-                                    <span>{{products.product_brand}}</span>
-                                </li>
-                                <li>
-                                    <span> {{products.product_name}}  </span>
-                                </li>
-                            </ul>
-                        </nav>
+{% extends "base.html" %} 
+{% load static %} 
+{% load humanize %} 
+{% load jalali_tags %} 
+{% block title %}خرید {{products.product_name}}
+{% endblock title %} 
+{% block content %} 
+x<main class="single-product default">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <nav>
+          <ul class="breadcrumb">
+            <a href="{% url 'home:home1' %}">
+              <li>
+                <i class="fa fa-home" aria-hidden="true"></i>
+              </li>
+            </a>
+            <li>
+              <a href="#">
+                <span>{{ products.product_category }}</span>
+              </a>
+            </li>
+            <li>
+              <span>{{products.product_brand}}</span>
+            </li>
+            <li>
+              <span> {{products.product_name}} </span>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <article class="product">
+          <div class="row product_main_details">
+            <div class="col-lg-5 col-md-6 col-sm-12">
+              <div class="product-gallery default">
+                <img class="main_img_gallery" src="{{products.pic.url}}" alt="{{products.product_name}}" /> {% comment %} <section class="testimonial py-3" id="testimonial">
+                  <div class="container">
+                    <div class="row gallery">
+                      <div class="col-4 col-md-3 pd">
+                        <a href="assets/img/product_img/single/1.jpg" rel="prettyPhoto[gallery1]">
+                          <img src="assets/img/product_img/single/1.jpg" class="img-thumb" alt="نمایشگر همیشه روشن" />
+                        </a>
+                      </div>
+                      <div class="col-4 col-md-3 pd">
+                        <a href="assets/img/product_img/single/2.jpg" rel="prettyPhoto[gallery1]">
+                          <img src="assets/img/product_img/single/2.jpg" class="img-thumb" alt="سخت تر از همه" />
+                        </a>
+                      </div>
+                      <div class="col-4 col-md-3 pd">
+                        <a href="assets/img/product_img/single/3.jpg" rel="prettyPhoto[gallery1]">
+                          <img src="assets/img/product_img/single/3.jpg" class="img-thumb" alt="یک دوربین در یک کلاس به تنهایی" />
+                        </a>
+                      </div>
+                      <div class="col-4 col-md-3 pd">
+                        <a href="assets/img/product_img/single/4.jpg" rel="prettyPhoto[gallery1]">
+                          <img src="assets/img/product_img/single/4.jpg" class="img-thumb" alt="حریم خصوصی" />
+                        </a>
+                      </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <article class="product">
-                            <div class="row product_main_details">
-                                <div class="col-lg-5 col-md-6 col-sm-12">
-                                    <div class="product-gallery default">
-                                        <img class="main_img_gallery" src="{{products.pic.url}}" alt="{{products.product_name}}" />
-                                        {% comment %} <section class="testimonial py-3" id="testimonial">
-                                            <div class="container">
-                                                <div class="row gallery">
-                                                    <div class="col-4 col-md-3 pd"><a href="assets/img/product_img/single/1.jpg" rel="prettyPhoto[gallery1]"><img src="assets/img/product_img/single/1.jpg" class="img-thumb" alt="نمایشگر همیشه روشن" /></a></div>
-                                                    <div class="col-4 col-md-3 pd"><a href="assets/img/product_img/single/2.jpg" rel="prettyPhoto[gallery1]"><img src="assets/img/product_img/single/2.jpg" class="img-thumb" alt="سخت تر از همه" /></a></div>
-                                                    <div class="col-4 col-md-3 pd"><a href="assets/img/product_img/single/3.jpg" rel="prettyPhoto[gallery1]"><img src="assets/img/product_img/single/3.jpg" class="img-thumb" alt="یک دوربین در یک کلاس به تنهایی" /></a></div>
-                                                    <div class="col-4 col-md-3 pd"><a href="assets/img/product_img/single/4.jpg" rel="prettyPhoto[gallery1]"><img src="assets/img/product_img/single/4.jpg" class="img-thumb" alt="حریم خصوصی" /></a></div>
-
-                                                </div>
-                                            </div>
-                                        </section> {% endcomment %}
-                                    </div>
-                                    <ul class="gallery-options">
-                                        <li>
-                                            <button class="add-favorites favorites2 favorites_heart"><i class="fa fa-heart"></i></button>
-                                        </li>
-                                        <li>
-                                            <button class="favorites2" data-toggle="modal" data-target="#myModal"><i class="fa fa-share-alt"></i></button>
-                                        </li>
-                                    </ul>
-                                    <!-- Modal Core -->
-                                    <div class="modal-share modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                    <h4 class="modal-title" id="myModalLabel">به اشتراک گذاشتن</h4>
-                                                </div>
-                                              
-                                                <div class="modal-footer">
-                                                    <form class="default">
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                 <p>
-                                                                     برای کپی آدرس در کادر زیر دابل <a href="#" role="button" onclick="copyElementText(this.id)">کلیک</a> کنید
-                                                                 </p>
-                                                                <p class="right-side-header shareurlvalue" id="text" onclick="copyElementText(this.id)">http://myrezometest.ir/shop/{{products.slug}}</p>
-
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Modal Core -->
-                                </div>
-                                <div class="col-lg-7 col-md-6 col-sm-12 " >
-                                   
-
-                                        <h2 class="product-title ">
-                                            <h1>    {{products.product_name}}    </h1>
-                                        </h2>
-                                        <hr class="hr-text" data-content="{{products.mini_description}}">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <ul class="list-group space-15">
-                                                    <li class="list-group-item">رنگ: {{products.product_color}}</li>
-                                                    <li class="list-group-item">بلوتوث:  {{products.bluetooth}} </li>
-                                                    <li class="list-group-item"> رزولوشن عکس : {{products.resolution}} مگاپیکسل</li>
-                                                    <li class="list-group-item"> امتیاز کاربران : {{products.product_rate}}/10</li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-6">
-                                                <ul class="list-group space-15">
-                                                    <li class="list-group-item">قابلیت : {{products.capability}}</li>
-                                                    <li class="list-group-item">  گوشی : دو گوشی</li>
-                                                    <li class="list-group-item"> سیستم عامل : {{products.platform_os}}</li>
-                                                    <li class="list-group-item"> فناوری  : {{products.technology}}</li>
-                                    
-                                                </ul>
-                                            </div>
-                                            <div class="col-lg-12 col-md-12 col-sm-12 product_main_pr">
-
-                                                <div class="time_pr">
-
-
-                                                    <div class="row">
-                                                        <div class="col-12 upda">
-                                                            <b>
-                                                                <i class="fa fa-calendar" aria-hidden="true"></i>
-
-                                                               زمان ارسال محصول :
-                                                            </b>
-                                                            {{products.time_send}}روز
-                                                        </div>
-
-                                                        <div class="col-12 col-lg-6 col-md-6">
-
-                                                            <p>زمان باقی مانده </p>
-                                                            <div class="countdown-timer" countdown="" data-date="06 12 2023 20:20:22">
-                                                                <ul class="text_countdown">
-                                                                    <li data-days="" class="number_countdown">2</li>
-                                                                    <li>روز</li>
-                                                                </ul>
-                                                                <ul class="text_countdown">
-                                                                    <li data-hours="" class="number_countdown">8</li>
-                                                                    <li>ساعت</li>
-                                                                </ul>
-                                                                <ul class="text_countdown">
-                                                                    <li data-minutes="" class="number_countdown">1</li>
-                                                                    <li>دقیقه</li>
-                                                                </ul>
-                                                                <ul class="text_countdown">
-                                                                    <li data-seconds="" class="number_countdown">22</li>
-                                                                    <li>ثانیه</li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 col-lg-6 col-md-6 border_left">
-                                                            <div class="price space-15">
-                                                            {% if products.offer %}
-                                                                <del><span>{{ products.price|floatformat:0|intcomma }}<span>تومان</span></span></del>
-                                                                <span class="discount_badge">{{ products.offer }}%</span>
-                                                                <ins><span>{{ products.discounted_price|floatformat:0|intcomma }}<span>تومان</span></span></ins>
-                                                            {% else %}
-                                                                <span>{{ products.price|floatformat:0|intcomma }}<span>تومان</span></span>
-                                                            {% endif %}
-                                                            </div>
-                                                            <div class="col-12 timer-title text--center">
-                                                                <form action="{% url 'cart:cart_add' products.id %}" method="post">
-                                                                    <div class="tedad">
-                                                                    <p> {{ cart_add_product_form }} </p>
-                                                                    </div>
-
-                                                                    {% csrf_token %}
-                                                                    <input type="submit" class="btn big_btn btn-main-masai" value="افزودن به سبد خرید">
-                                                                </form>
-                                                                
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-
-                                                </div>
-
-
-                                            </div>
-                                            <div class="col-12">
-                                                <p class="txt_note">
-                                                    <i class="fa fa-info" aria-hidden="true"></i>
-                                                    {{products.product_inf}}
-                                                </p>
-                                            </div>
-                                            
-                                        </div>
-                                   
-                                       
-                                </div>
-                                
-                            </div>
-                        </article>
+                  </div>
+                </section> {% endcomment %}
+              </div>
+              <ul class="gallery-options">
+                <li>
+                  <button class="add-favorites favorites2 favorites_heart">
+                    <i class="fa fa-heart"></i>
+                  </button>
+                </li>
+                <li>
+                  <button class="favorites2" data-toggle="modal" data-target="#myModal">
+                    <i class="fa fa-share-alt"></i>
+                  </button>
+                </li>
+              </ul>
+              <!-- Modal Core -->
+              <div class="modal-share modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h4 class="modal-title" id="myModalLabel">به اشتراک گذاشتن</h4>
                     </div>
-                </div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12 default no-padding bg_single_product">
-                            <div class="product-tabs default">
-                                <div class="box-tabs default">
-                                    <ul class="nav" role="tablist">
-                                        <li class="box-tabs-tab">
-                                            <a class="active " data-toggle="tab" href="#desc" role="tab" aria-expanded="true">
-                                                 توضیحات تکمیلی
-                                            </a>
-                                        </li>
-                                        <li class="box-tabs-tab">
-                                            <a data-toggle="tab" href="#params" role="tab" aria-expanded="false">
-                                                 مشخصات محصول
-                                            </a>
-                                        </li>
-                                        <li class="box-tabs-tab">
-                                            <a data-toggle="tab" href="#comments" role="tab" aria-expanded="false">
-                                                 دیدگاه خریداران
-                                            </a>
-                                        </li>
-                                        <li class="box-tabs-tab">
-                                            <a data-toggle="tab" href="#comments_questions" role="tab" aria-expanded="false">
-                                                پرسش و نظر
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div class="card-body default">
-                                        <!-- Tab panes -->
-                                        <div class="tab-content">
-                                            <div class="tab-pane active" id="desc" role="tabpanel" aria-expanded="true">
-                                                
-                                                    <header class="card-header">
-                                                        <h3 class="card-title"><span>بررسی تخصصی گوشی iPhone 13 Pro Max </span></h3>
-                                                    </header>
-                                                    <div class="parent-expert default">
-                                                        <div class="content-expert">
-                                                            <p>
-                                                            {{ products.specifications}}             
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                     
-                                                
-                                            </div>
-                                            <div class="tab-pane params" id="params" role="tabpanel" aria-expanded="false">
-                                                <header class="card-header">
-                                                    <h3 class="card-title"><span>بررسی تخصصی گوشی {{products.product_name}} </span></h3>
-                                                </header>
-                                                    <div class="col-12">
-                                                        <ul class="list-group ">
-                                                            <li class="list-group-item">رنگ: {{products.product_color}}</li>
-                                                            <li class="list-group-item">{{products.bluetooth}}:دارد</li>
-                                                            <li class="list-group-item"> رزولوشن عکس : {{products.resolution}} مگاپیکسل</li>
-                                                            <li class="list-group-item" > امتیاز کاربران  : {{products.product_rate}}/10</li>
-                                                            <li class="list-group-item">قابلیت : {{products.capability}}</li>     
-                                                            <li class="list-group-item"> سیستم عامل : {{products.platform_os}}</li>
-                                                            <li class="list-group-item"> فناوری  : {{products.technology}}</li>
-                  
-                                                        </ul>       
-                                                    </div>        
-                                            </div>
-                                            <div class="tab-pane" id="comments" role="tabpanel" aria-expanded="false">
-                                               
-                                                    <header class="card-header">
-                                                        <h3 class="card-title"><span>دیدگاه های دیگر کاربران</span></h3>
-                                                    </header>
-                                                    <div class="comments_form default">
-                                                        <ol class="comment-list">
-                                                            <!-- #comment-## -->
-                                                            <li>
-                                                                <div class="comment-body">
-                                                                    {% for i in comments %}
-                                                                    <div class="comment-author">
-                                                                        <img alt="" src="{{ i.username.customer_image.url }}" class="avatar"><span class="star4">{{i.rate}}</span>
-                                                                    </div>
-                                                                    
-                                                                    <p>{{i.comment}}</p>
-                                                                  <ul class="commentul">
-                                                                      <li>
-                                                                          {{ i.created_date|to_jalali:'%y/%m/%d _ %H:%M:%S'}}
-
-
-                                                                      </li>
-                                                                      <li>
-                                                                          {{i.username}}
-                                                                      </li>
-                                                                  </ul>
-                                                                </div>
-                                                                    {% empty %}
-                                                                    <h3 class="card-title" style="color: #46A9AE;"><span>نظری ثبت نشده است</span></h3>
-                                                                    {% endfor %}
-                                                            </li>
-                                                        </ol>
-                                                    </div>
-                                                 
-                                            </div>
-                                            <div class="tab-pane form-comment" id="comments_questions" role="tabpanel" aria-expanded="false">
-                                                <header class="card-header">
-                                                    <h3 class="card-title"><span>ارسال نظر و پرسش  </span></h3>
-                                                </header>
-                                                    <form action="" class="comment" method='post'>
-                                                          {% csrf_token %}
-
-                                                        {{ form.message_product }}
-                                                        <button class="btn btn-main-masai">ارسال برای تایید</button>
-                                    
-                                                    </form>  
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="modal-footer">
+                      <form class="default">
+                        <div class="row">
+                          <div class="col-12">
+                            <p> برای کپی آدرس در کادر زیر دابل <a href="#" role="button" onclick="copyElementText(this.id)">کلیک</a> کنید </p>
+                            <p class="right-side-header shareurlvalue" id="text" onclick="copyElementText(this.id)">http://myrezometest.ir/shop/{{products.slug}}</p>
+                          </div>
                         </div>
+                      </form>
                     </div>
+                  </div>
                 </div>
+              </div>
+              <!-- Modal Core -->
             </div>
-        </main>
-
+            <div class="col-lg-7 col-md-6 col-sm-12 ">
+              <h2 class="product-title ">
+                <h1> {{products.product_name}} </h1>
+              </h2>
+              <hr class="hr-text" data-content="{{products.mini_description}}">
+              <div class="row">
+                <div class="col-6">
+                  <ul class="list-group space-15">
+                    <li class="list-group-item">رنگ: {{products.product_color}}</li>
+                    <li class="list-group-item">بلوتوث: {{products.bluetooth}} </li>
+                    <li class="list-group-item"> رزولوشن عکس : {{products.resolution}} مگاپیکسل</li>
+                    <li class="list-group-item"> امتیاز کاربران : {{products.product_rate}}/10</li>
+                  </ul>
+                </div>
+                <div class="col-6">
+                  <ul class="list-group space-15">
+                    <li class="list-group-item">قابلیت : {{products.capability}}</li>
+                    <li class="list-group-item"> گوشی : دو گوشی</li>
+                    <li class="list-group-item"> سیستم عامل : {{products.platform_os}}</li>
+                    <li class="list-group-item"> فناوری : {{products.technology}}</li>
+                  </ul>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 product_main_pr">
+                  <div class="time_pr">
+                    <div class="row">
+                      <div class="col-12 upda">
+                        <b>
+                          <i class="fa fa-calendar" aria-hidden="true"></i> زمان ارسال محصول : </b>
+                        {{products.time_send}}روز
+                      </div>
+                      <div class="col-12 col-lg-6 col-md-6">
+                        <p>زمان باقی مانده </p>
+                        <div class="countdown-timer" countdown="" data-date="06 12 2023 20:20:22">
+                          <ul class="text_countdown">
+                            <li data-days="" class="number_countdown">2</li>
+                            <li>روز</li>
+                          </ul>
+                          <ul class="text_countdown">
+                            <li data-hours="" class="number_countdown">8</li>
+                            <li>ساعت</li>
+                          </ul>
+                          <ul class="text_countdown">
+                            <li data-minutes="" class="number_countdown">1</li>
+                            <li>دقیقه</li>
+                          </ul>
+                          <ul class="text_countdown">
+                            <li data-seconds="" class="number_countdown">22</li>
+                            <li>ثانیه</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="col-12 col-lg-6 col-md-6 border_left">
+                        <div class="price space-15"> {% if products.offer %} <del>
+                            <span>{{ products.price|floatformat:0|intcomma }}
+                              <span>تومان</span>
+                            </span>
+                          </del>
+                          <span class="discount_badge">{{ products.offer }}%</span>
+                          <ins>
+                            <span>{{ products.discounted_price|floatformat:0|intcomma }}
+                              <span>تومان</span>
+                            </span>
+                          </ins> {% else %} <span>{{ products.price|floatformat:0|intcomma }}
+                            <span>تومان</span>
+                          </span> {% endif %}
+                        </div>
+                        <div class="col-12 timer-title text--center">
+                          <form action="{% url 'cart:cart_add' products.pk %}" method="post">
+                            <div class="tedad">
+                              <p> {{ cart_add_product_form }} </p>
+                            </div> {% csrf_token %} <input type="submit" class="btn big_btn btn-main-masai" value="افزودن به سبد خرید">
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <p class="txt_note">
+                    <i class="fa fa-info" aria-hidden="true"></i>
+                    {{products.product_inf}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 default no-padding bg_single_product">
+          <div class="product-tabs default">
+            <div class="box-tabs default">
+              <ul class="nav" role="tablist">
+                <li class="box-tabs-tab">
+                  <a class="active " data-toggle="tab" href="#desc" role="tab" aria-expanded="true"> توضیحات تکمیلی </a>
+                </li>
+                <li class="box-tabs-tab">
+                  <a data-toggle="tab" href="#params" role="tab" aria-expanded="false"> مشخصات محصول </a>
+                </li>
+                <li class="box-tabs-tab">
+                  <a data-toggle="tab" href="#comments" role="tab" aria-expanded="false"> دیدگاه خریداران </a>
+                </li>
+                <li class="box-tabs-tab">
+                  <a data-toggle="tab" href="#comments_questions" role="tab" aria-expanded="false"> پرسش و نظر </a>
+                </li>
+              </ul>
+              <div class="card-body default">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                  <div class="tab-pane active" id="desc" role="tabpanel" aria-expanded="true">
+                    <header class="card-header">
+                      <h3 class="card-title">
+                        <span>بررسی تخصصی گوشی iPhone 13 Pro Max </span>
+                      </h3>
+                    </header>
+                    <div class="parent-expert default">
+                      <div class="content-expert">
+                        <p>
+                          {{ products.specifications}}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane params" id="params" role="tabpanel" aria-expanded="false">
+                    <header class="card-header">
+                      <h3 class="card-title">
+                        <span>بررسی تخصصی گوشی {{products.product_name}} </span>
+                      </h3>
+                    </header>
+                    <div class="col-12">
+                      <ul class="list-group ">
+                        <li class="list-group-item">رنگ: {{products.product_color}}</li>
+                        <li class="list-group-item">{{products.bluetooth}}:دارد</li>
+                        <li class="list-group-item"> رزولوشن عکس : {{products.resolution}} مگاپیکسل</li>
+                        <li class="list-group-item"> امتیاز کاربران : {{products.product_rate}}/10</li>
+                        <li class="list-group-item">قابلیت : {{products.capability}}</li>
+                        <li class="list-group-item"> سیستم عامل : {{products.platform_os}}</li>
+                        <li class="list-group-item"> فناوری : {{products.technology}}</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="tab-pane" id="comments" role="tabpanel" aria-expanded="false">
+                    <header class="card-header">
+                      <h3 class="card-title">
+                        <span>دیدگاه های دیگر کاربران</span>
+                      </h3>
+                    </header>
+                    <div class="comments_form default">
+                      <ol class="comment-list">
+                        <!-- #comment-## -->
+                        <li>
+                          <div class="comment-body"> {% for i in comments %} <div class="comment-author">
+                              <img alt="" src="{{ i.username.customer_image.url }}" class="avatar">
+                              <span class="star4">{{i.rate}}</span>
+                            </div>
+                            <p>{{i.comment}}</p>
+                            <ul class="commentul">
+                              <li>
+                                {{ i.created_date|to_jalali:'%y/%m/%d _ %H:%M:%S'}}
+                              </li>
+                              <li>
+                                {{i.username}}
+                              </li>
+                            </ul>
+                          </div> {% empty %} <h3 class="card-title" style="color: #46A9AE;">
+                            <span>نظری ثبت نشده است</span>
+                          </h3> {% endfor %}
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                  <div class="tab-pane form-comment" id="comments_questions" role="tabpanel" aria-expanded="false">
+                    <header class="card-header">
+                      <h3 class="card-title">
+                        <span>ارسال نظر و پرسش </span>
+                      </h3>
+                    </header>
+                    <form action="" class="comment" method='post'> {% csrf_token %} {{ form.message_product }}
+                      <button class="btn btn-main-masai">ارسال برای تایید</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main> 
 {% endblock content %}

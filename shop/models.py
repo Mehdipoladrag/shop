@@ -8,10 +8,10 @@ from accounts.models import CustomUser
 
 class Category(models.Model):
     category_name = models.CharField(_("دسته بندی"), max_length=50)
-    category_code = models.IntegerField(_("کد دسته بندی"))
+    category_code = models.IntegerField(_("کد دسته بندی"), unique = True)
     category_pic = models.ImageField(_("عکس دسته بندی"), upload_to='images/category/%Y/%m/%d', blank=True, null=True)
     category_slug = models.SlugField(_("یو ار ال دسته بندی"), unique=True)
-
+    
     def __str__(self):
         return self.category_name
     class Meta:
@@ -64,7 +64,7 @@ class Product(models.Model):
     technology = models.CharField(_("تکنولوژی"), max_length=50)  # تکنولوژی
     platform_os = models.CharField(_("سیستم عامل"), max_length=50)  # سیستم عامل
     bluetooth = models.CharField(_("بلوتوث"), max_length=20, choices=bluetooth_choice, default=False)  # بلوتوث
-    product_rate = models.IntegerField(_("امتیاز"))
+    product_rate = models.DecimalField(_("امتیاز"), max_digits=3, decimal_places=1)  # یک رقم اعشار
     specifications = models.TextField(_("مشخصات فنی"))  # مشخصات فنی
     product_description = models.TextField(_("توضیحات تکمیلی"))  # توضیحات تکمیلی
     mini_description = models.CharField(_("توضیح کوتاه"), max_length=50)  # توضیح کوتاه

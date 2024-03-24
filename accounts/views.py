@@ -5,24 +5,23 @@ from accounts.models import CustomProfileModel, CustomUser
 from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
 # Serializers
 from accounts.serializers import ProfileSerializer, UserSerializer
+# Permissions
+from accounts.permissions import IsSuperUser
 #
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-
+from shop.models import Order, OrderItem
+#
 from django.urls import reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.views import LoginView, LogoutView
-from accounts.permissions import IsSuperUser
 from django.contrib import messages
 from django.http import Http404
-
 from django.contrib.auth import views as auth_views
+# For APIS
 from rest_framework import generics, mixins
-from django.contrib.auth import get_user_model 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from shop.models import Order, OrderItem
 # Create your views here.
 
 #Signup

@@ -1,8 +1,18 @@
 from django.contrib import admin
 from shop.models import Product, Category, Contact_product, Brand, Offers , Info, Invoice, Order , OrderItem, Comment, Transaction
+from django.utils.html import format_html
 # Register your models here.
+class CategoryAdmin(admin.ModelAdmin) : 
+    list_display = ['category_code', 'category_name', 'category_slug', 'slug_cat']
+    list_display_links = ['category_code', 'category_name', 'slug_cat']
+    def slug_cat(self, obj):
+        url_cat = 'http://127.0.0.1:8000/shop/'
+        return format_html("<a href='{url}{slug}'>{url}{slug}</a>", url=url_cat, slug=obj.category_slug)
+
+    slug_cat.short_description = 'آدرس دسته بندی'
 
 
+    
 class ProductAdmin(admin.ModelAdmin):
     
     list_display = ['product_name', 'product_brand','formatted_price', 'offer', 'discounted_price', 'slug']
@@ -37,16 +47,16 @@ class ProductAdmin(admin.ModelAdmin):
     )
     
     def formatted_price(self, obj):
-        return '{:,.2f}'.format(obj.price)
+        return '{:,.0f}'.format(obj.price)
 
     # عنوان فیلد نمایش داده شده در صفحه ادمین
-    formatted_price.short_description = 'Price'
+    formatted_price.short_description = 'قیمت اصلی'
 
     def discounted_price(self, obj):
-        return '{:,.2f}'.format(obj.discounted_price)
+        return '{:,.0f}'.format(obj.discounted_price)
 
-    discounted_price.short_description = 'Discounted Price'
-
+    discounted_price.short_description = 'قیمت با تخفیف'
+    
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
@@ -69,7 +79,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brand)
 admin.site.register(Offers)
 admin.site.register(Info)

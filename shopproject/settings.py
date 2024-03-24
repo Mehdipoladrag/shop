@@ -41,12 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     # 'jdatetime', 
+    'import_export',
     'jalali_date',  # برای تبدیل تاریخ به فارسی {% load jdatetime_tags %}
     'home', 'shop', 'accounts',
     'contact', 'blog', 'cart',
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
+    
 ]
 
 MIDDLEWARE = [
@@ -148,14 +150,14 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIFILES_DIRS = [
-    BASE_DIR / "static"
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
+    os.path.join(BASE_DIR, "static"),
 ]
 
 # Default primary key field type

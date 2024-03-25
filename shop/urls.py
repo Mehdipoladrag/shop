@@ -1,9 +1,9 @@
 from django.urls import path
 from shop.views import (
     ShopListView, ShopDetailView,
-    shop_detail,
+    SearchView,
     categor_list, categor_detail,
-    checkout, SEARCH,
+    checkout,
     Categorymixinlist, CategoryDetailmixin,
     Brandmixinlist, BrandDetailmixin,
     Productmixinlist, ProductDetailmixin,
@@ -20,7 +20,7 @@ app_name = 'shop'
 
 urlpatterns = [
     path('', ShopListView.as_view(), name='shoplist'),
-    path('search/', SEARCH, name='search1'),
+    path('search/', SearchView.as_view(), name='search1'),
     path('product/<slug:slug>/', ShopDetailView.as_view(), name='detailpro'),
     path('all-categories/', categor_list, name='categorylist1'),
     path('<str:category_slug>/',categor_detail, name='categorydetail1'),

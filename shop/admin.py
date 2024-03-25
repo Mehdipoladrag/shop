@@ -15,7 +15,7 @@ class CategoryAdmin(admin.ModelAdmin) :
     
 class ProductAdmin(admin.ModelAdmin):
     
-    list_display = ['product_name', 'product_brand','formatted_price', 'offer', 'discounted_price', 'slug']
+    list_display = ['product_code','product_name', 'product_brand','formatted_price', 'offer', 'discounted_price', 'slug_product']
     search_fields = ['product_name']
     list_display_links = ['product_name', 'product_brand']
     list_filter = ['product_brand','product_category']
@@ -45,7 +45,11 @@ class ProductAdmin(admin.ModelAdmin):
             ),
         }),
     )
-    
+    def slug_product(self, obj):
+        url_product = 'http://127.0.0.1:8000/shop/product/'
+        return format_html("<a href='{url}{slug}'>{url}{slug}</a>", url=url_product, slug=obj.slug)
+
+    slug_product.short_description = 'آدرس محصول'
     def formatted_price(self, obj):
         return '{:,.0f}'.format(obj.price)
 
@@ -77,10 +81,19 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ('order_date',)
     inlines = [OrderItemInline, InvoiceInline]
 
+
+class BrandsAdmin(admin.ModelAdmin) : 
+    list_display = ['brand_code', 'brand_name']
+    filter_horizontal = ['category_brand']
+    list_display_links =  ['brand_code', 'brand_name']
+
+
+
+
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Brand)
+admin.site.register(Brand, BrandsAdmin)
 admin.site.register(Offers)
 admin.site.register(Info)
 admin.site.register(Invoice)

@@ -21,7 +21,7 @@ class Category(models.Model):
 class Brand(models.Model):
 
     brand_name = models.CharField(_("نام برند"), max_length=50)
-    category_barnd = models.ManyToManyField(Category,verbose_name='دسته بندی برند ها')
+    category_brand = models.ManyToManyField(Category,verbose_name='دسته بندی برند ها')
     brand_code = models.IntegerField(_("کد برند"))
     brand_pic = models.ImageField(
         _("عکس برند"), upload_to='images/brand/%Y/%m/%d', blank=True, null=True)

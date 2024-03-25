@@ -36,56 +36,35 @@ class ShopListView(ListView) :
 
 
 class ShopDetailView(DetailView):
-    model = Product  # مدل مربوطه را تعیین می‌کنیم
+    model = Product  
     template_name = 'shop/shopdetail.html'
     slug_url_kwarg = 'slug'  
     def get_context_data(self, **kwargs):
         slug = self.kwargs.get(self.pk_url_kwarg)
         context = super().get_context_data(**kwargs)
-        product_detail = self.get_object()  # مدل محصول در اینجا قابل دسترس است
+        product_detail = self.object  
         context['products'] = product_detail
         context['cart_add_product_form'] = CartAddProductForm()
         #context['comments'] = Comment.objects.filter(product=product_detail)
         return context
 
 
-def shop_detail(request, slug) :
-    if request.method == 'POST':
-        productform = ContactProductForm(request.POST)
-        if productform.is_valid():
-            productform.save()
-            productform = ContactProductForm()
-    else:
-        productform = ContactProductForm()
-
-    product_detail = get_object_or_404(Product,slug=slug)
-    comments = Comment.objects.filter(product=product_detail)
-    cart_add_product_form = CartAddProductForm()
-    context = {
-      
-        'products': product_detail,
-        'comments': comments,
-        'form': productform,
-        'cart_add_product_form': cart_add_product_form,
-    }
-    return render(request, 'shop/shopdetail.html', context)
-
-def SEARCH(request):
-    brands = Brand.objects.all()
-    products2 = Product.objects.all()
-    q = request.GET.get('q')
-    if q:
-        products = Product.objects.filter(Q(product_name__icontains=q))
-        context = {
+class SearchView(View) : 
+    def get(self, request) : 
+        brands = Brand.objects.all()
+        products2 = Product.objects.all()
+        q = request.GET.get('q') 
+        if q : 
+            products = Product.objects.filter(Q(product_name__icontains=q))
+            context = {
             'q': q,
             'products': products,
             'products2': products2,
             'brands' : brands,
         }
-        return render(request, 'shop/search.html', context)
-    return render(request, 'shop/search.html')
+            return render(request, 'shop/search.html', context)
+        return render(request, 'shop/search.html')
 
-# http://127.0.0.1:8000/shop/all-categories/
 def categor_list(request):
     product_list = Product.objects.filter(offer__gt=0).order_by('create_date')
     product_second_list = Product.objects.filter(product_rate__gt=0).exclude(pk__in=product_list)
@@ -98,8 +77,17 @@ def categor_list(request):
         'product2': product_second_list,
     }
     return render(request, 'shop/categoryproductlist.html', context)
+class CategoryListView(ListView) :
+    model = Product
+    template_name = 'shop/categoryproductlist.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product_list'] = Product.objects.filter(offer__gt=0).order_by('create_date')
+        context['product_second_list'] = Product.objects.filter(product_rate__gt=0).exclude(pk__in='product_list')
+        context['categor'] = Category.objects.all()
+        context['brands'] = Brand.objects.all()
 
-
+        
 def categor_detail(request, category_slug): 
     categorlist = Category.objects.exclude(category_slug=category_slug)
     categor = get_object_or_404(Category,category_slug=category_slug)

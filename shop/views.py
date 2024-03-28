@@ -77,39 +77,46 @@ def categor_list(request):
         'product2': product_second_list,
     }
     return render(request, 'shop/categoryproductlist.html', context)
-class CategoryListView(ListView) :
+
+
+class CategoryListView(ListView):
     model = Product
     template_name = 'shop/categoryproductlist.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['product_list'] = Product.objects.filter(offer__gt=0).order_by('create_date')
-        context['product_second_list'] = Product.objects.filter(product_rate__gt=0).exclude(pk__in='product_list')
-        context['categor'] = Category.objects.all()
-        context['brands'] = Brand.objects.all()
+        context['products'] = Product.objects.filter(offer__gt=0).order_by('create_date')
+        product_list_ids = list(context['products'].values_list('pk', flat=True))
+        context['product2'] = Product.objects.filter(product_rate__gt=0).exclude(pk__in=product_list_ids)
+        context['cat'] = Category.objects.all()
+        context['brand'] = Brand.objects.all()
+        return context
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = 'shop/detailcat.html'
+    context_object_name = 'cat'
+    slug_url_kwarg = 'category_slug' 
 
-        
-def categor_detail(request, category_slug): 
-    categorlist = Category.objects.exclude(category_slug=category_slug)
-    categor = get_object_or_404(Category,category_slug=category_slug)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.get_object()
+        context['categorlist'] = Category.objects.exclude(pk=category.pk)
+        productlist = Product.objects.filter(product_category=category)
+        paginator = Paginator(productlist, 9)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        context['brand'] = Brand.objects.all()
+        context['listpage'] = page_obj
+        return context
 
-    productlist = Product.objects.filter(product_category=categor)
-    paginator = Paginator(productlist, 9)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-
-    brands = Brand.objects.all()
-    context = {
-        'cat' : categor,
-        'categorlist' : categorlist,
-        'brand': brands,
-        'listpage': page_obj,
-
-    }
-    return render(request,'shop/detailcat.html', context) 
-
-
-
-
+    def get_object(self, queryset=None):
+        queryset = self.get_queryset()
+        slug = self.kwargs.get(self.slug_url_kwarg)
+        if slug is not None:
+            queryset = queryset.filter(category_slug=slug)
+        obj = get_object_or_404(queryset)
+        return obj
+    
 @login_required
 def checkout(request):
     cart = Cart(request)

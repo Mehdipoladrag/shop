@@ -1,30 +1,29 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
-
+from django.views.generic import View, DeleteView
 from cart.forms import CartAddProductForm
 from .cart import Cart
+from django.urls import reverse_lazy
 from shop.models import Product
 # Create your views here.
 
-@require_POST
-def cart_add(requset, product_id):
-    cart = Cart(requset)
-    product = get_object_or_404(Product, id=product_id)
-    form = CartAddProductForm(requset.POST)
-    if form.is_valid():
-        cd = form.cleaned_data
-        cart.add(product=product,product_count=cd['product_count'],update_count=cd['update'])
-    return redirect('cart:cart_detail')
 
+class AddCartView(View) :
+    def post(self, request, product_id) : 
+        cart = Cart(request) 
+        product = get_object_or_404(Product, id=product_id) 
+        form = CartAddProductForm(request.POST) 
+        if form.is_valid() : 
+            cd = form.cleaned_data
+            cart.add(product=product,product_count=cd['product_count'], update_count=cd['update'])
+        return redirect('cart:cart_detail')
+    
+class CartDeleteView(View):
+    def get(self, request, product_id):
+        cart = Cart(request)
 
-
-
-def cart_remove(request, product_id):
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id)
-
-    cart.remove(product_id)
-    return redirect('cart:cart_detail')
+        cart.remove(product_id)
+        return redirect('cart:cart_detail')
 
 
 def cart_detail(request):

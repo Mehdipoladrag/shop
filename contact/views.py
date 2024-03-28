@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from contact.forms import ContactUsForm
 from contact.models import Contact
 from contact.serializers import ContactSerializer

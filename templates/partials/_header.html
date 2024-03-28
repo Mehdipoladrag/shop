@@ -1,4 +1,6 @@
 {% load static %}
+{% load humanize %}
+
 <div class="top-section fullscreen-container">
         <img src="{% static 'assets/img/banner_img/bg_top.jpg' %}" class="h-100">
     </div>
@@ -124,7 +126,7 @@
                                 <div class="m_cart-header">
                                     <div class="m_cart-total">
                                         <span>مجموع سبد:</span>
-                                        <span> ۳۵,۲۵۳,۵۰۰</span>
+                                        <span> {{ cart.get_total_price|floatformat:0|intcomma }}</span>
                                         <span> تومان</span>
                                     </div>
                                 </div>

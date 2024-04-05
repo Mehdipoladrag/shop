@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  django:
+    image: django_shop_3
+    container_name: django_shop_3
+    build:
+      dockerfile: Dockerfile
+      context: ./shop
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./shop:/app   
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY= django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: shop_masay
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mehdi4363
+    ports:
+      - "5432:5432"

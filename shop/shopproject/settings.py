@@ -88,11 +88,11 @@ WSGI_APPLICATION = 'shopproject.wsgi.application'
 DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'shop_db',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': os.environ.get('PG_DB', 'shop_db'),
+        'USER': os.environ.get('PG_USER', 'root'),
+        'PASSWORD': os.environ.get('PG_PASSWORD', 'root'),
+        'HOST': os.environ.get('PG_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('PG_PORT', '5432'),
     }
 }
 

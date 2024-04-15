@@ -1,25 +1,60 @@
 version: '3.8'
+
+
 services:
-  django:
-    image: django_shop_3
-    container_name: django_shop_3
-    build:
-      dockerfile: Dockerfile
-      context: ./shop
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - ./shop:/app   
-    ports:
-      - "8000:8000"
-    environment:
-      - SECRET_KEY= django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
-      - DEBUG=True
-      - ALLOWED_HOSTS=localhost,127.0.0.1
+
   db:
-    image: postgres:latest
+    container_name: postgresql_db
+    image: postgres
+    # automatically restarts the container - Docker daemon on restart or 
+    # the container itself is manually restarted
+    restart: always 
+
+    # volumes:
+    #   - ./data/db:/var/lib/postgresql/data
+
+
     environment:
-      POSTGRES_DB: shop_masay
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mehdi4363
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: shop_db
     ports:
       - "5432:5432"
+    
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+
+    volumes:
+      - ./data/pgadmin-data:/var/lib/pgadmin
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      # PGADMIN_LISTEN_PORT = 80
+    ports:
+      - "5050:80"
+
+  # django :
+  #   image: django_shop_3
+  #   container_name: django_shop_3
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./shop
+  #   command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+  #   volumes:
+  #     - ./shop:/app   
+  #   ports:
+  #     - "8001:8000"
+  #   environment:
+  #     - SECRET_KEY= django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
+  #     - DEBUG=True
+  #     - ALLOWED_HOSTS=localhost,127.0.0.1
+  #   depends_on:
+  #     - db
+
+volumes:
+  db : 
+  pgadmin :
+  # django :

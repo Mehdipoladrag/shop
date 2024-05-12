@@ -7,18 +7,18 @@ from accounts.permissions import AdminPermission
 #
 
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined')
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined')
     list_display_links = ('username', 'email',)
 
     search_fields = ['first_name', 'last_name', 'username']
     list_filter = ('is_staff','date_joined',)
     list_per_page = 10
-    readonly_fields = ('uuid','username', 'first_name', 'last_name','is_staff','password','date_joined','last_login',)
+    readonly_fields = ('id','username', 'first_name', 'last_name','is_staff','password','date_joined','last_login',)
     # FieldSets 
     fieldsets = (
         ('اطلاعات کاربری', {
             "fields": (
-                'uuid','username', 'first_name', 'last_name','is_staff','password' 
+                'id','username', 'first_name', 'last_name','is_staff','password' 
             ),
         }),
         ('اطلاعات ورود و خروج', {
@@ -32,7 +32,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     
 
 class CustomProfileAdmin(admin.ModelAdmin):
-    list_display = ('uuid_obj','user', 'national_code','is_complete',) 
+    list_display = ('id_obj','user', 'national_code','is_complete',) 
     list_display_links = ('user',)
     list_filter = ('age', 'gender', 'city', 'is_complete')
     search_fields = ('age', 'gender', 'city', 'is_complete')
@@ -55,10 +55,10 @@ class CustomProfileAdmin(admin.ModelAdmin):
 
     permissions_class = AdminPermission
 
-    # UUID obj From CustomUser
-    def uuid_obj(self, obj) : 
-        return obj.user.uuid
-    uuid_obj.short_description = 'UUID کاربر'
+    # id obj From CustomUser
+    def id_obj(self, obj) : 
+        return obj.user.id
+    id_obj.short_description = 'id کاربر'
 
     
 admin.site.register(CustomUser, CustomUserAdmin)

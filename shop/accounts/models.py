@@ -59,7 +59,7 @@ from django.dispatch import receiver
 
 
 class CustomUser(AbstractUser):
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(max_length=150, unique=True)
     class Meta:
         verbose_name = 'کاربر'

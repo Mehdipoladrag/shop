@@ -4,9 +4,10 @@ from accounts.models import CustomProfileModel, CustomUser
 # Form
 from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
 # Serializers
-from accounts.serializers import ProfileSerializer, UserSerializer
+from accounts.serializers import ProfileSerializer, UserSerializer, LoginSerializer
 # Permissions
 from accounts.permissions import IsSuperUser
+from rest_framework.permissions import AllowAny, IsAdminUser
 #
 from shop.models import Order, OrderItem
 #
@@ -14,7 +15,8 @@ from django.urls import reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import Http404
 from django.contrib.auth import views as auth_views
@@ -22,6 +24,9 @@ from django.contrib.auth import views as auth_views
 from rest_framework import generics, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 # Create your views here.
 
 #Signup
@@ -53,8 +58,11 @@ class LoginUserView(LoginView) :
         return reverse_lazy('home:home1')
     
 # LogOut
-class UserLogOutView(LoginRequiredMixin,LogoutView):
-    next_page = reverse_lazy('accounts:signin1')
+ 
+class UserLogOutView(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect('accounts:signin1')
 
 
 #UpdateInformation
@@ -165,7 +173,7 @@ class ProfileDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mix
 class UserListmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView) :
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsSuperUser]
+    permission_classes = []
     filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
     filterset_fields = ['username']
     search_fields = ['username']
@@ -179,7 +187,7 @@ class UserListmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.Gene
 class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView) :
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsSuperUser]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, pk) :
         return self.retrieve(request, pk) 
@@ -187,3 +195,12 @@ class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
         return self.update(request,pk)
     def delete(self, request, pk) :
          return self.destroy(request,pk)
+    
+class LoginAPIView(APIView):
+    permission_classes = [IsAdminUser]
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

@@ -34,7 +34,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
       # PGADMIN_LISTEN_PORT = 80
     ports:
-      - "5050:80"
+      - "4050:80"
 
   web :
     image: django_shop_3

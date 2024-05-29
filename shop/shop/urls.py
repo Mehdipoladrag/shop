@@ -47,6 +47,5 @@ urlpatterns = [
     path('api/comment-detail/<pk>/', CommentDetailmixin.as_view()),
     path('api/contact-product-list/', Contactproductmixinlist.as_view()),
     path('api/contact-product-detail/<pk>/', ContactproductDetailmixin.as_view()),
-
 ]
 

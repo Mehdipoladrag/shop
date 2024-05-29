@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
-    'drf_yasg',
+    'drf_yasg', 'django_celery_beat',
     
 ]
 
@@ -199,3 +199,8 @@ JAZZMIN_SETTINGS = {
     "copyright": "تمامی حقوق این سایت متعلق به مهدی پولادرگ است",
 
 }
+
+
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'amqp://guest:guest@rabbitmq:5672//')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'rpc://')

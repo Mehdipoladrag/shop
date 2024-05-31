@@ -46,50 +46,53 @@ services:
       - PG_PORT=5432
     depends_on:
       - db
-
-  celery:
-    container_name: celery_proj
-    build:
-      context: ./shop
-      dockerfile: Dockerfile
-    command: celery -A shopproject.celery worker -l INFO
-    volumes:
-      - ./shop:/app
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-      - CELERY_RESULT_BACKEND=rpc://
-      - ALLOWED_HOSTS=localhost,127.0.0.1
-      - DEBUG=True
-      - SECRET_KEY=django-insecure-beuu&e-)-p3cluy@f8ebcg^ye8s9f5#-83g6t7^g8_mltzdb+0
-      - C_FORCE_ROOT=True
-    depends_on:
-      - web
       - rabbitmq
 
   rabbitmq:
-    image: rabbitmq:3-management
-    container_name: project_rabbitmq
+    image: rabbitmq:management
+    container_name: massay_rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  celery:
+    container_name: massay_celery
+    build:
+      context: ./shop
+      dockerfile: Dockerfile
+    command: celery -A shopproject worker -l INFO
+    volumes:
+      - ./shop:/app/
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
+      - PG_DB=shop_db
+      - PG_USER=root
+      - PG_PASSWORD=root
+      - PG_HOST=db
+      - PG_PORT=5432
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - CELERY_BEAT_SCHEDULER=django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - web
+      - rabbitmq
+      - db
 
   celery_beat:
-    container_name: django_celery_beat
+    container_name: massay_celery_beat
     build:
-      dockerfile: Dockerfile
       context: ./shop
-    command: celery -A shopproject.celery beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      dockerfile: Dockerfile
+    command: celery -A shopproject beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
-      - ./shop:/app
+      - ./shop:/app/
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-      - CELERY_RESULT_BACKEND=rpc://
-      - SECRET_KEY=django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
-      - DEBUG=True
       - ALLOWED_HOSTS=localhost,127.0.0.1
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+      - CELERY_BEAT_SCHEDULER=django_celery_beat.schedulers:DatabaseScheduler
       - PG_DB=shop_db
       - PG_USER=root
       - PG_PASSWORD=root
@@ -98,13 +101,16 @@ services:
     depends_on:
       - web
       - rabbitmq
+      - db
 
   flower:
     image: mher/flower
     ports:
       - "4445:5555"
     environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
 
 volumes:
   db:

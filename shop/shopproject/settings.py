@@ -214,8 +214,6 @@ CELERY_TIMEZONE = 'Asia/Tehran'
 
 
 # SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-
-
 # SESSION_COOKIE_NAME = "sessionid"
 # SESSION_COOKIE_HTTPONLY = True
 # SESSION_COOKIE_SECURE = False  # Set to True in production for HTTPS

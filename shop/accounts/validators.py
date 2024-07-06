@@ -1,6 +1,7 @@
 import unicodedata
 from django.core.exceptions import ValidationError
 from accounts.models import CustomUser
+
 def is_persian(text):
   for char in text:
     if not unicodedata.category(char).startswith('Lo'):
@@ -8,6 +9,7 @@ def is_persian(text):
   return True
 
 class UserRegisterValidators:
+  """ This is a class to validate our registration form """
   @staticmethod
   def validate_username(value):
     if not value:
@@ -28,20 +30,3 @@ class UserRegisterValidators:
     if value and value[0].isdigit():
       raise ValidationError('لطفا ایمیل را به درستی وارد کنید')
     return value  
-  
-
-# class UserLoginValidator:
-#   def clean_username(value ,self):
-#     username = self.cleaned_data.get('value')
-#     if CustomUser.objects.filter(username=username).exists():
-#         return username
-#     else:
-#         raise ValidationError('نام کاربری اشتباه است')
-#   def clean_password(value ,self):
-#         password = self.cleaned_data.get(value)
-#         username = self.cleaned_data.get(value)
-#         if username:
-#             user = CustomUser.objects.filter(username=username).first()
-#             if user and not user.check_password(password):
-#                 raise ValidationError('رمز عبور اشتباه است')
-#         return password

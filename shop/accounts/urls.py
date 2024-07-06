@@ -1,15 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 from accounts.views import(
     SignUpView,
     LoginUserView, UserLogOutView,
     UserProfileView, ProfileUpdateView,
     UserChangePasswordView, UserAddressView, 
-    user_message_info,
-    # APIS
-    ProfileUSerlistmixin, ProfileDetailmixin,
-    UserListmixin,UserDetailmixin, 
-    #
-    order_list,
+    UserOrderView,
 )
 
 
@@ -25,11 +20,7 @@ urlpatterns = [
     path('profile/update/', ProfileUpdateView.as_view(), name='update1'),
     path('change-password/', UserChangePasswordView.as_view(), name='change1'),
     path('address/', UserAddressView.as_view(), name='address1'),
-    path('orders/', order_list, name='order1'),   
-    path('messages/', user_message_info, name='message1'),
-    path('api/v1/profile-list/', ProfileUSerlistmixin.as_view()),
-    path('api/v1/profile-detail/<pk>/', ProfileDetailmixin.as_view()),
-    path('api/v1/user-list/', UserListmixin.as_view()),
-    path('api/v1/user-detail/<pk>/', UserDetailmixin.as_view()),
-
+    path('orders/', UserOrderView.as_view(), name='order1'),   
+    # API 
+    path('api/v1/', include('accounts.api.v1.urls')),
 ]

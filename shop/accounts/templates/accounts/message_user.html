@@ -15,21 +15,18 @@
                                 </header>
                                 <div class="content-section default">
                                     <div class="row">
-                                        {% for message in message_user %}
+                                    {% for message in message_user %}
                                         <div class="col-md-6 col-sm-6 order_delivered_sec">
                                             <div class="row">
-                                   
                                                 <div class="col-12 col-lg-12 col-md-12">
-
                                                     <h4 class="profile-recent-fav-name">
-                                                        <i class="fa fa-bell " aria-hidden="true"></i> {{message.description}}
+                                                        <i class="fa fa-bell" aria-hidden="true"></i> {{message.description}}
                                                     </h4>
                                                     <span class="span-sub-bel">{{message.message_date|to_jalali:'%y/%m/%d | %H:%M:%S'}}</span>
                                                 </div>
-                               
                                             </div>
                                         </div>
-                                        {% endfor %}
+                                    {% endfor %}
                                     </div>
                                 </div>
                             </div>

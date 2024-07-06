@@ -1,18 +1,5 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse
-# Model
-from accounts.models import CustomProfileModel, CustomUser
-# Form
-from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
-# Serializers
-from accounts.serializers import ProfileSerializer, UserSerializer
-# Permissions
-from accounts.permissions import IsSuperUser
-from rest_framework.permissions import AllowAny, IsAdminUser
-#
-from shop.models import Order, OrderItem
-#
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView
@@ -21,20 +8,26 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import Http404
 from django.contrib.auth import views as auth_views
-# For APIS
-import requests
+# Model
+from accounts.models import CustomProfileModel, CustomUser
+# Form
+from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
+# Permissions
+#
+from shop.models import Order, OrderItem
+#
 
-from rest_framework import generics, mixins
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+
 # Create your views here.
 
 #Signup
 class SignUpView(generic.CreateView):
+
+    """ 
+        A class is for the registration form and 
+        page where the user must enter the relevant information
+    """
+
     form_class = UserRegisterForm
     success_url = reverse_lazy('accounts:signin1')
     template_name = 'accounts/signuppage.html'
@@ -45,11 +38,14 @@ class SignUpView(generic.CreateView):
         messages.success(self.request, self.success_message)
         return response
 
-from django.contrib.sessions.backends.db import SessionStore
+
 #Login
-# Manage Login with username 
-    # add Email for Login Users
 class LoginUserView(LoginView):
+
+    """
+        The task of this class is to authenticate the user
+    """
+
     template_name = 'accounts/login.html'
     form_class = UserLoginForm
     success_message = 'با موفقیت وارد شدید'
@@ -58,26 +54,14 @@ class LoginUserView(LoginView):
         response = super().form_valid(form)
         messages.success(self.request, self.success_message)
         user = form.get_user()
-
-        # ایجاد توکن
-        refresh = RefreshToken.for_user(user)
-
-        # ذخیره توکن در سشن
-        session = SessionStore()
-        session['access_token'] = str(refresh.access_token)
-        session['refresh_token'] = str(refresh)
-        session.save()
-
         if not CustomProfileModel.objects.filter(user=user).exists():
             CustomProfileModel.objects.create(user=user)
-
         return response
 
     def get_success_url(self):
         return reverse('home:home1')
     
 # LogOut
- 
 class UserLogOutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
@@ -86,6 +70,9 @@ class UserLogOutView(View):
 
 #UpdateInformation
 class UserProfileView(LoginRequiredMixin,View) :
+
+
+
     template_name = 'accounts/profile.html'
     login_required = True
     def get(self, request, *args, **kwargs):
@@ -93,15 +80,20 @@ class UserProfileView(LoginRequiredMixin,View) :
             profile = CustomProfileModel.objects.get(user=request.user)
         except CustomProfileModel.DoesNotExist:
             raise Http404("مشخصات کاربری پیدا نشد.")
-        
-        #orders_count = Order.objects.filter(customer=request.user).count()
         context = {
             'profile': profile,
-          #  'orders_count': orders_count,
+
         }
         return render(request, self.template_name, context)
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    
+
+    """
+        The task of this class is to allow the 
+        user to record or even edit personal information
+    """
+
     template_name = 'accounts/updateuser.html'
     success_url = reverse_lazy('accounts:profile1')
 
@@ -130,6 +122,11 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             })
 
 class UserChangePasswordView(LoginRequiredMixin ,auth_views.PasswordChangeView) : 
+
+    """
+        The user can change the account password
+    """
+
     form_class = UserChangePassForm
     template_name = 'accounts/Changepass.html'
     login_url = ('accounts:signin1')
@@ -139,6 +136,11 @@ class UserChangePasswordView(LoginRequiredMixin ,auth_views.PasswordChangeView) 
 
 
 class UserAddressView(LoginRequiredMixin, View) : 
+
+    """
+        Add user address information to the page
+    """
+
     def get(self, request) : 
         user = request.user
         user_info_address = CustomProfileModel.objects.get(user_id = user)
@@ -147,70 +149,20 @@ class UserAddressView(LoginRequiredMixin, View) :
         }
         return render(request, 'accounts/newaddres.html',context)
 
-def order_list(request):
-    user = request.user
-    #message_count = Message.objects.filter(user=user).count()
-    orders = Order.objects.filter(customer=user).prefetch_related('orderitem_set__product')
-    
-    context =  {
-        'orders': orders,
-     #   'message_count': message_count,
-    }
-    return render(request, 'accounts/order_list.html',context)
 
-def user_message_info(request) :
-    user = request.user 
-   # messages = Message.objects.filter(user=user)
-    orders = Order.objects.filter(customer=user).count()
-    context = {
-        'message_user' : messages,
-        'orders': orders,
-    }
-    return render(request,'accounts/message_user.html', context)
-
-## API Custom Profile
-class ProfileUSerlistmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView) :
-    queryset = CustomProfileModel.objects.all()
-    serializer_class = ProfileSerializer
-    permission_classes = [IsSuperUser]
-    def get(self, request) : 
-        return self.list(request) 
-    def post(self, request) :
-        return self.create(request)
-class ProfileDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView) :
-    queryset = CustomProfileModel.objects.all()
-    serializer_class = ProfileSerializer
-    permission_classes = [IsSuperUser]
-    def get(self, request, pk) :
-        return self.retrieve(request, pk) 
-    def put(self, request, pk) :
-        return self.update(request,pk)
-    def delete(self, request, pk) :
-         return self.destroy(request,pk)
+class UserOrderView(View):
     
-# User API 
-class UserListmixin(mixins.ListModelMixin,mixins.CreateModelMixin, generics.GenericAPIView) :
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = []
-    filter_backends = [DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter]
-    filterset_fields = ['username']
-    search_fields = ['username']
-    ordering_fields = ['username', 'email']
-    ordering_fields = '__all__'
-    def get(self, request) : 
-        return self.list(request) 
-    def post(self, request) :
-        return self.create(request)
+    """
+        The user's previous order history
+    """
     
-class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView) :
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
-
-    def get(self, request, pk) :
-        return self.retrieve(request, pk) 
-    def put(self, request, pk) :
-        return self.update(request,pk)
-    def delete(self, request, pk) :
-         return self.destroy(request,pk)
+    template_name = 'accounts/order_list.html'
+    def get(self, request): 
+        user = request.user
+        orders = Order.objects.filter(customer=user).prefetch_related('orderitem_set__product')
+        user_info_address = CustomProfileModel.objects.get(user_id = user)
+        context =  {
+            'orders': orders,
+            'profile' : user_info_address,
+        }
+        return render(request, self.template_name ,context)

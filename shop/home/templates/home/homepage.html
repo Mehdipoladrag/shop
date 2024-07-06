@@ -289,7 +289,9 @@
                                          <div class="col-6 col-md-2 contact-bigicon">
                                        
                                              <a href="{% url 'shop:categorydetail1' cat.category_slug %}" target="_self">
+                                                 {% if cat.category_pic %}
                                                  <img class="img-responsive imgpad" src="{{cat.category_pic.url}}" alt="{{cat.category_name}}" />
+                                                 {% endif %}
                                                  <b class="title-3 light-black">{{cat.category_name}}</b>
                                              </a>
 
@@ -312,7 +314,9 @@
                             <div class="owl-carousel">
                                 {% for brands in brand %}
                                 <div class="item borderitem">
+                                {% if brands.brand_pic %}
                                     <img src="{{brands.brand_pic.url}}" alt="{{brands.brand_name}}">
+                                {% endif %}
                                 </div>
                                 {% endfor %}
                             </div>

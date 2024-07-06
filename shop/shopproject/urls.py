@@ -5,7 +5,10 @@ from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
-
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView, TokenVerifyView
+)
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -32,7 +35,10 @@ urlpatterns = [
    path('contact-us/', include('contact.urls')),
    path('blog/', include('blog.urls')),
    path('cart/', include('cart.urls')),
-   path('api-auth/', include('rest_framework.urls'))
+   path('api-auth/', include('rest_framework.urls')),
+   path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+   path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+   path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

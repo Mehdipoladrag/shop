@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 # Model
 from accounts.models import CustomProfileModel, CustomUser
 # Form
 from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
 # Serializers
-from accounts.serializers import ProfileSerializer, UserSerializer, LoginSerializer
+from accounts.serializers import ProfileSerializer, UserSerializer
 # Permissions
 from accounts.permissions import IsSuperUser
 from rest_framework.permissions import AllowAny, IsAdminUser
@@ -21,12 +22,15 @@ from django.contrib import messages
 from django.http import Http404
 from django.contrib.auth import views as auth_views
 # For APIS
+import requests
+
 from rest_framework import generics, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
 # Create your views here.
 
 #Signup
@@ -40,22 +44,37 @@ class SignUpView(generic.CreateView):
         response = super().form_valid(form)
         messages.success(self.request, self.success_message)
         return response
+
+from django.contrib.sessions.backends.db import SessionStore
 #Login
 # Manage Login with username 
     # add Email for Login Users
-class LoginUserView(LoginView) : 
+class LoginUserView(LoginView):
     template_name = 'accounts/login.html'
     form_class = UserLoginForm
     success_message = 'با موفقیت وارد شدید'
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, self.success_message)
-        user = form.get_user()  
+        user = form.get_user()
+
+        # ایجاد توکن
+        refresh = RefreshToken.for_user(user)
+
+        # ذخیره توکن در سشن
+        session = SessionStore()
+        session['access_token'] = str(refresh.access_token)
+        session['refresh_token'] = str(refresh)
+        session.save()
+
         if not CustomProfileModel.objects.filter(user=user).exists():
             CustomProfileModel.objects.create(user=user)
+
         return response
+
     def get_success_url(self):
-        return reverse_lazy('home:home1')
+        return reverse('home:home1')
     
 # LogOut
  
@@ -195,12 +214,3 @@ class UserDetailmixin(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
         return self.update(request,pk)
     def delete(self, request, pk) :
          return self.destroy(request,pk)
-    
-class LoginAPIView(APIView):
-    permission_classes = [IsAdminUser]
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    

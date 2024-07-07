@@ -39,11 +39,22 @@ class UserProfileListApiView(generics.ListAPIView):
 # DELETE DATA API
 
 class UserDeleteApiView(generics.DestroyAPIView): 
+
+  " Delete User API "
+
   queryset = CustomUser.objects.all()
   serializer_class = UserDataSerializer
   permission_classes = [AllowAny]
   lookup_field = 'pk'
 
+class UserProfileDeleteApiView(generics.DestroyAPIView): 
+
+  " Delete Profile API "
+
+  queryset = CustomProfileModel.objects.all()
+  serializer_class = UserProfileDataSerializer
+  lookup_field = 'pk'
+  permission_classes = [AllowAny]
 
 # UPDATE DATA API 
 
@@ -56,6 +67,18 @@ class UserUpdateApiView(generics.UpdateAPIView):
   
   queryset = CustomUser.objects.all()
   serializer_class = UserDataSerializer
+  permission_classes = [AllowAny]
+  lookup_field = 'pk'
+
+class UserProfileUpdateApiView(generics.UpdateAPIView):
+
+  """ 
+    A class to update where we can send 
+    our http request as Put or send a patch 
+  """
+
+  queryset = CustomUser.objects.all()
+  serializer_class = UserProfileDataSerializer
   permission_classes = [AllowAny]
   lookup_field = 'pk'
 

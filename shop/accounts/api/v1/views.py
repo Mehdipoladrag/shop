@@ -8,13 +8,16 @@ from rest_framework import status
 
 # Modules 
 from accounts.models import CustomProfileModel, CustomUser
-from .serializers import UserSerializer, UserProfileSerializer 
+from .serializers import (
+  UserSerializer, UserProfileSerializer, 
+  UserDataSerializer, UserProfileDataSerializer,
+)
 
 # View
 
 
 
-
+# LIST DATA API 
 
 class UserListApiView(generics.ListAPIView): 
 
@@ -33,3 +36,36 @@ class UserProfileListApiView(generics.ListAPIView):
   serializer_class = UserProfileSerializer
   permission_classes = [AllowAny] 
 
+# DELETE DATA API
+
+class UserDeleteApiView(generics.DestroyAPIView): 
+  queryset = CustomUser.objects.all()
+  serializer_class = UserDataSerializer
+  permission_classes = [AllowAny]
+  lookup_field = 'pk'
+
+
+# UPDATE DATA API 
+
+class UserUpdateApiView(generics.UpdateAPIView): 
+  
+  """
+    A class to update where we can send 
+    our http request as Put or send a patch 
+  """
+  
+  queryset = CustomUser.objects.all()
+  serializer_class = UserDataSerializer
+  permission_classes = [AllowAny]
+  lookup_field = 'pk'
+
+# CREATE DATA API 
+
+class UserCreateApiView(generics.CreateAPIView): 
+  """ 
+    CreateUser Api 
+  """
+  queryset = CustomUser.objects.all()
+  serializer_class = UserDataSerializer 
+  permission_classes = [AllowAny] 
+  

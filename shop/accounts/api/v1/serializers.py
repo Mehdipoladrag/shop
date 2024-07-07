@@ -38,7 +38,7 @@ class UserDataSerializer(serializers.ModelSerializer):
     return super().update(instance, validated_data)
 
 
-class UserProfileDataSerializer(serializers.Serializer): 
+class UserProfileDataSerializer(serializers.ModelSerializer): 
   class Meta: 
     model = CustomProfileModel
     fields = ['user', 'mobile','national_code', 'address', 'zipcode', 'street', 'city', 'age','gender', 'card_number', 'iban', 'back_money', 'customer_image', 'is_complete']

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from blog.views import (
     BlogPageView, BlogDetailView,
     CategoryDetailView,
@@ -20,4 +20,7 @@ urlpatterns = [
     path('api/category-detail/<pk>/', CategoryBlogDetailmixin.as_view()),
     path('api/Visitor-list/', VisitorBlogListmixin.as_view()),
     path('api/Visitor-detail/<pk>/', VisitorBlogDetailmixin.as_view()),
+    # API 
+    path('api/v1/', include('blog.api.v1.urls')), 
+
 ]

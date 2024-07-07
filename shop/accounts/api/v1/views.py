@@ -92,3 +92,19 @@ class UserCreateApiView(generics.CreateAPIView):
   serializer_class = UserDataSerializer 
   permission_classes = [AllowAny] 
   
+
+
+# DETAIL DATA API 
+
+class UserDetailApiView(generics.RetrieveAPIView): 
+  queryset = CustomUser.objects.all()
+  serializer_class = UserSerializer
+  lookup_field = 'pk'
+  permission_classes = [AllowAny]
+
+
+class ProfileDetailApiView(generics.RetrieveAPIView): 
+  queryset = CustomProfileModel.objects.all()
+  serializer_class = UserProfileDataSerializer 
+  lookup_field = 'pk'
+  permission_classes = [AllowAny]

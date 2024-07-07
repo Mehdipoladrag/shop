@@ -3,7 +3,8 @@ from .views import (
   UserListApiView, UserProfileListApiView, 
   UserUpdateApiView, UserCreateApiView,
   UserDeleteApiView, UserProfileDeleteApiView,
-  UserProfileUpdateApiView, 
+  UserProfileUpdateApiView, UserDetailApiView, 
+  ProfileDetailApiView,
 )
 
 
@@ -12,6 +13,9 @@ urlpatterns = [
   # List
   path('users-list/', UserListApiView.as_view()),
   path('users-profile/', UserProfileListApiView.as_view()),
+  # Detail 
+  path('users-detail/<int:pk>/', UserDetailApiView.as_view()),
+  path('users-profile-detail/<int:pk>/', ProfileDetailApiView.as_view()),
 
   # Update 
   path('users-change-info/<int:pk>/', UserUpdateApiView.as_view()),

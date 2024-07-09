@@ -7,14 +7,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contact', '0002_contact_created'),
+        ("contact", "0002_contact_created"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contact',
-            name='created',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2024, 6, 1, 0, 28, 2, 152199, tzinfo=datetime.timezone.utc)),
+            model_name="contact",
+            name="created",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(
+                    2024, 6, 1, 0, 28, 2, 152199, tzinfo=datetime.timezone.utc
+                ),
+            ),
             preserve_default=False,
         ),
     ]

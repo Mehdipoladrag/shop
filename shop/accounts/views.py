@@ -8,30 +8,40 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import Http404
 from django.contrib.auth import views as auth_views
+
 # Model
-from accounts.models import CustomProfileModel, CustomUser
+from accounts.models import CustomProfileModel
+
 # Form
-from accounts.forms import UserRegisterForm, UserLoginForm, ProfileUpdateForm, UserChangePassForm,CustomUserForm
+from accounts.forms import (
+    UserRegisterForm,
+    UserLoginForm,
+    ProfileUpdateForm,
+    UserChangePassForm,
+    CustomUserForm,
+)
+
 # Permissions
 #
-from shop.models import Order, OrderItem
+from shop.models import Order
+
 #
 
 
 # Create your views here.
 
-#Signup
-class SignUpView(generic.CreateView):
 
-    """ 
-        A class is for the registration form and 
-        page where the user must enter the relevant information
+# Signup
+class SignUpView(generic.CreateView):
+    """
+    A class is for the registration form and
+    page where the user must enter the relevant information
     """
 
     form_class = UserRegisterForm
-    success_url = reverse_lazy('accounts:signin1')
-    template_name = 'accounts/signuppage.html'
-    success_message = 'حساب کاربری با موفقیت ساخته شد'
+    success_url = reverse_lazy("accounts:signin1")
+    template_name = "accounts/signuppage.html"
+    success_message = "حساب کاربری با موفقیت ساخته شد"
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -39,16 +49,15 @@ class SignUpView(generic.CreateView):
         return response
 
 
-#Login
+# Login
 class LoginUserView(LoginView):
-
     """
-        The task of this class is to authenticate the user
+    The task of this class is to authenticate the user
     """
 
-    template_name = 'accounts/login.html'
+    template_name = "accounts/login.html"
     form_class = UserLoginForm
-    success_message = 'با موفقیت وارد شدید'
+    success_message = "با موفقیت وارد شدید"
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -59,110 +68,111 @@ class LoginUserView(LoginView):
         return response
 
     def get_success_url(self):
-        return reverse('home:home1')
-    
+        return reverse("home:home1")
+
+
 # LogOut
 class UserLogOutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
-        return redirect('accounts:signin1')
+        return redirect("accounts:signin1")
 
 
-#UpdateInformation
-class UserProfileView(LoginRequiredMixin,View) :
+# UpdateInformation
+class UserProfileView(LoginRequiredMixin, View):
 
-
-
-    template_name = 'accounts/profile.html'
+    template_name = "accounts/profile.html"
     login_required = True
+
     def get(self, request, *args, **kwargs):
         try:
             profile = CustomProfileModel.objects.get(user=request.user)
         except CustomProfileModel.DoesNotExist:
             raise Http404("مشخصات کاربری پیدا نشد.")
         context = {
-            'profile': profile,
-
+            "profile": profile,
         }
         return render(request, self.template_name, context)
 
+
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-    
-
     """
-        The task of this class is to allow the 
-        user to record or even edit personal information
+    The task of this class is to allow the
+    user to record or even edit personal information
     """
 
-    template_name = 'accounts/updateuser.html'
-    success_url = reverse_lazy('accounts:profile1')
+    template_name = "accounts/updateuser.html"
+    success_url = reverse_lazy("accounts:profile1")
 
     def get(self, request, *args, **kwargs):
         user_form = CustomUserForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.customprofilemodel)
-        return render(request, self.template_name, {
-            'user_form': user_form,
-            'profile_form': profile_form
-        })
+        return render(
+            request,
+            self.template_name,
+            {"user_form": user_form, "profile_form": profile_form},
+        )
 
     def post(self, request, *args, **kwargs):
         user_form = CustomUserForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.customprofilemodel)
+        profile_form = ProfileUpdateForm(
+            request.POST, request.FILES, instance=request.user.customprofilemodel
+        )
 
         if user_form.is_valid() and profile_form.is_valid():
             profile_instance = profile_form.save(commit=False)
             profile_instance.is_complete = True
             profile_instance.save()
-            messages.success(request, 'اطلاعات شما با موفقیت ذخیره شد')
+            messages.success(request, "اطلاعات شما با موفقیت ذخیره شد")
             return redirect(self.success_url)
         else:
-            return render(request, self.template_name, {
-                'user_form': user_form,
-                'profile_form': profile_form
-            })
+            return render(
+                request,
+                self.template_name,
+                {"user_form": user_form, "profile_form": profile_form},
+            )
 
-class UserChangePasswordView(LoginRequiredMixin ,auth_views.PasswordChangeView) : 
 
+class UserChangePasswordView(LoginRequiredMixin, auth_views.PasswordChangeView):
     """
-        The user can change the account password
+    The user can change the account password
     """
 
     form_class = UserChangePassForm
-    template_name = 'accounts/Changepass.html'
-    login_url = ('accounts:signin1')
-    success_url = reverse_lazy('accounts:profile1')
+    template_name = "accounts/Changepass.html"
+    login_url = "accounts:signin1"
+    success_url = reverse_lazy("accounts:profile1")
 
 
-
-
-class UserAddressView(LoginRequiredMixin, View) : 
-
+class UserAddressView(LoginRequiredMixin, View):
     """
-        Add user address information to the page
+    Add user address information to the page
     """
 
-    def get(self, request) : 
+    def get(self, request):
         user = request.user
-        user_info_address = CustomProfileModel.objects.get(user_id = user)
+        user_info_address = CustomProfileModel.objects.get(user_id=user)
         context = {
-            'profile' : user_info_address,
+            "profile": user_info_address,
         }
-        return render(request, 'accounts/newaddres.html',context)
+        return render(request, "accounts/newaddres.html", context)
 
 
 class UserOrderView(View):
-    
     """
-        The user's previous order history
+    The user's previous order history
     """
-    
-    template_name = 'accounts/order_list.html'
-    def get(self, request): 
+
+    template_name = "accounts/order_list.html"
+
+    def get(self, request):
         user = request.user
-        orders = Order.objects.filter(customer=user).prefetch_related('orderitem_set__product')
-        user_info_address = CustomProfileModel.objects.get(user_id = user)
-        context =  {
-            'orders': orders,
-            'profile' : user_info_address,
+        orders = Order.objects.filter(customer=user).prefetch_related(
+            "orderitem_set__product"
+        )
+        user_info_address = CustomProfileModel.objects.get(user_id=user)
+        context = {
+            "orders": orders,
+            "profile": user_info_address,
         }
-        return render(request, self.template_name ,context)
+        return render(request, self.template_name, context)

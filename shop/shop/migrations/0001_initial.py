@@ -15,184 +15,556 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Brand',
+            name="Brand",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('brand_name', models.CharField(max_length=50, verbose_name='نام برند')),
-                ('brand_code', models.IntegerField(verbose_name='کد برند')),
-                ('brand_pic', models.ImageField(blank=True, null=True, upload_to='images/brand/%Y/%m/%d', verbose_name='عکس برند')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "brand_name",
+                    models.CharField(max_length=50, verbose_name="نام برند"),
+                ),
+                ("brand_code", models.IntegerField(verbose_name="کد برند")),
+                (
+                    "brand_pic",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/brand/%Y/%m/%d",
+                        verbose_name="عکس برند",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'برند',
-                'verbose_name_plural': 'برند ها',
+                "verbose_name": "برند",
+                "verbose_name_plural": "برند ها",
             },
         ),
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category_name', models.CharField(max_length=50, verbose_name='دسته بندی')),
-                ('category_code', models.IntegerField(verbose_name='کد دسته بندی')),
-                ('category_pic', models.ImageField(blank=True, null=True, upload_to='images/category/%Y/%m/%d', verbose_name='عکس دسته بندی')),
-                ('category_slug', models.SlugField(unique=True, verbose_name='یو ار ال دسته بندی')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "category_name",
+                    models.CharField(max_length=50, verbose_name="دسته بندی"),
+                ),
+                ("category_code", models.IntegerField(verbose_name="کد دسته بندی")),
+                (
+                    "category_pic",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/category/%Y/%m/%d",
+                        verbose_name="عکس دسته بندی",
+                    ),
+                ),
+                (
+                    "category_slug",
+                    models.SlugField(unique=True, verbose_name="یو ار ال دسته بندی"),
+                ),
             ],
             options={
-                'verbose_name': 'دسته بندی',
-                'verbose_name_plural': 'دسته بندی ها',
+                "verbose_name": "دسته بندی",
+                "verbose_name_plural": "دسته بندی ها",
             },
         ),
         migrations.CreateModel(
-            name='Info',
+            name="Info",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('product_info', models.TextField(verbose_name='اطلاعیه محصول')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("product_info", models.TextField(verbose_name="اطلاعیه محصول")),
             ],
             options={
-                'verbose_name': 'اطلاعیه',
-                'verbose_name_plural': 'اطلاعیه ها',
+                "verbose_name": "اطلاعیه",
+                "verbose_name_plural": "اطلاعیه ها",
             },
         ),
         migrations.CreateModel(
-            name='Invoice',
+            name="Invoice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('invoice_date', models.DateTimeField(auto_now_add=True, verbose_name='تاریخ فاکتور')),
-                ('authority', models.CharField(blank=True, max_length=50, null=True, verbose_name='Authority')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "invoice_date",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="تاریخ فاکتور"
+                    ),
+                ),
+                (
+                    "authority",
+                    models.CharField(
+                        blank=True, max_length=50, null=True, verbose_name="Authority"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'صورت حساب',
-                'verbose_name_plural': 'صورت حساب ها',
+                "verbose_name": "صورت حساب",
+                "verbose_name_plural": "صورت حساب ها",
             },
         ),
         migrations.CreateModel(
-            name='Offers',
+            name="Offers",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('offer_name', models.CharField(max_length=50, verbose_name='تخفیف')),
-                ('offer_pic', models.ImageField(blank=True, null=True, upload_to='images/offer/%Y/%m/%d', verbose_name='عکس تخفیف')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("offer_name", models.CharField(max_length=50, verbose_name="تخفیف")),
+                (
+                    "offer_pic",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/offer/%Y/%m/%d",
+                        verbose_name="عکس تخفیف",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'تخفیف',
-                'verbose_name_plural': 'تخفیفات',
+                "verbose_name": "تخفیف",
+                "verbose_name_plural": "تخفیفات",
             },
         ),
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order_date', models.DateTimeField(auto_now_add=True, verbose_name='زمان سفارش')),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='نام کاربری مشتری')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "order_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="زمان سفارش"),
+                ),
+                (
+                    "customer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="نام کاربری مشتری",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'سفارش',
-                'verbose_name_plural': 'سفارش ها',
+                "verbose_name": "سفارش",
+                "verbose_name_plural": "سفارش ها",
             },
         ),
         migrations.CreateModel(
-            name='Transaction',
+            name="Transaction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('transaction_date', models.DateTimeField(auto_now_add=True, verbose_name='تاریخ تراکنش')),
-                ('amount', models.DecimalField(decimal_places=1, max_digits=10, verbose_name='مقدار')),
-                ('status', models.CharField(choices=[('pending', 'انتظار'), ('failed', 'ناموفق'), ('completed', 'تکمیل شده')], default='pending', max_length=50, verbose_name='وضغیت')),
-                ('invoice', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='shop.invoice', verbose_name='فاکتور')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "transaction_date",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="تاریخ تراکنش"
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=1, max_digits=10, verbose_name="مقدار"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "انتظار"),
+                            ("failed", "ناموفق"),
+                            ("completed", "تکمیل شده"),
+                        ],
+                        default="pending",
+                        max_length=50,
+                        verbose_name="وضغیت",
+                    ),
+                ),
+                (
+                    "invoice",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="shop.invoice",
+                        verbose_name="فاکتور",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'وضعیت سفارش',
-                'verbose_name_plural': 'وضعیت سفارش ها',
+                "verbose_name": "وضعیت سفارش",
+                "verbose_name_plural": "وضعیت سفارش ها",
             },
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('product_code', models.IntegerField(verbose_name='کد محصول')),
-                ('product_name', models.CharField(max_length=50, verbose_name='نام محصول')),
-                ('product_color', models.CharField(max_length=20, verbose_name='رنگ')),
-                ('product_number', models.PositiveIntegerField(verbose_name='تعداد موجود محصول در انبار')),
-                ('capability', models.CharField(max_length=20, verbose_name='قابلیت محصول')),
-                ('resolution', models.IntegerField(verbose_name='رزولوشون عکس')),
-                ('technology', models.CharField(max_length=50, verbose_name='تکنولوژی')),
-                ('platform_os', models.CharField(max_length=50, verbose_name='سیستم عامل')),
-                ('bluetooth', models.CharField(choices=[('دارد', 'دارد'), ('ندارد', 'ندارد')], default=False, max_length=20, verbose_name='بلوتوث')),
-                ('product_rate', models.IntegerField(verbose_name='امتیاز')),
-                ('specifications', models.TextField(verbose_name='مشخصات فنی')),
-                ('product_description', models.TextField(verbose_name='توضیحات تکمیلی')),
-                ('mini_description', models.CharField(max_length=50, verbose_name='توضیح کوتاه')),
-                ('price', models.DecimalField(decimal_places=1, max_digits=10, verbose_name='قیمت محصول')),
-                ('offer', models.IntegerField(blank=True, null=True, verbose_name='درصد تخفیف')),
-                ('time_send', models.PositiveIntegerField(verbose_name='زمان ارسال')),
-                ('pic', models.ImageField(blank=True, null=True, upload_to='images/product/%Y/%m/%d', verbose_name='عکس اصلی')),
-                ('pic2', models.ImageField(blank=True, null=True, upload_to='images/product/productimage/%Y/%m/%d', verbose_name='عکس 2')),
-                ('pic3', models.ImageField(blank=True, null=True, upload_to='images/product/productimage/%Y/%m/%d', verbose_name='عکس 3')),
-                ('pic4', models.ImageField(blank=True, null=True, upload_to='images/product/productimage/%Y/%m/%d', verbose_name='عکس 4')),
-                ('pic5', models.ImageField(blank=True, null=True, upload_to='images/product/productimage/%Y/%m/%d', verbose_name='عکس 5')),
-                ('create_date', models.DateTimeField(auto_now_add=True, verbose_name='زمان ساخت')),
-                ('update_date', models.DateTimeField(auto_now=True, verbose_name='زمان ویرایش')),
-                ('slug', models.SlugField(verbose_name='یو ار ال محصول')),
-                ('product_brand', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.brand', verbose_name='برند')),
-                ('product_category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.category', verbose_name='دسته بندی')),
-                ('product_inf', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.info', verbose_name='اطلاعیه')),
-                ('product_offer', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='shop.offers', verbose_name='دسته بندی تخفیفات')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("product_code", models.IntegerField(verbose_name="کد محصول")),
+                (
+                    "product_name",
+                    models.CharField(max_length=50, verbose_name="نام محصول"),
+                ),
+                ("product_color", models.CharField(max_length=20, verbose_name="رنگ")),
+                (
+                    "product_number",
+                    models.PositiveIntegerField(
+                        verbose_name="تعداد موجود محصول در انبار"
+                    ),
+                ),
+                (
+                    "capability",
+                    models.CharField(max_length=20, verbose_name="قابلیت محصول"),
+                ),
+                ("resolution", models.IntegerField(verbose_name="رزولوشون عکس")),
+                (
+                    "technology",
+                    models.CharField(max_length=50, verbose_name="تکنولوژی"),
+                ),
+                (
+                    "platform_os",
+                    models.CharField(max_length=50, verbose_name="سیستم عامل"),
+                ),
+                (
+                    "bluetooth",
+                    models.CharField(
+                        choices=[("دارد", "دارد"), ("ندارد", "ندارد")],
+                        default=False,
+                        max_length=20,
+                        verbose_name="بلوتوث",
+                    ),
+                ),
+                ("product_rate", models.IntegerField(verbose_name="امتیاز")),
+                ("specifications", models.TextField(verbose_name="مشخصات فنی")),
+                (
+                    "product_description",
+                    models.TextField(verbose_name="توضیحات تکمیلی"),
+                ),
+                (
+                    "mini_description",
+                    models.CharField(max_length=50, verbose_name="توضیح کوتاه"),
+                ),
+                (
+                    "price",
+                    models.DecimalField(
+                        decimal_places=1, max_digits=10, verbose_name="قیمت محصول"
+                    ),
+                ),
+                (
+                    "offer",
+                    models.IntegerField(
+                        blank=True, null=True, verbose_name="درصد تخفیف"
+                    ),
+                ),
+                ("time_send", models.PositiveIntegerField(verbose_name="زمان ارسال")),
+                (
+                    "pic",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/product/%Y/%m/%d",
+                        verbose_name="عکس اصلی",
+                    ),
+                ),
+                (
+                    "pic2",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/product/productimage/%Y/%m/%d",
+                        verbose_name="عکس 2",
+                    ),
+                ),
+                (
+                    "pic3",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/product/productimage/%Y/%m/%d",
+                        verbose_name="عکس 3",
+                    ),
+                ),
+                (
+                    "pic4",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/product/productimage/%Y/%m/%d",
+                        verbose_name="عکس 4",
+                    ),
+                ),
+                (
+                    "pic5",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="images/product/productimage/%Y/%m/%d",
+                        verbose_name="عکس 5",
+                    ),
+                ),
+                (
+                    "create_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="زمان ساخت"),
+                ),
+                (
+                    "update_date",
+                    models.DateTimeField(auto_now=True, verbose_name="زمان ویرایش"),
+                ),
+                ("slug", models.SlugField(verbose_name="یو ار ال محصول")),
+                (
+                    "product_brand",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.brand",
+                        verbose_name="برند",
+                    ),
+                ),
+                (
+                    "product_category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.category",
+                        verbose_name="دسته بندی",
+                    ),
+                ),
+                (
+                    "product_inf",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.info",
+                        verbose_name="اطلاعیه",
+                    ),
+                ),
+                (
+                    "product_offer",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.offers",
+                        verbose_name="دسته بندی تخفیفات",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'محصول',
-                'verbose_name_plural': 'محصولات',
+                "verbose_name": "محصول",
+                "verbose_name_plural": "محصولات",
             },
         ),
         migrations.CreateModel(
-            name='OrderItem',
+            name="OrderItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('product_price', models.DecimalField(decimal_places=1, max_digits=10, verbose_name='قیمت محصول')),
-                ('product_count', models.PositiveIntegerField(verbose_name='تعداد محصول')),
-                ('product_cost', models.DecimalField(decimal_places=1, max_digits=10, verbose_name='هزینه محصول')),
-                ('discounted_price', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='تخفیف محصول')),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='نام کاربری مشتری')),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.order', verbose_name='سفارش')),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='shop.product', verbose_name='محصول')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "product_price",
+                    models.DecimalField(
+                        decimal_places=1, max_digits=10, verbose_name="قیمت محصول"
+                    ),
+                ),
+                (
+                    "product_count",
+                    models.PositiveIntegerField(verbose_name="تعداد محصول"),
+                ),
+                (
+                    "product_cost",
+                    models.DecimalField(
+                        decimal_places=1, max_digits=10, verbose_name="هزینه محصول"
+                    ),
+                ),
+                (
+                    "discounted_price",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="تخفیف محصول",
+                    ),
+                ),
+                (
+                    "customer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="نام کاربری مشتری",
+                    ),
+                ),
+                (
+                    "order",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.order",
+                        verbose_name="سفارش",
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="shop.product",
+                        verbose_name="محصول",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'جزئیات سفارش',
-                'verbose_name_plural': 'جزئیات سفارش ها',
+                "verbose_name": "جزئیات سفارش",
+                "verbose_name_plural": "جزئیات سفارش ها",
             },
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='order',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='shop.order', verbose_name='اطلاعیه'),
+            model_name="invoice",
+            name="order",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="shop.order",
+                verbose_name="اطلاعیه",
+            ),
         ),
         migrations.CreateModel(
-            name='Contact_product',
+            name="Contact_product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message_product', models.TextField(verbose_name='نظر در مورد محصول')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.product', verbose_name='محصول')),
-                ('username', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='نام کاربری')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message_product", models.TextField(verbose_name="نظر در مورد محصول")),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.product",
+                        verbose_name="محصول",
+                    ),
+                ),
+                (
+                    "username",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="نام کاربری",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'نظرات در محصولات',
-                'verbose_name_plural': 'نظرات در مورد محصولات',
+                "verbose_name": "نظرات در محصولات",
+                "verbose_name_plural": "نظرات در مورد محصولات",
             },
         ),
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.TextField(verbose_name='کامنت')),
-                ('rate', models.PositiveIntegerField(default=False, verbose_name='امتیاز به محصول')),
-                ('created_date', models.DateTimeField(verbose_name='تاریخ ساخت کامنت')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.product', verbose_name='محصول')),
-                ('username', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='نام کاربری')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("comment", models.TextField(verbose_name="کامنت")),
+                (
+                    "rate",
+                    models.PositiveIntegerField(
+                        default=False, verbose_name="امتیاز به محصول"
+                    ),
+                ),
+                ("created_date", models.DateTimeField(verbose_name="تاریخ ساخت کامنت")),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.product",
+                        verbose_name="محصول",
+                    ),
+                ),
+                (
+                    "username",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="نام کاربری",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'کامنت',
-                'verbose_name_plural': 'کامنت ها',
+                "verbose_name": "کامنت",
+                "verbose_name_plural": "کامنت ها",
             },
         ),
         migrations.AddField(
-            model_name='brand',
-            name='category_barnd',
-            field=models.ManyToManyField(to='shop.category', verbose_name='دسته بندی برند ها'),
+            model_name="brand",
+            name="category_barnd",
+            field=models.ManyToManyField(
+                to="shop.category", verbose_name="دسته بندی برند ها"
+            ),
         ),
     ]

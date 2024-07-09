@@ -1,11 +1,11 @@
-from django.urls import path 
+from django.urls import path
 from .views import (
-  ContactListMixin, ContactDetailMixin,
+    ContactListMixin,
+    ContactDetailMixin,
 )
 
 
-
 urlpatterns = [
-  path('contact-list/', ContactListMixin.as_view()),
-  path('contact/<pk>/', ContactDetailMixin.as_view()),
+    path("contact-list/", ContactListMixin.as_view()),
+    path("contact/<pk>/", ContactDetailMixin.as_view()),
 ]

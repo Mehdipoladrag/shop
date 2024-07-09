@@ -15,54 +15,124 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Blogs',
+            name="Blogs",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('blog_name', models.CharField(max_length=100, verbose_name='نام وبلاگ')),
-                ('blog_image', models.ImageField(upload_to='blog_images/', verbose_name='عکس وبلاگ')),
-                ('blog_description', models.TextField(verbose_name='توضیحات وبلاگ')),
-                ('create_date', models.DateTimeField(auto_now_add=True, verbose_name='زمان ساخت وبلاگ')),
-                ('update_date', models.DateTimeField(auto_now=True, verbose_name='زمان ویرایش وبلاگ')),
-                ('slug', models.SlugField(unique=True, verbose_name='یو ار ال وبلاگ')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "blog_name",
+                    models.CharField(max_length=100, verbose_name="نام وبلاگ"),
+                ),
+                (
+                    "blog_image",
+                    models.ImageField(
+                        upload_to="blog_images/", verbose_name="عکس وبلاگ"
+                    ),
+                ),
+                ("blog_description", models.TextField(verbose_name="توضیحات وبلاگ")),
+                (
+                    "create_date",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="زمان ساخت وبلاگ"
+                    ),
+                ),
+                (
+                    "update_date",
+                    models.DateTimeField(
+                        auto_now=True, verbose_name="زمان ویرایش وبلاگ"
+                    ),
+                ),
+                ("slug", models.SlugField(unique=True, verbose_name="یو ار ال وبلاگ")),
             ],
             options={
-                'verbose_name': 'وبلاگ',
-                'verbose_name_plural': 'وبلاگ ها',
+                "verbose_name": "وبلاگ",
+                "verbose_name_plural": "وبلاگ ها",
             },
         ),
         migrations.CreateModel(
-            name='Category_blog',
+            name="Category_blog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='نام دسته بندی')),
-                ('slug_cat', models.SlugField(verbose_name='یو ار ال دسته بندی')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, verbose_name="نام دسته بندی"),
+                ),
+                ("slug_cat", models.SlugField(verbose_name="یو ار ال دسته بندی")),
             ],
             options={
-                'verbose_name': 'دسته بندی وبلاگ',
-                'verbose_name_plural': 'دسته بندی وبلاگ ها',
+                "verbose_name": "دسته بندی وبلاگ",
+                "verbose_name_plural": "دسته بندی وبلاگ ها",
             },
         ),
         migrations.CreateModel(
-            name='Visitor',
+            name="Visitor",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ساخت')),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='blog.blogs', verbose_name='وبلاگ')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='نشر دهنده توسط')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "timestamp",
+                    models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ساخت"),
+                ),
+                (
+                    "post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="blog.blogs",
+                        verbose_name="وبلاگ",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="نشر دهنده توسط",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'بازدید کننده ',
-                'verbose_name_plural': 'بازدید کنندگان',
+                "verbose_name": "بازدید کننده ",
+                "verbose_name_plural": "بازدید کنندگان",
             },
         ),
         migrations.AddField(
-            model_name='blogs',
-            name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='blog.category_blog', verbose_name='دسته بندی وبلاگ'),
+            model_name="blogs",
+            name="category",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="blog.category_blog",
+                verbose_name="دسته بندی وبلاگ",
+            ),
         ),
         migrations.AddField(
-            model_name='blogs',
-            name='username',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='نام کاربری'),
+            model_name="blogs",
+            name="username",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="نام کاربری",
+            ),
         ),
     ]

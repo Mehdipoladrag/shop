@@ -5,43 +5,23 @@ from cart.forms import CartAddProductForm
 from cart.cart import Cart
 from decimal import Decimal
 from django.shortcuts import render
-from rest_framework.permissions import IsAdminUser
-from rest_framework import generics, mixins
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 # Models
 from shop.models import (
     Product,
     Category,
     Brand,
-    Comment,
     OrderItem,
     Order,
     Transaction,
     Invoice,
-    Offers, 
-    Info, 
-    Contact_product
 )
 
-# Serializers
-from shop.serializers import (
-    CategorySerializer, 
-    BrandSerializer, 
-    ProductSerializer, 
-    OffersSerializer, 
-    InfoSerializer,
-    OrderSerializer, 
-    OrderItemSerializer, 
-    TransactionSerializer, 
-    InvoiceSerializer,
-    CommentSerializer, 
-    ContactProductSerializer 
-)
+
 # Create your views here.
 class ShopListView(ListView):
     template_name = "shop/shoplist.html"
@@ -53,6 +33,7 @@ class ShopListView(ListView):
         context["categori"] = Category.objects.all()
         context["brands"] = Brand.objects.all()
         return context
+
 
 class ShopDetailView(DetailView):
     model = Product
@@ -66,6 +47,7 @@ class ShopDetailView(DetailView):
         context["cart_add_product_form"] = CartAddProductForm()
         # context['comments'] = Comment.objects.filter(product=product_detail) slug = self.kwargs.get(self.pk_url_kwarg)
         return context
+
 
 class SearchView(View):
     def get(self, request):
@@ -83,20 +65,6 @@ class SearchView(View):
             return render(request, "shop/search.html", context)
         return render(request, "shop/search.html")
 
-def categor_list(request):
-    product_list = Product.objects.filter(offer__gt=0).order_by("create_date")
-    product_second_list = Product.objects.filter(product_rate__gt=0).exclude(
-        pk__in=product_list
-    )
-    categor = Category.objects.all()
-    brands = Brand.objects.all()
-    context = {
-        "cat": categor,
-        "brand": brands,
-        "products": product_list,
-        "product2": product_second_list,
-    }
-    return render(request, "shop/categoryproductlist.html", context)
 
 class CategoryListView(ListView):
     model = Product
@@ -114,6 +82,7 @@ class CategoryListView(ListView):
         context["cat"] = Category.objects.all()
         context["brand"] = Brand.objects.all()
         return context
+
 
 class CategoryDetailView(DetailView):
     model = Category
@@ -140,6 +109,7 @@ class CategoryDetailView(DetailView):
             queryset = queryset.filter(category_slug=slug)
         obj = get_object_or_404(queryset)
         return obj
+
 
 class CheckOutView(LoginRequiredMixin, View):
     def get(self, request):
@@ -198,6 +168,7 @@ class CheckOutView(LoginRequiredMixin, View):
 
         return render(request, "shop/checkout.html", {"cart": cart})
 
+
 @login_required
 def checkout(request):
     cart = Cart(request)
@@ -250,476 +221,3 @@ def checkout(request):
         )
 
     return render(request, "shop/checkout.html", {"cart": cart})
-
-# API
-class ShopPermission(IsAdminUser):
-    pass
-# Category API
-class Categorymixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["category_name"]
-    search_fields = ["category_name"]
-    ordering_fields = ["category_name"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-
-class CategoryDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# Brand API
-class Brandmixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Brand.objects.all()
-    serializer_class = BrandSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["brand_name"]
-    search_fields = [
-        "brand_name",
-    ]
-    ordering_fields = ["brand_name"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class BrandDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Brand.objects.all()
-    serializer_class = BrandSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# Product
-class Productmixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-):
-    queryset = Product.objects.all().order_by("-create_date")
-    serializer_class = ProductSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["product_name"]
-    search_fields = [
-        "product_name",
-    ]
-    ordering_fields = ["create_date"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class ProductDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# ORder API
-class Ordermixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["customer"]
-    search_fields = [
-        "customer",
-    ]
-    ordering_fields = ["order_date"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class OrderDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# ORDER ITEM API
-class OrderItemmixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = ["order"]
-    search_fields = [
-        "customer",
-    ]
-    ordering_fields = ["product"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class OrderItemDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = OrderItem.objects.all()
-    serializer_class = OrderItemSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-# Transaction api
-class Transactionmixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = [
-        "status",
-    ]
-    search_fields = [
-        "status",
-    ]
-    ordering_fields = ["status"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class TransactionDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# INVOICE API
-class Invoicemixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Invoice.objects.all()
-    serializer_class = InvoiceSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_fields = [
-        "order",
-    ]
-    search_fields = [
-        "status",
-    ]
-    ordering_fields = ["invoice_date"]
-    ordering_fields = "__all__"
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class InvoiceDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Invoice.objects.all()
-    serializer_class = InvoiceSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# API OFFER < INFO < COMMENT < CONTACT_PRODUCT
-class offermixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Offers.objects.all()
-    serializer_class = OffersSerializer
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class OfferDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Offers.objects.all()
-    serializer_class = OffersSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-# API info
-class infomixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Info.objects.all()
-    serializer_class = InfoSerializer
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class infoDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Info.objects.all()
-    serializer_class = InfoSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# API Comment
-class Commentxinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class CommentDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-
-    def put(self, request, pk):
-        return self.update(request, pk)
-
-    def delete(self, request, pk):
-        return self.destroy(request, pk)
-
-
-# Contact_product
-class Contactproductmixinlist(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Contact_product.objects.all()
-    serializer_class = ContactProductSerializer
-
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class ContactproductDetailmixin(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
-    ShopPermission,
-):
-    queryset = Contact_product.objects.all()
-    serializer_class = ContactProductSerializer
-
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
-    def put(self, request, pk):
-        return self.update(request, pk)
-    def delete(self, request, pk):
-        return self.destroy(request, pk)

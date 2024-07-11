@@ -3,7 +3,14 @@ from .models import Category_blog, Blogs, Visitor  # Changed import path to rela
 
 
 class BlogsAdmin(admin.ModelAdmin):
-    list_display = ["username", "blog_name", "slug", "category", "create_date", "update_date"]  # Added create_date and update_date to list_display
+    list_display = [
+        "username",
+        "blog_name",
+        "slug",
+        "category",
+        "create_date",
+        "update_date",
+    ]  # Added create_date and update_date to list_display
     list_display_links = ["blog_name", "slug"]  # Changed list_display_links order
     list_select_related = ["username", "category"]
     list_filter = ["category"]
@@ -22,7 +29,10 @@ class BlogsAdmin(admin.ModelAdmin):
                     "category",
                     "slug",
                     "blog_image",
-                    ("create_date", "update_date"),  # Grouped create_date and update_date
+                    (
+                        "create_date",
+                        "update_date",
+                    ),  # Grouped create_date and update_date
                 ],
             },
         ),
@@ -60,5 +70,7 @@ class VisitorBlogAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Blogs, BlogsAdmin)
-admin.site.register(Category_blog, CategoryBlogAdmin)  # Changed Category_blog to CategoryBlogAdmin
+admin.site.register(
+    Category_blog, CategoryBlogAdmin
+)  # Changed Category_blog to CategoryBlogAdmin
 admin.site.register(Visitor, VisitorBlogAdmin)

@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from django.utils import timezone
 
 # Create your models here.
 

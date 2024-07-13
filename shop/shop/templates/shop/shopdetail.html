@@ -2,7 +2,7 @@
 {% load static %} 
 {% load humanize %} 
 {% load jalali_tags %} 
-{% block title %}خرید {{products.product_name}}
+{% block title %}خرید {{product.product_name}}
 {% endblock title %} 
 {% block content %} 
 x<main class="single-product default">
@@ -18,14 +18,14 @@ x<main class="single-product default">
             </a>
             <li>
               <a href="#">
-                <span>{{ products.product_category }}</span>
+                <span>{{ product.product_category }}</span>
               </a>
             </li>
             <li>
-              <span>{{products.product_brand}}</span>
+              <span>{{product.product_brand}}</span>
             </li>
             <li>
-              <span> {{products.product_name}} </span>
+              <span> {{product.product_name}} </span>
             </li>
           </ul>
         </nav>
@@ -37,7 +37,7 @@ x<main class="single-product default">
           <div class="row product_main_details">
             <div class="col-lg-5 col-md-6 col-sm-12">
               <div class="product-gallery default">
-                <img class="main_img_gallery" src="{{products.pic.url}}" alt="{{products.product_name}}" /> {% comment %} <section class="testimonial py-3" id="testimonial">
+                <img class="main_img_gallery" src="{{product.pic.url}}" alt="{{product.product_name}}" /> {% comment %} <section class="testimonial py-3" id="testimonial">
                   <div class="container">
                     <div class="row gallery">
                       <div class="col-4 col-md-3 pd">
@@ -89,7 +89,7 @@ x<main class="single-product default">
                         <div class="row">
                           <div class="col-12">
                             <p> برای کپی آدرس در کادر زیر دابل <a href="#" role="button" onclick="copyElementText(this.id)">کلیک</a> کنید </p>
-                            <p class="right-side-header shareurlvalue" id="text" onclick="copyElementText(this.id)">http://myrezometest.ir/shop/{{products.slug}}</p>
+                            <p class="right-side-header shareurlvalue" id="text" onclick="copyElementText(this.id)">http://myrezometest.ir/shop/{{product.slug}}</p>
                           </div>
                         </div>
                       </form>
@@ -101,24 +101,24 @@ x<main class="single-product default">
             </div>
             <div class="col-lg-7 col-md-6 col-sm-12 ">
               <h2 class="product-title ">
-                <h1> {{products.product_name}} </h1>
+                <h1> {{product.product_name}} </h1>
               </h2>
-              <hr class="hr-text" data-content="{{products.mini_description}}">
+              <hr class="hr-text" data-content="{{product.mini_description}}">
               <div class="row">
                 <div class="col-6">
                   <ul class="list-group space-15">
-                    <li class="list-group-item">رنگ: {{products.product_color}}</li>
-                    <li class="list-group-item">بلوتوث: {{products.bluetooth}} </li>
-                    <li class="list-group-item"> رزولوشن عکس : {{products.resolution}} مگاپیکسل</li>
-                    <li class="list-group-item"> امتیاز کاربران : {{products.product_rate}}/10</li>
+                    <li class="list-group-item">رنگ: {{product.product_color}}</li>
+                    <li class="list-group-item">بلوتوث: {{product.bluetooth}} </li>
+                    <li class="list-group-item"> رزولوشن عکس : {{product.resolution}} مگاپیکسل</li>
+                    <li class="list-group-item"> امتیاز کاربران : {{product.product_rate}}/10</li>
                   </ul>
                 </div>
                 <div class="col-6">
                   <ul class="list-group space-15">
-                    <li class="list-group-item">قابلیت : {{products.capability}}</li>
+                    <li class="list-group-item">قابلیت : {{product.capability}}</li>
                     <li class="list-group-item"> گوشی : دو گوشی</li>
-                    <li class="list-group-item"> سیستم عامل : {{products.platform_os}}</li>
-                    <li class="list-group-item"> فناوری : {{products.technology}}</li>
+                    <li class="list-group-item"> سیستم عامل : {{product.platform_os}}</li>
+                    <li class="list-group-item"> فناوری : {{product.technology}}</li>
                   </ul>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 product_main_pr">
@@ -127,7 +127,7 @@ x<main class="single-product default">
                       <div class="col-12 upda">
                         <b>
                           <i class="fa fa-calendar" aria-hidden="true"></i> زمان ارسال محصول : </b>
-                        {{products.time_send}}روز
+                        {{product.time_send}}روز
                       </div>
                       <div class="col-12 col-lg-6 col-md-6">
                         <p>زمان باقی مانده </p>
@@ -151,22 +151,22 @@ x<main class="single-product default">
                         </div>
                       </div>
                       <div class="col-12 col-lg-6 col-md-6 border_left">
-                        <div class="price space-15"> {% if products.offer %} <del>
-                            <span>{{ products.price|floatformat:0|intcomma }}
+                        <div class="price space-15"> {% if product.offer %} <del>
+                            <span>{{ product.price|floatformat:0|intcomma }}
                               <span>تومان</span>
                             </span>
                           </del>
-                          <span class="discount_badge">{{ products.offer }}%</span>
+                          <span class="discount_badge">{{ product.offer }}%</span>
                           <ins>
-                            <span>{{ products.discounted_price|floatformat:0|intcomma }}
+                            <span>{{ product.discounted_price|floatformat:0|intcomma }}
                               <span>تومان</span>
                             </span>
-                          </ins> {% else %} <span>{{ products.price|floatformat:0|intcomma }}
+                          </ins> {% else %} <span>{{ product.price|floatformat:0|intcomma }}
                             <span>تومان</span>
                           </span> {% endif %}
                         </div>
                         <div class="col-12 timer-title text--center">
-                          <form action="{% url 'cart:cart_add' products.pk %}" method="post">
+                          <form action="{% url 'cart:cart_add' product.pk %}" method="post">
                             <div class="tedad">
                               <p> {{ cart_add_product_form }} </p>
                             </div> {% csrf_token %} <input type="submit" class="btn big_btn btn-main-masai" value="افزودن به سبد خرید">
@@ -179,7 +179,7 @@ x<main class="single-product default">
                 <div class="col-12">
                   <p class="txt_note">
                     <i class="fa fa-info" aria-hidden="true"></i>
-                    {{products.product_inf}}
+                    {{product.product_inf}}
                   </p>
                 </div>
               </div>
@@ -219,7 +219,7 @@ x<main class="single-product default">
                     <div class="parent-expert default">
                       <div class="content-expert">
                         <p>
-                          {{ products.specifications}}
+                          {{ product.specifications}}
                         </p>
                       </div>
                     </div>
@@ -227,18 +227,18 @@ x<main class="single-product default">
                   <div class="tab-pane params" id="params" role="tabpanel" aria-expanded="false">
                     <header class="card-header">
                       <h3 class="card-title">
-                        <span>بررسی تخصصی گوشی {{products.product_name}} </span>
+                        <span>بررسی تخصصی گوشی {{product.product_name}} </span>
                       </h3>
                     </header>
                     <div class="col-12">
                       <ul class="list-group ">
-                        <li class="list-group-item">رنگ: {{products.product_color}}</li>
-                        <li class="list-group-item">{{products.bluetooth}}:دارد</li>
-                        <li class="list-group-item"> رزولوشن عکس : {{products.resolution}} مگاپیکسل</li>
-                        <li class="list-group-item"> امتیاز کاربران : {{products.product_rate}}/10</li>
-                        <li class="list-group-item">قابلیت : {{products.capability}}</li>
-                        <li class="list-group-item"> سیستم عامل : {{products.platform_os}}</li>
-                        <li class="list-group-item"> فناوری : {{products.technology}}</li>
+                        <li class="list-group-item">رنگ: {{product.product_color}}</li>
+                        <li class="list-group-item">{{product.bluetooth}}:دارد</li>
+                        <li class="list-group-item"> رزولوشن عکس : {{product.resolution}} مگاپیکسل</li>
+                        <li class="list-group-item"> امتیاز کاربران : {{product.product_rate}}/10</li>
+                        <li class="list-group-item">قابلیت : {{product.capability}}</li>
+                        <li class="list-group-item"> سیستم عامل : {{product.platform_os}}</li>
+                        <li class="list-group-item"> فناوری : {{product.technology}}</li>
                       </ul>
                     </div>
                   </div>

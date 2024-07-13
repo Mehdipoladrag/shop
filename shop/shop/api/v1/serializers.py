@@ -3,7 +3,9 @@ from shop.models import (
     Category, 
     Brand,
     Product,
+    Order,
 )
+from jalali_date import datetime2jalali
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -106,3 +108,20 @@ class ProductPostSerializer(serializers.ModelSerializer):
             "slug",
             "product_inf",
         ]
+
+
+class OrderSerializer(serializers.ModelSerializer): 
+    customer = serializers.SlugRelatedField(
+        slug_field= 'username',
+        read_only = True
+    )
+    order_date_jalali = serializers.SerializerMethodField()
+    class Meta: 
+        model = Order 
+        fields = [
+            "customer", 
+            "order_date",
+            "order_date_jalali",
+        ]
+    def get_order_date_jalali(self, obj):
+        return datetime2jalali(obj.order_date).strftime('%Y/%m/%d %H:%M')

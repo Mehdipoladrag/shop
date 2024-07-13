@@ -15,6 +15,10 @@ from .views import (
     ProductCreateApiView,
     ProductDetailApiView,
     ProductPutDeleteApiView,
+    # Order 
+    OrderGetApiView,
+    OrderDetailApiView,
+    OrderPutDeleteApiView,
 )
 
 
@@ -34,5 +38,8 @@ urlpatterns = [
     path("product-create/", ProductCreateApiView.as_view()),
     path("product-detail/<pk>/", ProductDetailApiView.as_view()),
     path("product-data/<pk>/", ProductPutDeleteApiView.as_view()),
-    
+    # Order Api Route 
+    path("order-list/", OrderGetApiView.as_view()),
+    path("order-detail/<pk>/", OrderDetailApiView.as_view()),
+    path("order-data/<pk>/", OrderPutDeleteApiView.as_view()),
 ]

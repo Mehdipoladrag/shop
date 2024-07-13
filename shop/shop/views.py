@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.http import Http404
 # Models
 from shop.models import (
     Product,
@@ -40,14 +40,17 @@ class ShopDetailView(DetailView):
     template_name = "shop/shopdetail.html"
     slug_url_kwarg = "slug"
 
+    def get_object(self, queryset=None):
+        try:
+            return Product.objects.get(slug=self.kwargs[self.slug_url_kwarg])
+        except Product.DoesNotExist:
+            raise Http404("Product does not exist")
+        except Product.MultipleObjectsReturned:
+            return Product.objects.filter(slug=self.kwargs[self.slug_url_kwarg]).first()
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        product_detail = self.object
-        context["products"] = product_detail
         context["cart_add_product_form"] = CartAddProductForm()
-        # context['comments'] = Comment.objects.filter(product=product_detail) slug = self.kwargs.get(self.pk_url_kwarg)
         return context
-
 
 class SearchView(View):
     def get(self, request):

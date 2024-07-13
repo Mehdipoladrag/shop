@@ -5,11 +5,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from shop.models import (
     Category,
-    Brand
+    Brand, 
+    Product
 )
 from .serializers import (
     CategorySerializer,
-    BrandSerializer
+    BrandSerializer,
+    ProductSerializer, 
+    ProductPostSerializer,
 )
 
 
@@ -26,7 +29,7 @@ class CategoryGetApiView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class CategoryCreateAPIView(CreateAPIView):
+class CategoryCreateApiView(CreateAPIView):
     """Create Api For Category With generics.CreateAPIView For Create New Category"""
 
     permission_classes = [AllowAny]
@@ -118,3 +121,24 @@ class BrandPutDeleteApiView(APIView):
         query = Brand.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Product 
+
+class ProductGetApiView(APIView):
+    """ Create Api For Product List With ApiView  """
+    
+    permission_classes = [AllowAny]
+    def get(self, request): 
+        query = Product.objects.all()
+        serializer = ProductSerializer(query, many=True)
+        data = serializer.data 
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+
+class ProductCreateApiView(CreateAPIView):
+    """ This is a Api For Create a New Product With Api """
+
+    queryset = Product.objects.all()
+    serializer_class = ProductPostSerializer
+    permission_classes = [AllowAny]

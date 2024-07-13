@@ -108,7 +108,7 @@ class Product(models.Model):
         Info, verbose_name="اطلاعیه", on_delete=models.CASCADE
     )  # اطلاعیه محصول
     pic = models.ImageField(
-        _("عکس اصلی"), upload_to="images/product/%Y/%m/%d", blank=True, null=True
+        _("عکس اصلی"), upload_to="images/product/%Y/%m/%d", 
     )  # عکس اصلی
     pic2 = models.ImageField(
         _("عکس 2"),

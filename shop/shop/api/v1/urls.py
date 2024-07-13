@@ -19,6 +19,10 @@ from .views import (
     OrderGetApiView,
     OrderDetailApiView,
     OrderPutDeleteApiView,
+    # Order Item
+    OrderItemGetApiView,
+    OrderItemDetailApiView,
+    OrderItemPutDeleteApiView,
 )
 
 
@@ -42,4 +46,8 @@ urlpatterns = [
     path("order-list/", OrderGetApiView.as_view()),
     path("order-detail/<pk>/", OrderDetailApiView.as_view()),
     path("order-data/<pk>/", OrderPutDeleteApiView.as_view()),
+    # OrderItem Api Route
+    path("orderitem-list/", OrderItemGetApiView.as_view()),
+    path("orderitem-detail/<pk>/", OrderItemDetailApiView.as_view()),
+    path("orderitem-data/<pk>/", OrderItemPutDeleteApiView.as_view()),
 ]

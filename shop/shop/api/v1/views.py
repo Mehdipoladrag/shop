@@ -7,7 +7,8 @@ from shop.models import (
     Category,
     Brand, 
     Product, 
-    Order
+    Order, 
+    OrderItem
 )
 from .serializers import (
     CategorySerializer,
@@ -15,6 +16,7 @@ from .serializers import (
     ProductSerializer, 
     ProductPostSerializer,
     OrderSerializer,
+    OrderItemSerializer, 
 )
 
 
@@ -219,5 +221,51 @@ class OrderPutDeleteApiView(APIView):
 
     def delete(self, request, pk):
         query = Order.objects.get(pk=pk)
+        query.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# OrderItem 
+
+class OrderItemGetApiView(APIView):
+    """ Create Api For OrderItem List With ApiView  """
+    
+    permission_classes = [AllowAny]
+    def get(self, request): 
+        query = OrderItem.objects.all()
+        serializer = OrderItemSerializer(query, many=True)
+        data = serializer.data 
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+
+
+class OrderItemDetailApiView(RetrieveAPIView): 
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
+
+
+class OrderItemPutDeleteApiView(APIView):
+    """ Create Updata and Delete Api For Update or Delete OrderItem """
+
+    permission_classes = [AllowAny]
+
+    def put(self, request, pk):
+        try:
+            query = OrderItem.objects.get(pk=pk)
+        except Brand.DoesNotExist:
+            return Response(
+                {"error": "OrderItem not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = OrderItemSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        query = OrderItem.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

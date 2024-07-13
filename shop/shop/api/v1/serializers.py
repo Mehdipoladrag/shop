@@ -4,6 +4,7 @@ from shop.models import (
     Brand,
     Product,
     Order,
+    OrderItem, 
 )
 from jalali_date import datetime2jalali
 
@@ -115,13 +116,37 @@ class OrderSerializer(serializers.ModelSerializer):
         slug_field= 'username',
         read_only = True
     )
-    order_date_jalali = serializers.SerializerMethodField()
+    order_persian_date = serializers.SerializerMethodField()
+    total_cost = serializers.SerializerMethodField()
     class Meta: 
         model = Order 
         fields = [
             "customer", 
             "order_date",
-            "order_date_jalali",
+            "order_persian_date",
+            "total_cost",
         ]
-    def get_order_date_jalali(self, obj):
+    def get_order_persian_date(self, obj):
         return datetime2jalali(obj.order_date).strftime('%Y/%m/%d %H:%M')
+    
+    def get_total_cost(self, obj):
+        order_items = obj.orderitem_set.all()
+        total = sum(item.product_cost for item in order_items)  
+        return '{:,.0f}'.format(total)
+
+class OrderItemSerializer(serializers.ModelSerializer): 
+    order = OrderSerializer()
+    product = serializers.SlugRelatedField(
+        slug_field='product_name',
+        read_only= True, 
+    )
+    class Meta: 
+        model = OrderItem
+        fields = [
+            "order", 
+            "product",
+            "product_price", 
+            "product_count", 
+            "product_cost",
+            "discounted_price",
+        ]

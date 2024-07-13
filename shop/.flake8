@@ -2,6 +2,7 @@
 exclude = 
   .git, 
   .gitignore,
+  .dockerignore,
   env, 
   .venv, 
   __pycache__, 

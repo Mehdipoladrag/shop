@@ -13,6 +13,8 @@ from .views import (
     # product 
     ProductGetApiView,
     ProductCreateApiView,
+    ProductDetailApiView,
+    ProductPutDeleteApiView,
 )
 
 
@@ -30,5 +32,7 @@ urlpatterns = [
     # Product Api Route 
     path("product-list/", ProductGetApiView.as_view()),
     path("product-create/", ProductCreateApiView.as_view()),
-
+    path("product-detail/<pk>/", ProductDetailApiView.as_view()),
+    path("product-data/<pk>/", ProductPutDeleteApiView.as_view()),
+    
 ]

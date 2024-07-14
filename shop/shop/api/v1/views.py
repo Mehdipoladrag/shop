@@ -10,7 +10,7 @@ from shop.models import (
     Order, 
     OrderItem, 
     Invoice,
-    Transaction
+    Transaction,
 )
 from .serializers import (
     CategorySerializer,
@@ -316,5 +316,51 @@ class InvoicePutDeleteApiView(APIView):
 
     def delete(self, request, pk):
         query = Invoice.objects.get(pk=pk)
+        query.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# Transaction 
+
+class TransactionGetApiView(APIView):
+    """ Create Api For Transaction List With ApiView  """
+    
+    permission_classes = [AllowAny]
+    def get(self, request): 
+        query = Transaction.objects.all()
+        serializer = TransactionSerializer(query, many=True)
+        data = serializer.data 
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+
+
+class TransactionDetailApiView(RetrieveAPIView): 
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
+
+
+class TransactionPutDeleteApiView(APIView):
+    """ Create Updata and Delete Api For Update or Delete Transaction """
+
+    permission_classes = [AllowAny]
+
+    def put(self, request, pk):
+        try:
+            query = Transaction.objects.get(pk=pk)
+        except Brand.DoesNotExist:
+            return Response(
+                {"error": "Transaction not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = TransactionSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        query = Transaction.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

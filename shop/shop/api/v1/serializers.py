@@ -183,23 +183,20 @@ class InvoiceSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer): 
     """ Serializer For Transaction """
     
-    invoice = serializers.SlugRelatedField(
-        slug_field= 'invoice',
-        read_only=True,
-    )
+    invoice =InvoiceSerializer()
     STATUS_CHOICE = (
         ("pending", "انتظار"),
         ("failed", "ناموفق"),
         ("completed", "تکمیل شده"),
     )
-    pending = serializers.ChoiceField(choices=STATUS_CHOICE)
+    status = serializers.ChoiceField(choices=STATUS_CHOICE)
     transaction_date_persian = serializers.SerializerMethodField()
     
     class Meta: 
         model = Transaction 
         fields = [
             "invoice", 
-            "pending", 
+            "status", 
             "transaction_date_persian", 
             "amount", 
         ]

@@ -27,6 +27,11 @@ from .views import (
     InvoiceGetApiView,
     InvoiceDetailApiView,
     InvoicePutDeleteApiView,
+    # Transaction
+    TransactionGetApiView,
+    TransactionDetailApiView,
+    TransactionPutDeleteApiView,
+
 )
 
 
@@ -58,4 +63,8 @@ urlpatterns = [
     path("invoice-list/", InvoiceGetApiView.as_view()),
     path("invoice-detail/<pk>/", InvoiceDetailApiView.as_view()),
     path("invoice-data/<pk>/", InvoicePutDeleteApiView.as_view()),
+    # Transaction Api Route 
+    path("transaction-list/", TransactionGetApiView.as_view()),
+    path("transaction-detail/<pk>/", TransactionDetailApiView.as_view()),
+    path("transaction-data/<pk>/", TransactionPutDeleteApiView.as_view()),
 ]

@@ -8,7 +8,9 @@ from shop.models import (
     Brand, 
     Product, 
     Order, 
-    OrderItem
+    OrderItem, 
+    Invoice,
+    Transaction
 )
 from .serializers import (
     CategorySerializer,
@@ -17,6 +19,8 @@ from .serializers import (
     ProductPostSerializer,
     OrderSerializer,
     OrderItemSerializer, 
+    InvoiceSerializer,
+    TransactionSerializer,
 )
 
 
@@ -267,5 +271,50 @@ class OrderItemPutDeleteApiView(APIView):
 
     def delete(self, request, pk):
         query = OrderItem.objects.get(pk=pk)
+        query.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# Invoice 
+class InvoiceGetApiView(APIView):
+    """ Create Api For Invoice List With ApiView  """
+    
+    permission_classes = [AllowAny]
+    def get(self, request): 
+        query = Invoice.objects.all()
+        serializer = InvoiceSerializer(query, many=True)
+        data = serializer.data 
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+
+
+class InvoiceDetailApiView(RetrieveAPIView): 
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
+
+
+class InvoicePutDeleteApiView(APIView):
+    """ Create Updata and Delete Api For Update or Delete Invoice """
+
+    permission_classes = [AllowAny]
+
+    def put(self, request, pk):
+        try:
+            query = Invoice.objects.get(pk=pk)
+        except Brand.DoesNotExist:
+            return Response(
+                {"error": "Invoice not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = InvoiceSerializer(query, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        query = Invoice.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

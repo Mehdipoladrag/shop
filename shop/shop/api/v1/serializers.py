@@ -5,6 +5,8 @@ from shop.models import (
     Product,
     Order,
     OrderItem, 
+    Invoice, 
+    Transaction,
 )
 from jalali_date import datetime2jalali
 
@@ -44,6 +46,8 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """ Serializer For Product """
+
     product_category = serializers.StringRelatedField()
     product_brand = serializers.StringRelatedField()
     
@@ -81,6 +85,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductPostSerializer(serializers.ModelSerializer): 
+    """ Serializer For Create A New Product """
+
     product_category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all()),
     product_brand = serializers.PrimaryKeyRelatedField(queryset=Brand.objects.all()),
     pic = serializers.ImageField(required = True)
@@ -112,6 +118,8 @@ class ProductPostSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer): 
+    """ Serializer For Order"""
+
     customer = serializers.SlugRelatedField(
         slug_field= 'username',
         read_only = True
@@ -135,6 +143,9 @@ class OrderSerializer(serializers.ModelSerializer):
         return '{:,.0f}'.format(total)
 
 class OrderItemSerializer(serializers.ModelSerializer): 
+    """ Nested Serializer For OrderItems """
+
+
     order = OrderSerializer()
     product = serializers.SlugRelatedField(
         slug_field='product_name',
@@ -150,3 +161,47 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "product_cost",
             "discounted_price",
         ]
+
+class InvoiceSerializer(serializers.ModelSerializer): 
+    """ Nested Serializer For Invoice """
+
+    order = OrderSerializer()
+    invoice_date_persian = serializers.SerializerMethodField()
+    
+    class Meta: 
+        model = Invoice 
+        fields = [
+            "order",
+            "invoice_date_persian", 
+            "authority",
+        ]
+    
+    def get_invoice_date_persian(self, obj):
+        return datetime2jalali(obj.invoice_date).strftime('%Y/%m/%d %H:%M')
+
+
+class TransactionSerializer(serializers.ModelSerializer): 
+    """ Serializer For Transaction """
+    
+    invoice = serializers.SlugRelatedField(
+        slug_field= 'invoice',
+        read_only=True,
+    )
+    STATUS_CHOICE = (
+        ("pending", "انتظار"),
+        ("failed", "ناموفق"),
+        ("completed", "تکمیل شده"),
+    )
+    pending = serializers.ChoiceField(choices=STATUS_CHOICE)
+    transaction_date_persian = serializers.SerializerMethodField()
+    
+    class Meta: 
+        model = Transaction 
+        fields = [
+            "invoice", 
+            "pending", 
+            "transaction_date_persian", 
+            "amount", 
+        ]
+    def get_transaction_date_persian(self, obj): 
+        return datetime2jalali(obj.transaction_date).strftime('%Y/%m/%d %H:%M')

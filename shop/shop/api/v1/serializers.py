@@ -1,18 +1,19 @@
 from rest_framework import serializers
 from shop.models import (
-    Category, 
+    Category,
     Brand,
     Product,
     Order,
-    OrderItem, 
-    Invoice, 
+    OrderItem,
+    Invoice,
     Transaction,
 )
 from jalali_date import datetime2jalali
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """ Serializer For Category And Images """
+    """Serializer For Category And Images"""
+
     category_pic = serializers.ImageField()
 
     class Meta:
@@ -26,35 +27,29 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
 
 
-class BrandSerializer(serializers.ModelSerializer): 
-    """ Serializer For Brand And Images """
+class BrandSerializer(serializers.ModelSerializer):
+    """Serializer For Brand And Images"""
+
     brand_pic = serializers.ImageField()
     category_brand = serializers.SlugRelatedField(
-        many=True,
-        slug_field='category_name',
-        queryset=Category.objects.all()
+        many=True, slug_field="category_name", queryset=Category.objects.all()
     )
+
     class Meta:
-        model = Brand 
-        fields = [
-            "id",
-            "brand_name", 
-            "category_brand", 
-            "brand_code", 
-            "brand_pic"
-        ]
+        model = Brand
+        fields = ["id", "brand_name", "category_brand", "brand_code", "brand_pic"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    """ Serializer For Product """
+    """Serializer For Product"""
 
     product_category = serializers.StringRelatedField()
     product_brand = serializers.StringRelatedField()
-    
-    class Meta: 
+
+    class Meta:
         model = Product
         fields = [
-            "product_code", 
+            "product_code",
             "product_name",
             "product_category",
             "product_brand",
@@ -63,16 +58,16 @@ class ProductSerializer(serializers.ModelSerializer):
             "resolution",
             "technology",
             "platform_os",
-            "bluetooth",   
+            "bluetooth",
             "product_rate",
             "specifications",
             "mini_description",
             "product_description",
             "price",
-            "offer", 
+            "offer",
             "time_send",
             "product_offer",
-            "product_inf", 
+            "product_inf",
             "pic",
             "pic2",
             "pic3",
@@ -84,106 +79,110 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
 
-class ProductPostSerializer(serializers.ModelSerializer): 
-    """ Serializer For Create A New Product """
+class ProductPostSerializer(serializers.ModelSerializer):
+    """Serializer For Create A New Product"""
 
-    product_category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all()),
-    product_brand = serializers.PrimaryKeyRelatedField(queryset=Brand.objects.all()),
-    pic = serializers.ImageField(required = True)
-    class Meta: 
+    product_category = (
+        serializers.PrimaryKeyRelatedField(queryset=Category.objects.all()),
+    )
+    product_brand = (serializers.PrimaryKeyRelatedField(queryset=Brand.objects.all()),)
+    pic = serializers.ImageField(required=True)
+
+    class Meta:
         model = Product
         fields = [
             "product_code",
-            "product_name", 
-            "product_color", 
+            "product_name",
+            "product_color",
             "product_category",
             "product_brand",
-            "product_number", 
+            "product_number",
             "capability",
-            "resolution", 
+            "resolution",
             "technology",
             "platform_os",
             "bluetooth",
             "product_rate",
-            "specifications", 
-            "product_description", 
-            "mini_description", 
-            "price", 
+            "specifications",
+            "product_description",
+            "mini_description",
+            "price",
             "offer",
-            "time_send", 
-            "pic", 
+            "time_send",
+            "pic",
             "slug",
             "product_inf",
         ]
 
 
-class OrderSerializer(serializers.ModelSerializer): 
-    """ Serializer For Order"""
+class OrderSerializer(serializers.ModelSerializer):
+    """Serializer For Order"""
 
-    customer = serializers.SlugRelatedField(
-        slug_field= 'username',
-        read_only = True
-    )
+    customer = serializers.SlugRelatedField(slug_field="username", read_only=True)
     order_persian_date = serializers.SerializerMethodField()
     total_cost = serializers.SerializerMethodField()
-    class Meta: 
-        model = Order 
+
+    class Meta:
+        model = Order
         fields = [
-            "customer", 
+            "customer",
             "order_date",
             "order_persian_date",
             "total_cost",
         ]
+
     def get_order_persian_date(self, obj):
-        return datetime2jalali(obj.order_date).strftime('%Y/%m/%d %H:%M')
-    
+        return datetime2jalali(obj.order_date).strftime("%Y/%m/%d %H:%M")
+
     def get_total_cost(self, obj):
         order_items = obj.orderitem_set.all()
-        total = sum(item.product_cost for item in order_items)  
-        return '{:,.0f}'.format(total)
+        total = sum(item.product_cost for item in order_items)
+        return "{:,.0f}".format(total)
 
-class OrderItemSerializer(serializers.ModelSerializer): 
-    """ Nested Serializer For OrderItems """
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    """Nested Serializer For OrderItems"""
 
     order = OrderSerializer()
     product = serializers.SlugRelatedField(
-        slug_field='product_name',
-        read_only= True, 
+        slug_field="product_name",
+        read_only=True,
     )
-    class Meta: 
+
+    class Meta:
         model = OrderItem
         fields = [
-            "order", 
+            "order",
             "product",
-            "product_price", 
-            "product_count", 
+            "product_price",
+            "product_count",
             "product_cost",
             "discounted_price",
         ]
 
-class InvoiceSerializer(serializers.ModelSerializer): 
-    """ Nested Serializer For Invoice """
+
+class InvoiceSerializer(serializers.ModelSerializer):
+    """Nested Serializer For Invoice"""
 
     order = OrderSerializer()
     invoice_date_persian = serializers.SerializerMethodField()
-    
-    class Meta: 
-        model = Invoice 
+
+    class Meta:
+        model = Invoice
         fields = [
             "order",
-            "invoice_date_persian", 
+            "invoice_date_persian",
             "authority",
         ]
-    
+
     def get_invoice_date_persian(self, obj):
-        return datetime2jalali(obj.invoice_date).strftime('%Y/%m/%d %H:%M')
+        return datetime2jalali(obj.invoice_date).strftime("%Y/%m/%d %H:%M")
 
 
-class TransactionSerializer(serializers.ModelSerializer): 
-    """ Serializer For Transaction """
-    
-    invoice =InvoiceSerializer()
+class TransactionSerializer(serializers.ModelSerializer):
+    """Serializer For Transaction"""
+
+    invoice = InvoiceSerializer()
     STATUS_CHOICE = (
         ("pending", "انتظار"),
         ("failed", "ناموفق"),
@@ -191,14 +190,15 @@ class TransactionSerializer(serializers.ModelSerializer):
     )
     status = serializers.ChoiceField(choices=STATUS_CHOICE)
     transaction_date_persian = serializers.SerializerMethodField()
-    
-    class Meta: 
-        model = Transaction 
+
+    class Meta:
+        model = Transaction
         fields = [
-            "invoice", 
-            "status", 
-            "transaction_date_persian", 
-            "amount", 
+            "invoice",
+            "status",
+            "transaction_date_persian",
+            "amount",
         ]
-    def get_transaction_date_persian(self, obj): 
-        return datetime2jalali(obj.transaction_date).strftime('%Y/%m/%d %H:%M')
+
+    def get_transaction_date_persian(self, obj):
+        return datetime2jalali(obj.transaction_date).strftime("%Y/%m/%d %H:%M")

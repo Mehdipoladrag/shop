@@ -5,20 +5,20 @@ from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from shop.models import (
     Category,
-    Brand, 
-    Product, 
-    Order, 
-    OrderItem, 
+    Brand,
+    Product,
+    Order,
+    OrderItem,
     Invoice,
     Transaction,
 )
 from .serializers import (
     CategorySerializer,
     BrandSerializer,
-    ProductSerializer, 
+    ProductSerializer,
     ProductPostSerializer,
     OrderSerializer,
-    OrderItemSerializer, 
+    OrderItemSerializer,
     InvoiceSerializer,
     TransactionSerializer,
 )
@@ -89,13 +89,12 @@ class BrandGetApiView(APIView):
         serializer = BrandSerializer(query, many=True)
         data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
-    
 
-class BrandCreateApiView(CreateAPIView): 
+
+class BrandCreateApiView(CreateAPIView):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
     permission_classes = [AllowAny]
-
 
 
 class BrandDetailApiView(RetrieveAPIView):
@@ -130,38 +129,39 @@ class BrandPutDeleteApiView(APIView):
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# Product 
+
+# Product
+
 
 class ProductGetApiView(APIView):
-    """ Create Api For Product List With ApiView  """
-    
+    """Create Api For Product List With ApiView"""
+
     permission_classes = [AllowAny]
-    def get(self, request): 
+
+    def get(self, request):
         query = Product.objects.all()
         serializer = ProductSerializer(query, many=True)
-        data = serializer.data 
+        data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
-    
 
 
 class ProductCreateApiView(CreateAPIView):
-    """ This is a Api For Create a New Product With Api """
+    """This is a Api For Create a New Product With Api"""
 
     queryset = Product.objects.all()
     serializer_class = ProductPostSerializer
     permission_classes = [AllowAny]
 
 
-
-class ProductDetailApiView(RetrieveAPIView): 
+class ProductDetailApiView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
 
 class ProductPutDeleteApiView(APIView):
-    """ Create Updata and Delete Api For Update or Delete Product """
+    """Create Updata and Delete Api For Update or Delete Product"""
 
     permission_classes = [AllowAny]
 
@@ -182,31 +182,30 @@ class ProductPutDeleteApiView(APIView):
         query = Product.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
 
 # Order
 class OrderGetApiView(APIView):
-    """ Create Api For Order List With ApiView  """
-    
+    """Create Api For Order List With ApiView"""
+
     permission_classes = [AllowAny]
-    def get(self, request): 
+
+    def get(self, request):
         query = Order.objects.all()
         serializer = OrderSerializer(query, many=True)
-        data = serializer.data 
+        data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
-    
 
 
-
-class OrderDetailApiView(RetrieveAPIView): 
+class OrderDetailApiView(RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [AllowAny]
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
 
 class OrderPutDeleteApiView(APIView):
-    """ Create Updata and Delete Api For Update or Delete Order """
+    """Create Updata and Delete Api For Update or Delete Order"""
 
     permission_classes = [AllowAny]
 
@@ -227,32 +226,32 @@ class OrderPutDeleteApiView(APIView):
         query = Order.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
-# OrderItem 
+
+# OrderItem
+
 
 class OrderItemGetApiView(APIView):
-    """ Create Api For OrderItem List With ApiView  """
-    
+    """Create Api For OrderItem List With ApiView"""
+
     permission_classes = [AllowAny]
-    def get(self, request): 
+
+    def get(self, request):
         query = OrderItem.objects.all()
         serializer = OrderItemSerializer(query, many=True)
-        data = serializer.data 
+        data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
-    
 
 
-
-class OrderItemDetailApiView(RetrieveAPIView): 
+class OrderItemDetailApiView(RetrieveAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
     permission_classes = [AllowAny]
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
 
 class OrderItemPutDeleteApiView(APIView):
-    """ Create Updata and Delete Api For Update or Delete OrderItem """
+    """Create Updata and Delete Api For Update or Delete OrderItem"""
 
     permission_classes = [AllowAny]
 
@@ -273,31 +272,30 @@ class OrderItemPutDeleteApiView(APIView):
         query = OrderItem.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
-# Invoice 
+
+# Invoice
 class InvoiceGetApiView(APIView):
-    """ Create Api For Invoice List With ApiView  """
-    
+    """Create Api For Invoice List With ApiView"""
+
     permission_classes = [AllowAny]
-    def get(self, request): 
+
+    def get(self, request):
         query = Invoice.objects.all()
         serializer = InvoiceSerializer(query, many=True)
-        data = serializer.data 
+        data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
-    
 
 
-
-class InvoiceDetailApiView(RetrieveAPIView): 
+class InvoiceDetailApiView(RetrieveAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = [AllowAny]
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
 
 class InvoicePutDeleteApiView(APIView):
-    """ Create Updata and Delete Api For Update or Delete Invoice """
+    """Create Updata and Delete Api For Update or Delete Invoice"""
 
     permission_classes = [AllowAny]
 
@@ -318,32 +316,32 @@ class InvoicePutDeleteApiView(APIView):
         query = Invoice.objects.get(pk=pk)
         query.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
-# Transaction 
+
+# Transaction
+
 
 class TransactionGetApiView(APIView):
-    """ Create Api For Transaction List With ApiView  """
-    
+    """Create Api For Transaction List With ApiView"""
+
     permission_classes = [AllowAny]
-    def get(self, request): 
+
+    def get(self, request):
         query = Transaction.objects.all()
         serializer = TransactionSerializer(query, many=True)
-        data = serializer.data 
+        data = serializer.data
         return Response(data, status=status.HTTP_200_OK)
-    
 
 
-
-class TransactionDetailApiView(RetrieveAPIView): 
+class TransactionDetailApiView(RetrieveAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = [AllowAny]
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
 
 class TransactionPutDeleteApiView(APIView):
-    """ Create Updata and Delete Api For Update or Delete Transaction """
+    """Create Updata and Delete Api For Update or Delete Transaction"""
 
     permission_classes = [AllowAny]
 

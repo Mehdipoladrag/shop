@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
+
 # Models
 from shop.models import (
     Product,
@@ -47,10 +48,12 @@ class ShopDetailView(DetailView):
             raise Http404("Product does not exist")
         except Product.MultipleObjectsReturned:
             return Product.objects.filter(slug=self.kwargs[self.slug_url_kwarg]).first()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["cart_add_product_form"] = CartAddProductForm()
         return context
+
 
 class SearchView(View):
     def get(self, request):

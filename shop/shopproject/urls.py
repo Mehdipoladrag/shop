@@ -18,7 +18,6 @@ schema_view = get_schema_view(
         description="This is a Massay Api page",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="mehdipoladrag1382@gmail.com"),
-        license=openapi.License(name="BSD License"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),

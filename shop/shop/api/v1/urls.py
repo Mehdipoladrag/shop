@@ -6,16 +6,16 @@ from .views import (
     CategoryCreateApiView,
     CategoryDetailApiView,
     # Brand
-    BrandGetApiView, 
-    BrandCreateApiView, 
+    BrandGetApiView,
+    BrandCreateApiView,
     BrandDetailApiView,
     BrandPutDeleteApiView,
-    # product 
+    # product
     ProductGetApiView,
     ProductCreateApiView,
     ProductDetailApiView,
     ProductPutDeleteApiView,
-    # Order 
+    # Order
     OrderGetApiView,
     OrderDetailApiView,
     OrderPutDeleteApiView,
@@ -23,7 +23,7 @@ from .views import (
     OrderItemGetApiView,
     OrderItemDetailApiView,
     OrderItemPutDeleteApiView,
-    # Invoice 
+    # Invoice
     InvoiceGetApiView,
     InvoiceDetailApiView,
     InvoicePutDeleteApiView,
@@ -31,12 +31,11 @@ from .views import (
     TransactionGetApiView,
     TransactionDetailApiView,
     TransactionPutDeleteApiView,
-
 )
 
 
 urlpatterns = [
-    # Category Api Route 
+    # Category Api Route
     path("category-list/", CategoryGetApiView.as_view()),
     path("category-create/", CategoryCreateApiView.as_view()),
     path("category-detail/<pk>/", CategoryDetailApiView.as_view()),
@@ -46,12 +45,12 @@ urlpatterns = [
     path("brand-create/", BrandCreateApiView.as_view()),
     path("brand-detail/<pk>/", BrandDetailApiView.as_view()),
     path("brand-data/<pk>/", BrandPutDeleteApiView.as_view()),
-    # Product Api Route 
+    # Product Api Route
     path("product-list/", ProductGetApiView.as_view()),
     path("product-create/", ProductCreateApiView.as_view()),
     path("product-detail/<pk>/", ProductDetailApiView.as_view()),
     path("product-data/<pk>/", ProductPutDeleteApiView.as_view()),
-    # Order Api Route 
+    # Order Api Route
     path("order-list/", OrderGetApiView.as_view()),
     path("order-detail/<pk>/", OrderDetailApiView.as_view()),
     path("order-data/<pk>/", OrderPutDeleteApiView.as_view()),
@@ -59,11 +58,11 @@ urlpatterns = [
     path("orderitem-list/", OrderItemGetApiView.as_view()),
     path("orderitem-detail/<pk>/", OrderItemDetailApiView.as_view()),
     path("orderitem-data/<pk>/", OrderItemPutDeleteApiView.as_view()),
-    # Invoice Api Route 
+    # Invoice Api Route
     path("invoice-list/", InvoiceGetApiView.as_view()),
     path("invoice-detail/<pk>/", InvoiceDetailApiView.as_view()),
     path("invoice-data/<pk>/", InvoicePutDeleteApiView.as_view()),
-    # Transaction Api Route 
+    # Transaction Api Route
     path("transaction-list/", TransactionGetApiView.as_view()),
     path("transaction-detail/<pk>/", TransactionDetailApiView.as_view()),
     path("transaction-data/<pk>/", TransactionPutDeleteApiView.as_view()),

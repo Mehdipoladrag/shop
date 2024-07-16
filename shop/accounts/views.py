@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,11 +8,8 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import Http404
 from django.contrib.auth import views as auth_views
-
-# Model
 from accounts.models import CustomProfileModel
-
-# Form
+from django.core.cache import cache
 from accounts.forms import (
     UserRegisterForm,
     UserLoginForm,
@@ -20,12 +17,9 @@ from accounts.forms import (
     UserChangePassForm,
     CustomUserForm,
 )
-
-# Permissions
-#
 from shop.models import Order
 
-#
+
 
 
 # Create your views here.
@@ -58,15 +52,17 @@ class LoginUserView(LoginView):
     template_name = "accounts/login.html"
     form_class = UserLoginForm
     success_message = "با موفقیت وارد شدید"
-
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, self.success_message)
         user = form.get_user()
         if not CustomProfileModel.objects.filter(user=user).exists():
             CustomProfileModel.objects.create(user=user)
-        return response
+        self.request.session['user_id'] = user.id
+        self.request.session['username'] = user.username
+        self.request.session['email'] = user.email
 
+        return response
     def get_success_url(self):
         return reverse("home:home1")
 
@@ -75,12 +71,22 @@ class LoginUserView(LoginView):
 class UserLogOutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
+        self.request.session.flush()
         return redirect("accounts:signin1")
 
 
 # UpdateInformation
 class UserProfileView(LoginRequiredMixin, View):
 
+    """
+        View to display and manage the user's profile.
+        This view checks for the user's profile 
+        data in the cache to reduce
+        database load and improve response time. 
+        If the profile data is not
+        found in the cache, it retrieves the data from the database, 
+        caches it,and then returns the data.
+    """
     template_name = "accounts/profile.html"
     login_required = True
 
@@ -89,16 +95,39 @@ class UserProfileView(LoginRequiredMixin, View):
             profile = CustomProfileModel.objects.get(user=request.user)
         except CustomProfileModel.DoesNotExist:
             raise Http404("مشخصات کاربری پیدا نشد.")
+
+        cacheKey = f"user_profile_{request.user.id}"
+        cachedProfile = cache.get(cacheKey)
+
+        if not cachedProfile:
+            profileData = {
+                'national_code': profile.national_code,
+                'address': profile.address,
+                'zipcode': profile.zipcode,
+                'street': profile.street,
+                'city': profile.city,
+                'mobile': profile.mobile,
+                'age': profile.age,
+                'gender': profile.get_gender_display(),
+                'card_number': profile.card_number,
+                'iban': profile.iban,
+                'back_money': profile.back_money,
+                'customer_image': profile.customer_image.url if profile.customer_image else None,
+                'is_complete': profile.is_complete,
+            }
+            cache.set(cacheKey, profileData, timeout=300)
+            cachedProfile = profileData
+
         context = {
-            "profile": profile,
+            "profile": cachedProfile,
         }
+
         return render(request, self.template_name, context)
-
-
+    
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """
-    The task of this class is to allow the
-    user to record or even edit personal information
+        The task of this class is to allow the
+        user to record or even edit personal information
     """
 
     template_name = "accounts/updateuser.html"

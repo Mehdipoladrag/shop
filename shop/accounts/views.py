@@ -178,6 +178,9 @@ class UserAddressView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         user_info_address = CustomProfileModel.objects.get(user_id=user)
+        cache_key = f"user_address_{user.id}"
+        cache.get(cache_key)
+        cache.set(cache_key, user_info_address, timeout=3000)
         context = {
             "profile": user_info_address,
         }
@@ -196,6 +199,9 @@ class UserOrderView(View):
         orders = Order.objects.filter(customer=user).prefetch_related(
             "orderitem_set__product"
         )
+        cache_key = f"user_order_{user.id}"
+        cache.get(cache_key)
+        cache.set(cache_key, orders, timeout=3000)
         user_info_address = CustomProfileModel.objects.get(user_id=user)
         context = {
             "orders": orders,

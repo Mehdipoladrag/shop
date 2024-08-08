@@ -71,7 +71,6 @@ class UserRegisterForm(UserCreationForm):
         error_messages={"required": "لطفاً این فیلد را پر کنید"},
     )
     password2 = forms.CharField(
-        # validators=[UserRegisterValidators.validate_password2],
         max_length=25,
         label="تکرار رمز عبور",
         widget=forms.PasswordInput(
@@ -85,8 +84,20 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "first_name", "last_name", "password1")
+        fields = ("username", "email", "first_name", "last_name", "password1", "password2")
 
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        if len(password1) < 8:
+            raise forms.ValidationError("رمز عبور باید حداقل ۸ کاراکتر باشد.")
+        return password1
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("رمزهای عبور مطابقت ندارند.")
+        return password2
 
 # LoginForm
 class UserLoginForm(AuthenticationForm):

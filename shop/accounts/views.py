@@ -18,7 +18,7 @@ from accounts.forms import (
     CustomUserForm,
 )
 from shop.models import Order
-
+import json 
 
 
 
@@ -70,25 +70,18 @@ class LoginUserView(LoginView):
 # LogOut
 class UserLogOutView(View):
     def get(self, request, *args, **kwargs):
+        user_id = request.user.id if request.user.is_authenticated else None
+
         logout(request)
         self.request.session.flush()
-        return redirect("accounts:signin1")
 
+        if user_id:
+            cache_key = f"user_profile_{user_id}"
+            cache.delete(cache_key)
 
 # UpdateInformation
 class UserProfileView(LoginRequiredMixin, View):
-
-    """
-        View to display and manage the user's profile.
-        This view checks for the user's profile 
-        data in the cache to reduce
-        database load and improve response time. 
-        If the profile data is not
-        found in the cache, it retrieves the data from the database, 
-        caches it,and then returns the data.
-    """
     template_name = "accounts/profile.html"
-    login_required = True
 
     def get(self, request, *args, **kwargs):
         try:
@@ -101,6 +94,12 @@ class UserProfileView(LoginRequiredMixin, View):
 
         if not cachedProfile:
             profileData = {
+                'user': {
+                    'first_name': profile.user.first_name,
+                    'last_name': profile.user.last_name,
+                    'email': profile.user.email,
+                    'username': profile.user.username,
+                },
                 'national_code': profile.national_code,
                 'address': profile.address,
                 'zipcode': profile.zipcode,
@@ -121,15 +120,10 @@ class UserProfileView(LoginRequiredMixin, View):
         context = {
             "profile": cachedProfile,
         }
-
         return render(request, self.template_name, context)
     
-class ProfileUpdateView(LoginRequiredMixin, UpdateView):
-    """
-        The task of this class is to allow the
-        user to record or even edit personal information
-    """
 
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "accounts/updateuser.html"
     success_url = reverse_lazy("accounts:profile1")
 
@@ -152,6 +146,10 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             profile_instance = profile_form.save(commit=False)
             profile_instance.is_complete = True
             profile_instance.save()
+            
+            cacheKey = f"user_profile_{request.user.id}"
+            cache.delete(cacheKey)
+            
             messages.success(request, "اطلاعات شما با موفقیت ذخیره شد")
             return redirect(self.success_url)
         else:
@@ -160,7 +158,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
                 self.template_name,
                 {"user_form": user_form, "profile_form": profile_form},
             )
-
 
 class UserChangePasswordView(LoginRequiredMixin, auth_views.PasswordChangeView):
     """

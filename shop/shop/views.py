@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
-
 # Models
 from shop.models import (
     Product,

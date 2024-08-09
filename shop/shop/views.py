@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
+from django.core.cache import cache
 # Models
 from shop.models import (
     Product,
@@ -59,17 +60,26 @@ class SearchView(View):
         brands = Brand.objects.all()
         products2 = Product.objects.all()
         q = request.GET.get("q")
-        if q:
-            products = Product.objects.filter(Q(product_name__icontains=q))
-            context = {
-                "q": q,
-                "products": products,
-                "products2": products2,
-                "brands": brands,
-            }
-            return render(request, "shop/search.html", context)
-        return render(request, "shop/search.html")
+        cache_key = f"product_search_{q}"
+        products = cache.get(cache_key)
 
+        if not products:
+            if q:
+                try:
+                    products = Product.objects.filter(Q(product_name__icontains=q))
+                    cache.set(cache_key, products, timeout=3000)
+                except Exception as e:
+                    return Http404(f'Error: {e}')
+            else:
+                products = Product.objects.none()
+
+        context = {
+            "q": q,
+            "products": products,
+            "products2": products2,
+            "brands": brands,
+        }
+        return render(request, "shop/search.html", context)
 
 class CategoryListView(ListView):
     model = Product
@@ -172,57 +182,4 @@ class CheckOutView(LoginRequiredMixin, View):
             )
 
         return render(request, "shop/checkout.html", {"cart": cart})
-
-
-@login_required
-def checkout(request):
-    cart = Cart(request)
-    if not cart:
-        return render(request, "cart/emptycart.html")
-
-    order = None
-    order_total_cost = Decimal("0")
-    order_items = []  # لیستی برای ذخیره آیتم‌های سفارش
-
-    if request.method == "POST":
-        order = Order.objects.create(customer=request.user)
-        invoice = Invoice.objects.create(order=order, invoice_date=timezone.now())
-
-        for item in cart:
-            product = item["product"]
-            product_count = item["product_count"]
-            product_price = item["price"]
-            discounted_price = item["discounted_price"]
-
-            product_cost = Decimal(product_count) * Decimal(discounted_price)
-            item["cost"] = product_cost
-            order_total_cost += product_cost
-
-            order_items.append(
-                OrderItem(
-                    order=order,
-                    customer=request.user,
-                    product=product,
-                    product_price=product_price,
-                    product_count=product_count,
-                    product_cost=product_cost,
-                )
-            )
-
-        Transaction.objects.create(
-            invoice=invoice,
-            transaction_date=timezone.now(),
-            amount=order_total_cost,
-            status="pending",
-        )
-
-        OrderItem.objects.bulk_create(order_items)  # ایجاد همه آیتم‌های سفارش در یک بار
-
-        cart.clear()
-        return render(
-            request,
-            "shop/final_payment.html",
-            {"order": order, "total_cost": order_total_cost},
-        )
-
-    return render(request, "shop/checkout.html", {"cart": cart})
+    

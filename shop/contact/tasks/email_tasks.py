@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@shared_task(name="delete expired messages")
+@shared_task(name="Delete expired messages")
 def delete_expired_messages():
     """
     This is a task to delete redundant messages from the database

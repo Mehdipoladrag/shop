@@ -1,12 +1,18 @@
 
 <p align="center">
   <a>
-    <img src="https://skillicons.dev/icons?i=python,django,postgresql,docker,rabbitmq,postman,css,js,html&=3" />
+    <img src="https://skillicons.dev/icons?i=python,django,postgresql,redis,docker,rabbitmq,postman,css,js,html&=3" />
   </a>
 </p>
 <p align="center">
+  <a href="mailto:mehdipoladrag1382@gmail.com">
+    <img src="https://skillicons.dev/icons?i=gmail&=1" />
+  </a>
   <a href="https://www.linkedin.com/in/mehdi-poladrag">
     <img src="https://skillicons.dev/icons?i=linkedin&=1" />
+  </a>
+  <a href="https://instagram.com/mehdipoladrag">
+    <img src="https://skillicons.dev/icons?i=instagram&=1" />
   </a>
 </p>
 
@@ -74,21 +80,23 @@ A separate folder named api/v1/ has been created for each app, categorizing all 
 #### Database Section
 I have created a separate panel from Docker Hub for this project, making the database accessible on a completely separate port but with restricted access.
 
-
+### Celery Section 
+Use Celery to manage the database, allowing us to handle and clean up excess data efficiently. Celery Beat helps us schedule tasks, enabling time-based management of these tasks. Specifically, we add the necessary arguments for a task through the admin panel, and the task is executed automatically. The results of the task can be monitored using the Flower tool. In summary, we utilize Celery for effective database management.
 
 ## Technologies
 Project is created with:
 * Python,Django,DjangoRest,CeleryBeat,Celery,Jwt
-* Postgresql,Pgadmin,RabbitMq,Flower
+* Postgresql,Pgadmin,Redis,RabbitMq,Flower
 * Docker,Postman
 * Html,Css,Js
+* Swagger,flake8
 
 
 
 ## Refrence
-* See Django  [Reference](https://www.djangoproject.com/).
-* See Django RestFramework [Reference](https://www.django-rest-framework.org/).
-* See Celery Beat [Reference](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html).
+* See Django  [Reference](https://www.djangoproject.com/)
+* See Django RestFramework [Reference](https://www.django-rest-framework.org/)
+* See Celery Beat [Reference](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html)
 * See DockerHub [Refernce](https://hub.docker.com/) 
 
 

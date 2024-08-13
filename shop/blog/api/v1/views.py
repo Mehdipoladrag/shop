@@ -4,10 +4,10 @@ from blog.models import Blogs, Category_blog, Visitor
 from .serializers import BlogsSerializer, CategoryBlogSerializer, VisitorSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 # Blog API
-
-
+ 
 class BloglistMixinView(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
@@ -35,6 +35,8 @@ class BloglistMixinView(
         },
         tags=["Blog"],
     )
+    @method_decorator(cache_page(60 * 30))  # Cache for 30 minutes
+    # Cache With Cookies For Requested Url 
     def get(self, request):
         return self.list(request)
 
@@ -86,6 +88,8 @@ class BlogDetailmixinView(
         },
         tags=["Blog"],
     )
+    @method_decorator(cache_page(60 * 30))
+   # Cache With Cookies For Requested Url 
     def get(self, request, pk):
         return self.retrieve(request, pk)
 
@@ -153,6 +157,8 @@ class CategoryBlogListmixinView(
         },
         tags=["Blog Categories"],
     )
+    @method_decorator(cache_page(60 * 30))
+   # Cache With Cookies For Requested Url 
     def get(self, request):
         return self.list(request)
 
@@ -201,6 +207,8 @@ class CategoryBlogDetailmixinView(
         },
         tags=["Blog Categories"],
     )
+    @method_decorator(cache_page(60 * 30))
+   # Cache With Cookies For Requested Url 
     def get(self, request, pk):
         return self.retrieve(request, pk)
 
@@ -264,6 +272,8 @@ class VisitorBlogListmixinView(
         },
         tags=["Visitor Blogs"],
     )
+    @method_decorator(cache_page(60 * 30))
+   # Cache With Cookies For Requested Url 
     def get(self, request):
         return self.list(request)
 
@@ -315,6 +325,8 @@ class VisitorBlogDetailmixinView(
         },
         tags=["Visitor Blogs"],
     )
+    @method_decorator(cache_page(60 * 30))
+   # Cache With Cookies For Requested Url 
     def get(self, request, pk):
         return self.retrieve(request, pk)
 

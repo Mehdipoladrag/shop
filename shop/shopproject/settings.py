@@ -60,6 +60,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -67,6 +68,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Cache
+    "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 
 ROOT_URLCONF = "shopproject.urls"
@@ -216,13 +219,16 @@ CELERY_TIMEZONE = "Asia/Tehran"
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",  
+        "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "TIMEOUT": 300,  # Timeout for Redis connections in seconds
         }
     }
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
-SESSION_COOKIE_AGE = 3000
+SESSION_CACHE_ALIAS = 'default'  # Use the 'default' cache for sessions
+SESSION_COOKIE_AGE = 3600  # Session cookie age in seconds (1 hour)
+SESSION_COOKIE_SECURE = True  # Ensure cookies are sent over HTTPS only
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies

@@ -44,25 +44,30 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    # Packages
     # 'jdatetime',
     "jalali_date",  # برای تبدیل تاریخ به فارسی {% load jdatetime_tags %}
+    "rest_framework",
+    "django_filters",
+    "rest_framework_simplejwt",
+    "drf_yasg",
+    "django_celery_beat",
+    "corsheaders",
+    # Apps 
     "home",
     "shop",
     "accounts",
     "contact",
     "blog",
     "cart",
-    "rest_framework",
-    "django_filters",
-    "rest_framework_simplejwt",
-    "drf_yasg",
-    "django_celery_beat",
+
 ]
 
 MIDDLEWARE = [
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -226,9 +231,46 @@ CACHES = {
         }
     }
 }
+# Manage Cookies and Cache and Security 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'  # Use the 'default' cache for sessions
 SESSION_COOKIE_AGE = 3600  # Session cookie age in seconds (1 hour)
 SESSION_COOKIE_SECURE = True  # Ensure cookies are sent over HTTPS only
-SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
+SESSION_COOKIE_NAME = 'massay_session_cookie' # Define a custom name for the session cookie.
+SESSION_COOKIE_SAMESITE = 'Lax' # Set SameSite attribute of session cookies to 'Lax' to limit cross-site request behavior.
+CSRF_COOKIE_SECURE = True # Ensure CSRF cookies are sent over HTTPS only
+X_FRAME_OPTIONS = 'DENY' # Prevent the site from being embedded in an iframe to protect against clickjacking attacks.
+SECURE_BROWSER_XSS_FILTER = True # Enable the XSS filter built into modern browsers.
+SECURE_CONTENT_TYPE_NOSNIFF = True # Prevent browsers from interpreting files as a different MIME type than specified.
+# SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
+# SECURE_HSTS_SECONDS = 31536000  # Enable HSTS for one year to enforce HTTPS connections. 1 year 
+# SECURE_SSL_REDIRECT = True # Redirect all HTTP requests to HTTPS
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Apply HSTS policy to all subdomains.
+# SECURE_HSTS_PRELOAD = True # Add the domain to the HSTS preload list for stricter enforcement. 
+
+
+
+# DJANGO CORS HEADER 
+
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = []
+CSRF_TRUSTED_ORIGINS = []
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "POST",
+    "PUT",
+)
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
+

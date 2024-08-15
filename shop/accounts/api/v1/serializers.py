@@ -1,8 +1,46 @@
 from rest_framework import serializers
 from accounts.models import CustomProfileModel, CustomUser
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
+from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
+#
 
+class CustomTokenObtainPairSerializer(serializers.Serializer):
+    """
+    Serializer for Login for token.
+    Checks a username and password.
+    If the username exists in Users and the user is a superuser or admin,
+    the user can access the token.
+    """
+    username = serializers.CharField(required=False)
+    password = serializers.CharField(max_length=128, write_only=True)
 
+    def validate(self, attrs):
+        username = attrs.get("username")
+        password = attrs.get("password")
+
+        if not password:
+            raise serializers.ValidationError("Please enter a valid password")
+
+        if not username:
+            raise serializers.ValidationError("Please enter a username")
+
+        user = None
+        if username:
+            user = authenticate(username=username, password=password)
+        
+
+        if user and (user.is_staff or user.is_superuser):
+            refresh = RefreshToken.for_user(user)
+            data = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'username': user.username,
+            }
+            return data
+        raise serializers.ValidationError("You are not authorized to access this page")
+    
 class UserSerializer(serializers.ModelSerializer):
     """Serializer For User"""
 

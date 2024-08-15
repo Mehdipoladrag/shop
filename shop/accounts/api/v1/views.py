@@ -3,7 +3,10 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 # Modules
 from accounts.models import CustomProfileModel, CustomUser
 from .serializers import (
@@ -11,11 +14,23 @@ from .serializers import (
     UserProfileSerializer,
     UserDataSerializer,
     UserProfileDataSerializer,
+    CustomTokenObtainPairSerializer,
 )
 
 # View
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
+class LoginApiView(APIView):
+    """ Login API View For authentication To a Panel Admin """
+    permission_classes = [AllowAny]
+    def post(self, request, *args, **kwargs):
+        serializer = CustomTokenObtainPairSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 # LIST DATA API
 
 

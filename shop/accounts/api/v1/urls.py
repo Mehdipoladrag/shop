@@ -9,6 +9,7 @@ from .views import (
     UserProfileUpdateApiView,
     UserDetailApiView,
     ProfileDetailApiView,
+    LoginApiView,
 )
 
 
@@ -27,4 +28,7 @@ urlpatterns = [
     # Delete
     path("users-delete/<int:pk>/", UserDeleteApiView.as_view()),
     path("users-profile-delete/<int:pk>/", UserProfileDeleteApiView.as_view()),
+
+    # Login 
+    path('login/', LoginApiView.as_view(), name='login-api'),
 ]

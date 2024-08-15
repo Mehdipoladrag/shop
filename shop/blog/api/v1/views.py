@@ -1,5 +1,5 @@
 from rest_framework import generics, mixins
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAdminUser
 from blog.models import Blogs, Category_blog, Visitor
 from .serializers import BlogsSerializer, CategoryBlogSerializer, VisitorSerializer
 from drf_yasg.utils import swagger_auto_schema
@@ -18,7 +18,7 @@ class BloglistMixinView(
 
     queryset = Blogs.objects.all()
     serializer_class = BlogsSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="List of blogs",
@@ -69,7 +69,7 @@ class BlogDetailmixinView(
     In this class, we can read, delete, and edit the details of a blog
     """
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     queryset = Blogs.objects.all()
     serializer_class = BlogsSerializer
 
@@ -138,9 +138,10 @@ class CategoryBlogListmixinView(
     of Categories and also create a new blog
     """
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     queryset = Category_blog.objects.all()
     serializer_class = CategoryBlogSerializer
+    
 
     @swagger_auto_schema(
         operation_summary="List of BlogCategory",
@@ -191,6 +192,9 @@ class CategoryBlogDetailmixinView(
     In this class, we can read and
     delete and edit the details of a Categories
     """
+    permission_classes = [IsAdminUser]
+    queryset =  Category_blog.objects.all()
+    serializer_class = CategoryBlogSerializer
 
     @swagger_auto_schema(
         operation_summary="Detail a BlogCategory",
@@ -256,7 +260,7 @@ class VisitorBlogListmixinView(
     In this class we can get the list
     of Visitor and also create a new blog
     """
-
+    permission_classes = [IsAdminUser]
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
 
@@ -272,8 +276,6 @@ class VisitorBlogListmixinView(
         },
         tags=["Visitor Blogs"],
     )
-    @method_decorator(cache_page(60 * 30))
-   # Cache With Cookies For Requested Url 
     def get(self, request):
         return self.list(request)
 
@@ -306,7 +308,7 @@ class VisitorBlogDetailmixinView(
     In this class, we can read and
     delete and edit the details of a Visitor
     """
-
+    permission_classes = [IsAdminUser]
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
 
@@ -325,8 +327,7 @@ class VisitorBlogDetailmixinView(
         },
         tags=["Visitor Blogs"],
     )
-    @method_decorator(cache_page(60 * 30))
-   # Cache With Cookies For Requested Url 
+
     def get(self, request, pk):
         return self.retrieve(request, pk)
 

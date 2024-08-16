@@ -19,22 +19,20 @@ def DeleteUserBlogWithOutPermissions():
     except Exception as e:
         logger.error(f"Error: Something went wrong {e}")
 
-
-
-
 @shared_task(name="Manage Image Size")
-def manage_image_size(size_limit_kb="200"):
+def manage_image_size(size_limit_kb=200):
     """
         Task to delete images larger than a specified size.
     """
     try:
-        size_limit_bytes = size_limit_kb * 1024
+        size_limit_bytes = int(size_limit_kb) * 1024
         blogs = Blogs.objects.all()
         for blog in blogs:
             if blog.blog_image:
                 image_size = blog.blog_image.size
                 if image_size > size_limit_bytes:
-                    blogs.delete()
+                    blog.blog_image.delete()  # Delete the image file
+                    blog.delete()  # Delete the blog entry
                     logger.info(f"Deleted image for blog ID {blog.id} & {blog.blog_name} due to size exceeding {size_limit_kb} kb.")
     except Exception as e:
         logger.error(f"Error: We have an error {e}")

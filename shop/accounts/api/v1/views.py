@@ -1,6 +1,6 @@
 # Libraries
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import status
@@ -25,6 +25,29 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class LoginApiView(APIView):
     """ Login API View For authentication To a Panel Admin """
     permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_summary="Login endpoint for obtaining tokens",
+        operation_description="Authenticate user and obtain tokens.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description='The username of the user'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='The password of the user'),
+            },
+            required=['username', 'password']
+        ),
+        responses={
+            200: openapi.Response(
+                description="Login successful, token returned.",
+                schema=CustomTokenObtainPairSerializer(),
+            ),
+            401: openapi.Response(
+                description="Authentication credentials were not provided."
+            ),
+            403: openapi.Response(description="Permission denied."),
+        },
+        tags=["Authentication"],
+    )
     def post(self, request, *args, **kwargs):
         serializer = CustomTokenObtainPairSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -39,7 +62,7 @@ class UserListApiView(generics.ListAPIView):
 
     queryset = CustomUser.objects.all().order_by("date_joined")
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="This is a endpoint for user list",
@@ -65,7 +88,7 @@ class UserProfileListApiView(generics.ListAPIView):
 
     queryset = CustomProfileModel.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="This is a endpoint for userprofile list",
@@ -95,7 +118,7 @@ class UserDeleteApiView(generics.DestroyAPIView):
 
     queryset = CustomUser.objects.all()
     serializer_class = UserDataSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
     @swagger_auto_schema(
@@ -124,7 +147,7 @@ class UserProfileDeleteApiView(generics.DestroyAPIView):
     queryset = CustomProfileModel.objects.all()
     serializer_class = UserProfileDataSerializer
     lookup_field = "pk"
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="This is a endpoint for Delete UserProfile",
@@ -156,7 +179,7 @@ class UserUpdateApiView(generics.UpdateAPIView):
 
     queryset = CustomUser.objects.all()
     serializer_class = UserDataSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
     @swagger_auto_schema(
@@ -204,7 +227,7 @@ class UserProfileUpdateApiView(generics.UpdateAPIView):
 
     queryset = CustomUser.objects.all()
     serializer_class = UserProfileDataSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
     @swagger_auto_schema(
@@ -254,7 +277,7 @@ class UserCreateApiView(generics.CreateAPIView):
 
     queryset = CustomUser.objects.all()
     serializer_class = UserDataSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="This is a endpoint for Create User",
@@ -282,7 +305,7 @@ class UserDetailApiView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = "pk"
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="This is a endpoint for user list",
@@ -307,7 +330,7 @@ class ProfileDetailApiView(generics.RetrieveAPIView):
     queryset = CustomProfileModel.objects.all()
     serializer_class = UserProfileDataSerializer
     lookup_field = "pk"
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="This is a endpoint for Profile Detail",

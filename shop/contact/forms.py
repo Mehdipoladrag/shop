@@ -7,7 +7,6 @@ from contact.validators import ContactValidators as validate
 class ContactUsForm(forms.ModelForm):
     name = forms.CharField(
         max_length=50,
-        validators=[validate.validate_name],
         widget=TextInput(
             attrs={
                 "placeholder": "نام و نام خانوادگی",

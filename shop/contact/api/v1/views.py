@@ -1,5 +1,5 @@
 from rest_framework import mixins, generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAdminUser
 from contact.models import Contact
 from .serializers import ContactSerializer
 
@@ -14,7 +14,7 @@ class ContactListMixin(
 
     queryset = Contact.objects.all().order_by("name")
     serializer_class = ContactSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         return self.list(request)
@@ -36,7 +36,7 @@ class ContactDetailMixin(
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, pk):
         return self.retrieve(request, pk)

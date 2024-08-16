@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAdminUser, IsAdminUser
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -30,7 +30,7 @@ from .serializers import (
 class CategoryGetApiView(APIView):
     """Create Api list for Category with APIVIEW"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="List of Category",
@@ -57,7 +57,7 @@ class CategoryGetApiView(APIView):
 class CategoryCreateApiView(CreateAPIView):
     """Create Api For Category With generics.CreateAPIView For Create New Category"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
@@ -83,7 +83,7 @@ class CategoryCreateApiView(CreateAPIView):
 class CategoryDetailApiView(RetrieveAPIView):
     """Create Category Detail Api For access pk Category"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = "pk"
@@ -110,7 +110,7 @@ class CategoryDetailApiView(RetrieveAPIView):
 class CategoryPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Category"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Update a Category",
@@ -165,7 +165,7 @@ class CategoryPutDeleteApiView(APIView):
 class BrandGetApiView(APIView):
     """Create Api list for Brand with APIVIEW"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="List of a Brand",
@@ -192,7 +192,7 @@ class BrandGetApiView(APIView):
 class BrandCreateApiView(CreateAPIView):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Detail of a Brand",
@@ -216,7 +216,7 @@ class BrandCreateApiView(CreateAPIView):
 class BrandDetailApiView(RetrieveAPIView):
     """Create Brand Detail Api For access pk Brand"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
     lookup_field = "pk"
@@ -243,7 +243,7 @@ class BrandDetailApiView(RetrieveAPIView):
 class BrandPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Brand"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Update of a Brand",
@@ -300,7 +300,7 @@ class BrandPutDeleteApiView(APIView):
 class ProductGetApiView(APIView):
     """Create Api For Product List With ApiView"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Product List api",
@@ -329,7 +329,7 @@ class ProductCreateApiView(CreateAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductPostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Product Post api",
@@ -353,7 +353,7 @@ class ProductCreateApiView(CreateAPIView):
 class ProductDetailApiView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
     @swagger_auto_schema(
@@ -378,7 +378,7 @@ class ProductDetailApiView(RetrieveAPIView):
 class ProductPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Product"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="update Product Information api",
@@ -433,7 +433,7 @@ class ProductPutDeleteApiView(APIView):
 class OrderGetApiView(APIView):
     """Create Api For Order List With ApiView"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Order Information api",
@@ -451,7 +451,7 @@ class OrderGetApiView(APIView):
 class OrderDetailApiView(RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
     @swagger_auto_schema(
@@ -466,7 +466,7 @@ class OrderDetailApiView(RetrieveAPIView):
 class OrderPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Order"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="Order Information Update api",
@@ -505,7 +505,7 @@ class OrderPutDeleteApiView(APIView):
 class OrderItemGetApiView(APIView):
     """Create Api For OrderItem List With ApiView"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="OrderItem Information List api",
@@ -523,7 +523,7 @@ class OrderItemGetApiView(APIView):
 class OrderItemDetailApiView(RetrieveAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
     @swagger_auto_schema(
@@ -540,7 +540,7 @@ class OrderItemDetailApiView(RetrieveAPIView):
 class OrderItemPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete OrderItem"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     @swagger_auto_schema(
         operation_summary="OrderItem Information Updaet api",
@@ -580,7 +580,7 @@ class OrderItemPutDeleteApiView(APIView):
 class InvoiceGetApiView(APIView):
     """Create Api For Invoice List With ApiView"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         query = Invoice.objects.all()
@@ -592,14 +592,14 @@ class InvoiceGetApiView(APIView):
 class InvoiceDetailApiView(RetrieveAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
 
 class InvoicePutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Invoice"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def put(self, request, pk):
         try:
@@ -626,7 +626,7 @@ class InvoicePutDeleteApiView(APIView):
 class TransactionGetApiView(APIView):
     """Create Api For Transaction List With ApiView"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         query = Transaction.objects.all()
@@ -638,14 +638,14 @@ class TransactionGetApiView(APIView):
 class TransactionDetailApiView(RetrieveAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
     lookup_field = "pk"
 
 
 class TransactionPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Transaction"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     def put(self, request, pk):
         try:

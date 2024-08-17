@@ -132,6 +132,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer'
+    ],
     # "DEFAULT_RENDERER_CLASSES": [
     #     "rest_framework.renderers.JSONRenderer",
     # ],
@@ -247,7 +252,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True # Prevent browsers from interpreting files as
 # SECURE_HSTS_SECONDS = 31536000  # Enable HSTS for one year to enforce HTTPS connections. 1 year 
 # SECURE_SSL_REDIRECT = True # Redirect all HTTP requests to HTTPS
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Apply HSTS policy to all subdomains.
-# SECURE_HSTS_PRELOAD = True # Add the domain to the HSTS preload list for stricter enforcement. 
+# SECURE_HSTS_PRELOAD = True # Add the domain to the HSTS preload list for stricter enforcement.
 
 
 

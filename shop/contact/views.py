@@ -16,10 +16,9 @@ class ContactPageView(FormView):
 
     def form_valid(self, form):
         form.save()
-        success_message = "با موفقیت ارسال شد"
-        error_message = "مشکلی در ارسال پیام شما به وجود آماده است"
-        if form.errors:
-            messages.error(self.request, error_message)
-        else:
-            messages.success(self.request, success_message)
+        messages.success(self.request, "با موفقیت ارسال شد")
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "مشکلی در ارسال پیام شما به وجود آمده است")
+        return super().form_invalid(form)

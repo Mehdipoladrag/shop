@@ -10,13 +10,6 @@ def is_persian(text):
 
 
 class ContactValidators:
-    def validate_name(value):
-        if not value.isalpha():
-            raise forms.ValidationError("لطفا تمام کاراکتر‌ها شامل حروف باشند")
-        if not is_persian(value):
-            raise forms.ValidationError("لطفا تمام کاراکتر‌ها شامل حروف فارسی باشند")
-        return value
-
     def validate_email(value):
         if "@" not in value:
             raise forms.ValidationError("لطفا ایمیل را به درستی وارد کنید")

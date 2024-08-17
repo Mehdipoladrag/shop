@@ -6,6 +6,6 @@ from .views import (
 
 
 urlpatterns = [
-    path("contact-list/", ContactListMixin.as_view()),
-    path("contact/<pk>/", ContactDetailMixin.as_view()),
+    path("contact-list/", ContactListMixin.as_view(), name="contact-list"),
+    path("contact/<pk>/", ContactDetailMixin.as_view(), name= "contact-detail"),
 ]

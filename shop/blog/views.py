@@ -16,6 +16,9 @@ class BlogPageView(ListView):
         context = super().get_context_data(**kwargs)
         context["bloglist"] = Blogs.objects.all().order_by("create_date")
         context["categories"] = Category_blog.objects.all()
+        
+        print("Context Data:", context)  # برای دیباگ
+        
         return context
 
 

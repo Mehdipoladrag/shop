@@ -1,13 +1,21 @@
 # Libraries
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAdminUser
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema # type: ignore
+from drf_yasg import openapi # type: ignore
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 # Modules
+from .filters.user_join_filter import (
+    UserProfileSearchFilter, 
+    UserOrderFilter, 
+    UserSearchFilter
+    
+)
 from accounts.models import CustomProfileModel, CustomUser
 from .serializers import (
     UserSerializer,
@@ -56,59 +64,23 @@ class LoginApiView(APIView):
             return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 # LIST DATA API
 
-
+@method_decorator(never_cache, name='dispatch')
 class UserListApiView(generics.ListAPIView):
     """The job of this class is to return the list of users"""
 
-    queryset = CustomUser.objects.all().order_by("date_joined")
+    queryset = CustomUser.objects.select_related().order_by("date_joined")
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [UserOrderFilter, UserSearchFilter]
 
-    @swagger_auto_schema(
-        operation_summary="This is a endpoint for user list",
-        operation_description="We Can See a user information and user list in this api",
-        response={
-            200: openapi.Response(
-                description="List of User",
-                schema=UserSerializer(many=True),
-            ),
-            401: openapi.Response(
-                description="Authentication credentials were not provided."
-            ),
-            403: openapi.Response(description="Permission denied."),
-        },
-        tags=["User Information"],
-    )
-    def get(self, request):
-        return self.list(request)
-
-
+@method_decorator(never_cache, name='dispatch')
 class UserProfileListApiView(generics.ListAPIView):
     """The job of this class is to return the list of users and profiles of each user"""
 
     queryset = CustomProfileModel.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsAdminUser]
-
-    @swagger_auto_schema(
-        operation_summary="This is a endpoint for userprofile list",
-        operation_description="We Can See a userprofile information and userprofile list in this api",
-        response={
-            200: openapi.Response(
-                description="List of UserProfile",
-                schema=UserProfileSerializer(many=True),
-            ),
-            401: openapi.Response(
-                description="Authentication credentials were not provided."
-            ),
-            403: openapi.Response(description="Permission denied."),
-        },
-        tags=["Profile Information"],
-    )
-    def get(self, request):
-        return self.list(request)
-
-
+    filter_backends = [UserProfileSearchFilter]
 # DELETE DATA API
 
 
@@ -137,7 +109,7 @@ class UserDeleteApiView(generics.DestroyAPIView):
         tags=["User Information"],
     )
     def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+        return self.destroy(request)
 
 
 class UserProfileDeleteApiView(generics.DestroyAPIView):

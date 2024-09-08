@@ -34,7 +34,8 @@ services:
     volumes:
       - ./shop:/app
     ports:
-      - "8000:8000"
+      - "8001:8000"
+
     environment:
       - SECRET_KEY=django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-(
       - DEBUG=True

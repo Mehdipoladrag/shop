@@ -78,6 +78,7 @@ class UserLogOutView(View):
         if user_id:
             cache_key = f"user_profile_{user_id}"
             cache.delete(cache_key)
+        return redirect('home:home1')
 
 # UpdateInformation
 class UserProfileView(LoginRequiredMixin, View):

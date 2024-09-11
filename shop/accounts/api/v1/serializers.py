@@ -4,8 +4,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-#
-
+from jalali_date import datetime2jalali
+from shop.models import Order
 class CustomTokenObtainPairSerializer(serializers.Serializer):
     """
     Serializer for Login for token.
@@ -133,4 +133,38 @@ class UserProfileDataSerializer(serializers.ModelSerializer):
             "back_money",
             "customer_image",
             "is_complete",
+        ]
+
+
+class UserOrderSerializer(serializers.ModelSerializer):
+    customer = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    order_persian_date = serializers.SerializerMethodField()
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+    city = serializers.SerializerMethodField()
+    street = serializers.SerializerMethodField()
+    def get_order_persian_date(self, obj):
+        return datetime2jalali(obj.order_date).strftime("%Y/%m/%d %H:%M")
+    
+    def get_first_name(self, obj):
+        return obj.customer.first_name
+    
+    def get_last_name(self, obj):
+        return obj.customer.last_name
+    
+    def get_city(self, obj):
+        return getattr(obj.customer.customprofilemodel, 'city', 'N/A') 
+    
+    def get_street(self, obj): 
+        return getattr(obj.customer.customprofilemodel, 'street', 'N/A')
+
+    class Meta:
+        model = Order
+        fields = [
+            "customer",
+            "order_persian_date",
+            "first_name",
+            "last_name",
+            "city",
+            "street"
         ]

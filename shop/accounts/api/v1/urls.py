@@ -10,6 +10,7 @@ from .views import (
     UserDetailApiView,
     ProfileDetailApiView,
     LoginApiView,
+    UserOrderFilterApiView, 
 )
 
 
@@ -31,4 +32,9 @@ urlpatterns = [
 
     # Login 
     path('login/', LoginApiView.as_view(), name='login-api'),
+
+    # User Filters 
+
+    path('user-order/', UserOrderFilterApiView.as_view())
+
 ]

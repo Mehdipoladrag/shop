@@ -16,6 +16,7 @@ from .filters.user_join_filter import (
     UserSearchFilter
     
 )
+from .filters.max_user_order_filter import UserMaxOrderFilter
 from accounts.models import CustomProfileModel, CustomUser
 from .serializers import (
     UserSerializer,
@@ -23,8 +24,9 @@ from .serializers import (
     UserDataSerializer,
     UserProfileDataSerializer,
     CustomTokenObtainPairSerializer,
+    UserOrderSerializer
 )
-
+from shop.models import Order
 # View
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -321,3 +323,10 @@ class ProfileDetailApiView(generics.RetrieveAPIView):
     )
     def get(self, request, pk):
         return self.retrieve(request, pk)
+
+
+
+class UserOrderFilterApiView(generics.ListAPIView):
+    queryset = Order.objects.select_related('customer').all()
+    serializer_class = UserOrderSerializer
+    filter_backends = [UserMaxOrderFilter]

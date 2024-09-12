@@ -24,7 +24,8 @@ from .serializers import (
     UserDataSerializer,
     UserProfileDataSerializer,
     CustomTokenObtainPairSerializer,
-    UserOrderSerializer
+    UserOrderSerializer, 
+    UserCompleteSerializer
 )
 from shop.models import Order
 # View
@@ -330,3 +331,15 @@ class UserOrderFilterApiView(generics.ListAPIView):
     queryset = Order.objects.select_related('customer').all()
     serializer_class = UserOrderSerializer
     filter_backends = [UserMaxOrderFilter]
+    permission_classes = [IsAdminUser]
+
+
+@method_decorator(never_cache, name='dispatch')
+class UserIsCompleteApiView(generics.ListAPIView):
+    serializer_class = UserCompleteSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return CustomProfileModel.objects.filter(
+            is_complete=True
+        ).order_by('-user__date_joined')

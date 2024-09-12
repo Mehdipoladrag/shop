@@ -11,6 +11,7 @@ from .views import (
     ProfileDetailApiView,
     LoginApiView,
     UserOrderFilterApiView, 
+    UserIsCompleteApiView, 
 )
 
 
@@ -35,6 +36,6 @@ urlpatterns = [
 
     # User Filters 
 
-    path('user-order/', UserOrderFilterApiView.as_view())
-
+    path('user-order/', UserOrderFilterApiView.as_view()),
+    path('user-complete/', UserIsCompleteApiView.as_view()),
 ]

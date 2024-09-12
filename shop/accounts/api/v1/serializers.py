@@ -168,3 +168,18 @@ class UserOrderSerializer(serializers.ModelSerializer):
             "city",
             "street"
         ]
+    
+class UserCompleteSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name') 
+    last_name = serializers.CharField(source='user.last_name')  
+    username = serializers.CharField(source ='user.username' )
+    uuid = serializers.CharField(source='user.uuid')
+
+    class Meta:
+        model = CustomProfileModel  # The serializer should work with CustomProfileModel
+        fields = [
+            "username",
+            "uuid",
+            "first_name",
+            "last_name",
+        ]

@@ -10,8 +10,8 @@ from .views import (
     UserDetailApiView,
     ProfileDetailApiView,
     LoginApiView,
-    UserOrderFilterApiView, 
-    UserIsCompleteApiView, 
+    UserOrderFilterApiView,
+    UserIsCompleteApiView,
 )
 
 
@@ -30,12 +30,9 @@ urlpatterns = [
     # Delete
     path("users-delete/<int:pk>/", UserDeleteApiView.as_view()),
     path("users-profile-delete/<int:pk>/", UserProfileDeleteApiView.as_view()),
-
-    # Login 
-    path('login/', LoginApiView.as_view(), name='login-api'),
-
-    # User Filters 
-
-    path('user-order/', UserOrderFilterApiView.as_view()),
-    path('user-complete/', UserIsCompleteApiView.as_view()),
+    # Login
+    path("login/", LoginApiView.as_view(), name="login-api"),
+    # User Filters
+    path("user-order/", UserOrderFilterApiView.as_view()),
+    path("user-complete/", UserIsCompleteApiView.as_view()),
 ]

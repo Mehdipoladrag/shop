@@ -1,20 +1,20 @@
 # Libraries
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAdminUser
-from drf_yasg.utils import swagger_auto_schema # type: ignore
-from drf_yasg import openapi # type: ignore
+from drf_yasg.utils import swagger_auto_schema  # type: ignore
+from drf_yasg import openapi  # type: ignore
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
+
 # Modules
 from .filters.user_join_filter import (
-    UserProfileSearchFilter, 
-    UserOrderFilter, 
-    UserSearchFilter
-    
+    UserProfileSearchFilter,
+    UserOrderFilter,
+    UserSearchFilter,
 )
 from .filters.max_user_order_filter import UserMaxOrderFilter
 from accounts.models import CustomProfileModel, CustomUser
@@ -24,28 +24,37 @@ from .serializers import (
     UserDataSerializer,
     UserProfileDataSerializer,
     CustomTokenObtainPairSerializer,
-    UserOrderSerializer, 
-    UserCompleteSerializer
+    UserOrderSerializer,
+    UserCompleteSerializer,
 )
 from shop.models import Order
+
 # View
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+
 class LoginApiView(APIView):
-    """ Login API View For authentication To a Panel Admin """
+    """Login API View For authentication To a Panel Admin"""
+
     permission_classes = [AllowAny]
+
     @swagger_auto_schema(
         operation_summary="Login endpoint for obtaining tokens",
         operation_description="Authenticate user and obtain tokens.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'username': openapi.Schema(type=openapi.TYPE_STRING, description='The username of the user'),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description='The password of the user'),
+                "username": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="The username of the user"
+                ),
+                "password": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="The password of the user"
+                ),
             },
-            required=['username', 'password']
+            required=["username", "password"],
         ),
         responses={
             200: openapi.Response(
@@ -60,14 +69,19 @@ class LoginApiView(APIView):
         tags=["Authentication"],
     )
     def post(self, request, *args, **kwargs):
-        serializer = CustomTokenObtainPairSerializer(data=request.data, context={'request': request})
+        serializer = CustomTokenObtainPairSerializer(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+
 # LIST DATA API
 
-@method_decorator(never_cache, name='dispatch')
+
+@method_decorator(never_cache, name="dispatch")
 class UserListApiView(generics.ListAPIView):
     """The job of this class is to return the list of users"""
 
@@ -76,7 +90,8 @@ class UserListApiView(generics.ListAPIView):
     permission_classes = [IsAdminUser]
     filter_backends = [UserOrderFilter, UserSearchFilter]
 
-@method_decorator(never_cache, name='dispatch')
+
+@method_decorator(never_cache, name="dispatch")
 class UserProfileListApiView(generics.ListAPIView):
     """The job of this class is to return the list of users and profiles of each user"""
 
@@ -84,6 +99,8 @@ class UserProfileListApiView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAdminUser]
     filter_backends = [UserProfileSearchFilter]
+
+
 # DELETE DATA API
 
 
@@ -326,20 +343,19 @@ class ProfileDetailApiView(generics.RetrieveAPIView):
         return self.retrieve(request, pk)
 
 
-
 class UserOrderFilterApiView(generics.ListAPIView):
-    queryset = Order.objects.select_related('customer').all()
+    queryset = Order.objects.select_related("customer").all()
     serializer_class = UserOrderSerializer
     filter_backends = [UserMaxOrderFilter]
     permission_classes = [IsAdminUser]
 
 
-@method_decorator(never_cache, name='dispatch')
+@method_decorator(never_cache, name="dispatch")
 class UserIsCompleteApiView(generics.ListAPIView):
     serializer_class = UserCompleteSerializer
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        return CustomProfileModel.objects.filter(
-            is_complete=True
-        ).order_by('-user__date_joined')
+        return CustomProfileModel.objects.filter(is_complete=True).order_by(
+            "-user__date_joined"
+        )

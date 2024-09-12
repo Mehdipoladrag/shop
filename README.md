@@ -89,7 +89,8 @@ Project is created with:
 * Postgresql,Pgadmin,Redis,RabbitMq,Flower
 * Docker,Postman
 * Html,Css,Js
-* Swagger,flake8
+* Swagger
+* flake8,black,pylint,pycodestyle
 
 
 

@@ -5,7 +5,7 @@ from blog.models import Blogs, Category_blog, Visitor
 class BlogsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blogs
-        fields = '__all__'
+        fields = "__all__"
         exclude = []
 
 

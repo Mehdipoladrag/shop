@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic, View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,8 +8,8 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import Http404
 from django.contrib.auth import views as auth_views
-from accounts.models import CustomProfileModel
 from django.core.cache import cache
+from accounts.models import CustomProfileModel
 from accounts.forms import (
     UserRegisterForm,
     UserLoginForm,
@@ -18,8 +18,6 @@ from accounts.forms import (
     CustomUserForm,
 )
 from shop.models import Order
-import json 
-
 
 
 # Create your views here.
@@ -52,17 +50,19 @@ class LoginUserView(LoginView):
     template_name = "accounts/login.html"
     form_class = UserLoginForm
     success_message = "با موفقیت وارد شدید"
+
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, self.success_message)
         user = form.get_user()
         if not CustomProfileModel.objects.filter(user=user).exists():
             CustomProfileModel.objects.create(user=user)
-        self.request.session['user_id'] = user.id
-        self.request.session['username'] = user.username
-        self.request.session['email'] = user.email
+        self.request.session["user_id"] = user.id
+        self.request.session["username"] = user.username
+        self.request.session["email"] = user.email
 
         return response
+
     def get_success_url(self):
         return reverse("home:home1")
 
@@ -78,7 +78,8 @@ class UserLogOutView(View):
         if user_id:
             cache_key = f"user_profile_{user_id}"
             cache.delete(cache_key)
-        return redirect('home:home1')
+        return redirect("home:home1")
+
 
 # UpdateInformation
 class UserProfileView(LoginRequiredMixin, View):
@@ -95,25 +96,27 @@ class UserProfileView(LoginRequiredMixin, View):
 
         if not cachedProfile:
             profileData = {
-                'user': {
-                    'first_name': profile.user.first_name,
-                    'last_name': profile.user.last_name,
-                    'email': profile.user.email,
-                    'username': profile.user.username,
+                "user": {
+                    "first_name": profile.user.first_name,
+                    "last_name": profile.user.last_name,
+                    "email": profile.user.email,
+                    "username": profile.user.username,
                 },
-                'national_code': profile.national_code,
-                'address': profile.address,
-                'zipcode': profile.zipcode,
-                'street': profile.street,
-                'city': profile.city,
-                'mobile': profile.mobile,
-                'age': profile.age,
-                'gender': profile.get_gender_display(),
-                'card_number': profile.card_number,
-                'iban': profile.iban,
-                'back_money': profile.back_money,
-                'customer_image': profile.customer_image.url if profile.customer_image else None,
-                'is_complete': profile.is_complete,
+                "national_code": profile.national_code,
+                "address": profile.address,
+                "zipcode": profile.zipcode,
+                "street": profile.street,
+                "city": profile.city,
+                "mobile": profile.mobile,
+                "age": profile.age,
+                "gender": profile.get_gender_display(),
+                "card_number": profile.card_number,
+                "iban": profile.iban,
+                "back_money": profile.back_money,
+                "customer_image": (
+                    profile.customer_image.url if profile.customer_image else None
+                ),
+                "is_complete": profile.is_complete,
             }
             cache.set(cacheKey, profileData, timeout=300)
             cachedProfile = profileData
@@ -122,7 +125,7 @@ class UserProfileView(LoginRequiredMixin, View):
             "profile": cachedProfile,
         }
         return render(request, self.template_name, context)
-    
+
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "accounts/updateuser.html"
@@ -147,10 +150,10 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             profile_instance = profile_form.save(commit=False)
             profile_instance.is_complete = True
             profile_instance.save()
-            
+
             cacheKey = f"user_profile_{request.user.id}"
             cache.delete(cacheKey)
-            
+
             messages.success(request, "اطلاعات شما با موفقیت ذخیره شد")
             return redirect(self.success_url)
         else:
@@ -159,6 +162,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
                 self.template_name,
                 {"user_form": user_form, "profile_form": profile_form},
             )
+
 
 class UserChangePasswordView(LoginRequiredMixin, auth_views.PasswordChangeView):
     """

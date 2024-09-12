@@ -6,8 +6,10 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+
 # Blog API
- 
+
+
 class BloglistMixinView(
     mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
@@ -36,7 +38,7 @@ class BloglistMixinView(
         tags=["Blog"],
     )
     @method_decorator(cache_page(60 * 30))  # Cache for 30 minutes
-    # Cache With Cookies For Requested Url 
+    # Cache With Cookies For Requested Url
     def get(self, request):
         return self.list(request)
 
@@ -89,7 +91,7 @@ class BlogDetailmixinView(
         tags=["Blog"],
     )
     @method_decorator(cache_page(60 * 30))
-   # Cache With Cookies For Requested Url 
+    # Cache With Cookies For Requested Url
     def get(self, request, pk):
         return self.retrieve(request, pk)
 
@@ -141,7 +143,6 @@ class CategoryBlogListmixinView(
     permission_classes = [IsAdminUser]
     queryset = Category_blog.objects.all()
     serializer_class = CategoryBlogSerializer
-    
 
     @swagger_auto_schema(
         operation_summary="List of BlogCategory",
@@ -159,7 +160,7 @@ class CategoryBlogListmixinView(
         tags=["Blog Categories"],
     )
     @method_decorator(cache_page(60 * 30))
-   # Cache With Cookies For Requested Url 
+    # Cache With Cookies For Requested Url
     def get(self, request):
         return self.list(request)
 
@@ -192,8 +193,9 @@ class CategoryBlogDetailmixinView(
     In this class, we can read and
     delete and edit the details of a Categories
     """
+
     permission_classes = [IsAdminUser]
-    queryset =  Category_blog.objects.all()
+    queryset = Category_blog.objects.all()
     serializer_class = CategoryBlogSerializer
 
     @swagger_auto_schema(
@@ -212,7 +214,7 @@ class CategoryBlogDetailmixinView(
         tags=["Blog Categories"],
     )
     @method_decorator(cache_page(60 * 30))
-   # Cache With Cookies For Requested Url 
+    # Cache With Cookies For Requested Url
     def get(self, request, pk):
         return self.retrieve(request, pk)
 
@@ -260,6 +262,7 @@ class VisitorBlogListmixinView(
     In this class we can get the list
     of Visitor and also create a new blog
     """
+
     permission_classes = [IsAdminUser]
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
@@ -308,6 +311,7 @@ class VisitorBlogDetailmixinView(
     In this class, we can read and
     delete and edit the details of a Visitor
     """
+
     permission_classes = [IsAdminUser]
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
@@ -327,7 +331,6 @@ class VisitorBlogDetailmixinView(
         },
         tags=["Visitor Blogs"],
     )
-
     def get(self, request, pk):
         return self.retrieve(request, pk)
 

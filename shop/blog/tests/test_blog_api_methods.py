@@ -8,31 +8,29 @@ from django.utils import timezone
 from rest_framework.test import RequestsClient
 
 
-
 @pytest.mark.django_db
 class TestBlogApiUrl:
     def setup_method(self):
         self.is_admin = CustomUser.objects.create_superuser(
-            username='test',
-            email='test@example.com',
-            password='test'
+            username="test", email="test@example.com", password="test"
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.is_admin)
 
-        self.category = Category_blog.objects.create(name="BlogTestCategory", slug_cat="test-category")
+        self.category = Category_blog.objects.create(
+            name="BlogTestCategory", slug_cat="test-category"
+        )
         self.blog = Blogs.objects.create(
             username=self.is_admin,
             blog_name="Test Blog",
             blog_image="test_image.png",
             category=self.category,
             blog_description="This is a test blog.",
-            slug="test-blog"
+            slug="test-blog",
         )
 
-
     def test_delete_blog(self):
-        url = reverse('blog:api-v1:api-blog-detail', kwargs={'pk': self.blog.id})
+        url = reverse("blog:api-v1:api-blog-detail", kwargs={"pk": self.blog.id})
         response = self.client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert Blogs.objects.count() == 0  
+        assert Blogs.objects.count() == 0

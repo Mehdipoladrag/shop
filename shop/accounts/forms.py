@@ -4,8 +4,8 @@ from django.contrib.auth.forms import (
     AuthenticationForm,
     SetPasswordForm,
 )
-from accounts.models import CustomUser, CustomProfileModel
 from django.core.exceptions import ValidationError
+from accounts.models import CustomUser, CustomProfileModel
 from accounts.validators import UserRegisterValidators
 
 
@@ -84,20 +84,28 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "password1",
+            "password2",
+        )
 
     def clean_password1(self):
-        password1 = self.cleaned_data.get('password1')
+        password1 = self.cleaned_data.get("password1")
         if len(password1) < 8:
             raise forms.ValidationError("رمز عبور باید حداقل ۸ کاراکتر باشد.")
         return password1
 
     def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("رمزهای عبور مطابقت ندارند.")
         return password2
+
 
 # LoginForm
 class UserLoginForm(AuthenticationForm):

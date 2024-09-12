@@ -1,11 +1,13 @@
 from rest_framework import serializers
-from accounts.models import CustomProfileModel, CustomUser
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
 from jalali_date import datetime2jalali
+from accounts.models import CustomProfileModel, CustomUser
 from shop.models import Order
+
+
 class CustomTokenObtainPairSerializer(serializers.Serializer):
     """
     Serializer for Login for token.
@@ -13,6 +15,7 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
     If the username exists in Users and the user is a superuser or admin,
     the user can access the token.
     """
+
     username = serializers.CharField(required=False)
     password = serializers.CharField(max_length=128, write_only=True)
 
@@ -29,18 +32,18 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
         user = None
         if username:
             user = authenticate(username=username, password=password)
-        
 
         if user and (user.is_staff or user.is_superuser):
             refresh = RefreshToken.for_user(user)
             data = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'username': user.username,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "username": user.username,
             }
             return data
         raise serializers.ValidationError("You are not authorized to access this page")
-    
+
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer For User"""
 
@@ -143,20 +146,21 @@ class UserOrderSerializer(serializers.ModelSerializer):
     last_name = serializers.SerializerMethodField()
     city = serializers.SerializerMethodField()
     street = serializers.SerializerMethodField()
+
     def get_order_persian_date(self, obj):
         return datetime2jalali(obj.order_date).strftime("%Y/%m/%d %H:%M")
-    
+
     def get_first_name(self, obj):
         return obj.customer.first_name
-    
+
     def get_last_name(self, obj):
         return obj.customer.last_name
-    
+
     def get_city(self, obj):
-        return getattr(obj.customer.customprofilemodel, 'city', 'N/A') 
-    
-    def get_street(self, obj): 
-        return getattr(obj.customer.customprofilemodel, 'street', 'N/A')
+        return getattr(obj.customer.customprofilemodel, "city", "N/A")
+
+    def get_street(self, obj):
+        return getattr(obj.customer.customprofilemodel, "street", "N/A")
 
     class Meta:
         model = Order
@@ -166,14 +170,15 @@ class UserOrderSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "city",
-            "street"
+            "street",
         ]
-    
+
+
 class UserCompleteSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(source='user.first_name') 
-    last_name = serializers.CharField(source='user.last_name')  
-    username = serializers.CharField(source ='user.username' )
-    uuid = serializers.CharField(source='user.uuid')
+    first_name = serializers.CharField(source="user.first_name")
+    last_name = serializers.CharField(source="user.last_name")
+    username = serializers.CharField(source="user.username")
+    uuid = serializers.CharField(source="user.uuid")
 
     class Meta:
         model = CustomProfileModel  # The serializer should work with CustomProfileModel

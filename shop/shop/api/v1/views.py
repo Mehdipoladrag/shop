@@ -440,7 +440,6 @@ class OrderGetApiView(APIView):
         operation_description="We can Order Information with this api",
         tags=["Order & OrderItem API"],
     )
-
     def get(self, request):
         query = Order.objects.all()
         serializer = OrderSerializer(query, many=True)
@@ -459,9 +458,9 @@ class OrderDetailApiView(RetrieveAPIView):
         operation_description="We can See a Detail Order Information with this api",
         tags=["Order & OrderItem API"],
     )
-
-    def get(self, request, *args, **kwargs): 
+    def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
 
 class OrderPutDeleteApiView(APIView):
     """Create Updata and Delete Api For Update or Delete Order"""
@@ -473,7 +472,6 @@ class OrderPutDeleteApiView(APIView):
         operation_description="We can Update Order Information with this api",
         tags=["Order & OrderItem API"],
     )
-
     def put(self, request, pk):
         try:
             query = Order.objects.get(pk=pk)
@@ -492,7 +490,6 @@ class OrderPutDeleteApiView(APIView):
         operation_description="We can Delete Order Information with this api",
         tags=["Order & OrderItem API"],
     )
-
     def delete(self, request, pk):
         query = Order.objects.get(pk=pk)
         query.delete()
@@ -512,7 +509,6 @@ class OrderItemGetApiView(APIView):
         operation_description="We can See a OrderItem Information list with this api",
         tags=["Order & OrderItem API"],
     )
-
     def get(self, request):
         query = OrderItem.objects.all()
         serializer = OrderItemSerializer(query, many=True)
@@ -531,9 +527,7 @@ class OrderItemDetailApiView(RetrieveAPIView):
         operation_description="We can See a OrderItem Information Detail with this api",
         tags=["Order & OrderItem API"],
     )
-
-
-    def get(self, request, *args, **kwargs): 
+    def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
 
@@ -547,8 +541,6 @@ class OrderItemPutDeleteApiView(APIView):
         operation_description="We can Update a OrderItem Information list with this api",
         tags=["Order & OrderItem API"],
     )
-
-
     def put(self, request, pk):
         try:
             query = OrderItem.objects.get(pk=pk)
@@ -562,14 +554,11 @@ class OrderItemPutDeleteApiView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     @swagger_auto_schema(
         operation_summary="OrderItem Information Delete api",
         operation_description="We can Delete OrderItem Information list with this api",
         tags=["Order & OrderItem API"],
     )
-
-
     def delete(self, request, pk):
         query = OrderItem.objects.get(pk=pk)
         query.delete()

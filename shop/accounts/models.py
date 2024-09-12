@@ -1,13 +1,15 @@
+import uuid
 from django.db import models
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
-import uuid
+
+
 # Create your models here.
 
 
 class CustomUser(AbstractUser):
-    id = models.AutoField(primary_key=True)  
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True) 
+    id = models.AutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     username = models.CharField(max_length=150, unique=True)
 
 

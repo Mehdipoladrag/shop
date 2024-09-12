@@ -53,14 +53,13 @@ INSTALLED_APPS = [
     "drf_yasg",
     "django_celery_beat",
     "corsheaders",
-    # Apps 
+    # Apps
     "home",
     "shop",
     "accounts",
     "contact",
     "blog",
     "cart",
-
 ]
 
 MIDDLEWARE = [
@@ -113,7 +112,6 @@ DATABASES = {
 }
 
 
-
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.sqlite3",
@@ -138,7 +136,6 @@ DATABASES = {
 # }
 # REST_FRAMEWORK
 REST_FRAMEWORK = {
-    
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAdminUser",
     ],
@@ -148,10 +145,10 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-    'TEST_REQUEST_RENDERER_CLASSES': [
-        'rest_framework.renderers.MultiPartRenderer',
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.TemplateHTMLRenderer'
+    "TEST_REQUEST_RENDERER_CLASSES": [
+        "rest_framework.renderers.MultiPartRenderer",
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.TemplateHTMLRenderer",
     ],
     # "DEFAULT_RENDERER_CLASSES": [
     #     "rest_framework.renderers.JSONRenderer",
@@ -249,30 +246,31 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "TIMEOUT": 300,  # Timeout for Redis connections in seconds
-        }
+        },
     }
 }
-# Manage Cookies and Cache and Security 
+# Manage Cookies and Cache and Security
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'  # Use the 'default' cache for sessions
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"  # Use the 'default' cache for sessions
 SESSION_COOKIE_AGE = 3600  # Session cookie age in seconds (1 hour)
 SESSION_COOKIE_SECURE = True  # Ensure cookies are sent over HTTPS only
-SESSION_COOKIE_NAME = 'massay_session_cookie' # Define a custom name for the session cookie.
-SESSION_COOKIE_SAMESITE = 'Lax' # Set SameSite attribute of session cookies to 'Lax' to limit cross-site request behavior.
-CSRF_COOKIE_SECURE = True # Ensure CSRF cookies are sent over HTTPS only
-X_FRAME_OPTIONS = 'DENY' # Prevent the site from being embedded in an iframe to protect against clickjacking attacks.
-SECURE_BROWSER_XSS_FILTER = True # Enable the XSS filter built into modern browsers.
-SECURE_CONTENT_TYPE_NOSNIFF = True # Prevent browsers from interpreting files as a different MIME type than specified.
+SESSION_COOKIE_NAME = (
+    "massay_session_cookie"  # Define a custom name for the session cookie.
+)
+SESSION_COOKIE_SAMESITE = "Lax"  # Set SameSite attribute of session cookies to 'Lax' to limit cross-site request behavior.
+CSRF_COOKIE_SECURE = True  # Ensure CSRF cookies are sent over HTTPS only
+X_FRAME_OPTIONS = "DENY"  # Prevent the site from being embedded in an iframe to protect against clickjacking attacks.
+SECURE_BROWSER_XSS_FILTER = True  # Enable the XSS filter built into modern browsers.
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from interpreting files as a different MIME type than specified.
 # SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
-# SECURE_HSTS_SECONDS = 31536000  # Enable HSTS for one year to enforce HTTPS connections. 1 year 
+# SECURE_HSTS_SECONDS = 31536000  # Enable HSTS for one year to enforce HTTPS connections. 1 year
 # SECURE_SSL_REDIRECT = True # Redirect all HTTP requests to HTTPS
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True # Apply HSTS policy to all subdomains.
 # SECURE_HSTS_PRELOAD = True # Add the domain to the HSTS preload list for stricter enforcement.
 
 
-
-# DJANGO CORS HEADER 
+# DJANGO CORS HEADER
 
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = []
@@ -293,5 +291,3 @@ CORS_ALLOW_HEADERS = (
     "x-csrftoken",
     "x-requested-with",
 )
-
-

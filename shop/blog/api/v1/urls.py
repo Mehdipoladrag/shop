@@ -8,12 +8,12 @@ from .views import (
     VisitorBlogListmixinView,
 )
 
-app_name = 'api-v1'
+app_name = "api-v1"
 
 urlpatterns = [
     # Blogs
-    path("blog-list/", BloglistMixinView.as_view(), name='api-blog-list'),
-    path("blog-detail/<pk>/", BlogDetailmixinView.as_view(), name='api-blog-detail'),
+    path("blog-list/", BloglistMixinView.as_view(), name="api-blog-list"),
+    path("blog-detail/<pk>/", BlogDetailmixinView.as_view(), name="api-blog-detail"),
     # Categories
     path("category-list/", CategoryBlogListmixinView.as_view()),
     path("category-detail/<pk>/", CategoryBlogDetailmixinView.as_view()),

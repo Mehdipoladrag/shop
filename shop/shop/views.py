@@ -6,11 +6,11 @@ from cart.cart import Cart
 from decimal import Decimal
 from django.shortcuts import render
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404
 from django.core.cache import cache
+
 # Models
 from shop.models import (
     Product,
@@ -69,7 +69,7 @@ class SearchView(View):
                     products = Product.objects.filter(Q(product_name__icontains=q))
                     cache.set(cache_key, products, timeout=3000)
                 except Exception as e:
-                    return Http404(f'Error: {e}')
+                    return Http404(f"Error: {e}")
             else:
                 products = Product.objects.none()
 
@@ -80,6 +80,7 @@ class SearchView(View):
             "brands": brands,
         }
         return render(request, "shop/search.html", context)
+
 
 class CategoryListView(ListView):
     model = Product
@@ -182,4 +183,3 @@ class CheckOutView(LoginRequiredMixin, View):
             )
 
         return render(request, "shop/checkout.html", {"cart": cart})
-    

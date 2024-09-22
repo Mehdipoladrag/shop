@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-
+from django.db.models import Q
 # Modules
 from .filters.user_join_filter import (
     UserProfileSearchFilter,
@@ -26,6 +26,7 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     UserOrderSerializer,
     UserCompleteSerializer,
+    UserCitySerializer,
 )
 from shop.models import Order
 
@@ -358,4 +359,17 @@ class UserIsCompleteApiView(generics.ListAPIView):
     def get_queryset(self):
         return CustomProfileModel.objects.filter(is_complete=True).order_by(
             "-user__date_joined"
+        )
+    
+
+@method_decorator(never_cache, name="dispatch")
+class UserCityFilterApiView(generics.ListAPIView): 
+    serializer_class = UserCitySerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        return CustomProfileModel.objects.filter(
+            Q(city="تبریز")
+        ).exclude(
+            Q(address="بزرگ مهر")
         )

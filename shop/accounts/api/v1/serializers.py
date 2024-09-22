@@ -188,3 +188,43 @@ class UserCompleteSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
         ]
+class UserInfoCitySerializer(serializers.ModelSerializer): 
+    uuid = serializers.UUIDField(source="user.uuid", format='hex_verbose')
+    username = serializers.CharField(source="user.username")
+    first_name = serializers.CharField(source="user.first_name")
+    last_name = serializers.CharField(source="user.last_name")
+    gender = serializers.SerializerMethodField()
+    
+    def get_gender(self, obj):
+        if obj.gender is True:
+            return 'زن'
+        else:
+            return 'مرد'        
+    class Meta: 
+        model = CustomProfileModel 
+        fields = [
+            "uuid",
+            "username",
+            "first_name",
+            "last_name",
+            "gender",
+        ]
+
+
+class UserCitySerializer(serializers.ModelSerializer):
+    user_info = UserInfoCitySerializer(source='*', read_only=True)  
+    city = serializers.CharField()
+    address = serializers.CharField()
+    street = serializers.CharField()
+    zipcode = serializers.CharField()
+    mobile = serializers.CharField()
+    class Meta: 
+        model = CustomProfileModel 
+        fields = [
+            "user_info", 
+            "city",
+            "address",
+            "street",
+            "zipcode",
+            "mobile",
+        ]

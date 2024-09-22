@@ -126,18 +126,17 @@ class UserProfileView(LoginRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
-
+from .models import CustomUser
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = CustomUser  
     template_name = "accounts/updateuser.html"
     success_url = reverse_lazy("accounts:profile1")
 
     def get(self, request, *args, **kwargs):
         user_form = CustomUserForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.customprofilemodel)
-        return render(
-            request,
-            self.template_name,
-            {"user_form": user_form, "profile_form": profile_form},
+        return self.render_to_response(
+            {"user_form": user_form, "profile_form": profile_form}
         )
 
     def post(self, request, *args, **kwargs):
@@ -150,19 +149,18 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
             profile_instance = profile_form.save(commit=False)
             profile_instance.is_complete = True
             profile_instance.save()
+            user_form.save()
 
             cacheKey = f"user_profile_{request.user.id}"
             cache.delete(cacheKey)
 
             messages.success(request, "اطلاعات شما با موفقیت ذخیره شد")
             return redirect(self.success_url)
-        else:
-            return render(
-                request,
-                self.template_name,
-                {"user_form": user_form, "profile_form": profile_form},
-            )
 
+        else:
+            return self.render_to_response(
+                {"user_form": user_form, "profile_form": profile_form}
+            )
 
 class UserChangePasswordView(LoginRequiredMixin, auth_views.PasswordChangeView):
     """

@@ -29,8 +29,8 @@ from .serializers import (
     UserCitySerializer,
 )
 from shop.models import Order
+from .filters.paginations import UserFilterResultPagination
 
-# View
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -349,13 +349,15 @@ class UserOrderFilterApiView(generics.ListAPIView):
     serializer_class = UserOrderSerializer
     filter_backends = [UserMaxOrderFilter]
     permission_classes = [IsAdminUser]
+    pagination_class = UserFilterResultPagination
 
 
 @method_decorator(never_cache, name="dispatch")
 class UserIsCompleteApiView(generics.ListAPIView):
     serializer_class = UserCompleteSerializer
     permission_classes = [IsAdminUser]
-
+    pagination_class = UserFilterResultPagination
+    
     def get_queryset(self):
         return CustomProfileModel.objects.filter(is_complete=True).order_by(
             "-user__date_joined"
@@ -366,10 +368,12 @@ class UserIsCompleteApiView(generics.ListAPIView):
 class UserCityFilterApiView(generics.ListAPIView): 
     serializer_class = UserCitySerializer
     permission_classes = [IsAdminUser]
-
+    pagination_class = UserFilterResultPagination
+    
     def get_queryset(self):
         return CustomProfileModel.objects.filter(
             Q(city="تبریز")
         ).exclude(
             Q(address="بزرگ مهر")
-        )
+        ).order_by('id')
+        

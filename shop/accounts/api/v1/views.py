@@ -1,5 +1,6 @@
 # Libraries
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication 
 from rest_framework.permissions import AllowAny, IsAdminUser
 from drf_yasg.utils import swagger_auto_schema  # type: ignore
 from drf_yasg import openapi  # type: ignore
@@ -10,6 +11,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from django.db.models import Q
+from django.db.models import Max, Min
+
 # Modules
 from .filters.user_join_filter import (
     UserProfileSearchFilter,
@@ -27,6 +30,7 @@ from .serializers import (
     UserOrderSerializer,
     UserCompleteSerializer,
     UserCitySerializer,
+    UserPersonalInformationSerializer,
 )
 from shop.models import Order
 from .filters.paginations import UserFilterResultPagination
@@ -376,4 +380,49 @@ class UserCityFilterApiView(generics.ListAPIView):
         ).exclude(
             Q(address="بزرگ مهر")
         ).order_by('id')
+    
+
+
+
+@method_decorator(never_cache, name="dispatch")
+class UserMaxAgeApiView(APIView):
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, *args, **kwargs):
+        max_age = CustomProfileModel.objects.aggregate(Max("age"))['age__max']
+
+        queryset = CustomProfileModel.objects.filter(age=max_age)
+
+        count = queryset.count()
+        serializer = UserPersonalInformationSerializer(queryset, many=True)
+
+        return Response({
+            "user_max_age": max_age,
+            "user_count": count,
+            "users_informations": serializer.data
+            
+        }, status=status.HTTP_200_OK) 
+
+
+@method_decorator(never_cache, name="dispatch")
+class UserMinAgeApiView(APIView): 
+    permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+   
+    def get(self, request, *args, **kwargs): 
+        min_age = CustomProfileModel.objects.aggregate(Min('age'))['age__min']
+
+        queryset = CustomProfileModel.objects.filter(age=min_age)
+
+        count = queryset.count()
+        serializer = UserPersonalInformationSerializer(queryset, many=True)
+
+        response = Response({
+            "user_min_age": min_age,
+            "user_count": count,
+            "users_informations": serializer.data
+        }, status=status.HTTP_200_OK)
         
+        
+        return response

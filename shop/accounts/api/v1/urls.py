@@ -13,6 +13,8 @@ from .views import (
     UserOrderFilterApiView,
     UserIsCompleteApiView,
     UserCityFilterApiView, 
+    UserMaxAgeApiView,
+    UserMinAgeApiView, 
 )
 
 
@@ -37,4 +39,7 @@ urlpatterns = [
     path("user-order/", UserOrderFilterApiView.as_view()),
     path("user-complete/", UserIsCompleteApiView.as_view()),
     path("user-city/", UserCityFilterApiView.as_view()),
+    path("user-max-age/", UserMaxAgeApiView.as_view()),
+    path("user-min-age/", UserMinAgeApiView.as_view()),
+
 ]

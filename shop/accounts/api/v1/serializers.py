@@ -181,7 +181,7 @@ class UserCompleteSerializer(serializers.ModelSerializer):
     uuid = serializers.CharField(source="user.uuid")
 
     class Meta:
-        model = CustomProfileModel  # The serializer should work with CustomProfileModel
+        model = CustomProfileModel  
         fields = [
             "username",
             "uuid",
@@ -228,3 +228,19 @@ class UserCitySerializer(serializers.ModelSerializer):
             "zipcode",
             "mobile",
         ]
+
+class UserPersonalInformationSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username")
+    fullname = serializers.SerializerMethodField()
+
+    def get_fullname(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
+    class Meta:
+        model = CustomProfileModel
+        fields = [
+            "username", 
+            "fullname",
+            "age", 
+            "gender"
+        ]
+    

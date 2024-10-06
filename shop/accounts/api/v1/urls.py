@@ -15,6 +15,7 @@ from .views import (
     UserCityFilterApiView, 
     UserMaxAgeApiView,
     UserMinAgeApiView, 
+    UserNameSearchApiView,
 )
 
 
@@ -41,5 +42,7 @@ urlpatterns = [
     path("user-city/", UserCityFilterApiView.as_view()),
     path("user-max-age/", UserMaxAgeApiView.as_view()),
     path("user-min-age/", UserMinAgeApiView.as_view()),
-
+ 
+    path("users/search/username/", UserNameSearchApiView.as_view()), # Params /?name=user_name
+    
 ]

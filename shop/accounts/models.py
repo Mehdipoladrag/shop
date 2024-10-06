@@ -19,7 +19,7 @@ class CustomProfileModel(models.Model):
         (True, "زن"),
     )
     user = models.OneToOneField(
-        CustomUser, on_delete=models.CASCADE, verbose_name="نام کاربری"
+        CustomUser, on_delete=models.CASCADE, verbose_name="نام کاربری", related_name="profile"
     )
     national_code = models.CharField(_("کد ملی"), max_length=10)
     address = models.TextField(_("آدرس"), blank=True, null=True)
@@ -43,6 +43,9 @@ class CustomProfileModel(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    def get_gender(self):
+        return 'زن' if self.gender else 'مرد'
 
     class Meta:
         verbose_name = "پروفایل"

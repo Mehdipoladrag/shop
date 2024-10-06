@@ -31,6 +31,7 @@ from .serializers import (
     UserCompleteSerializer,
     UserCitySerializer,
     UserPersonalInformationSerializer,
+    UserAllInformationSerializers,
 )
 from shop.models import Order
 from .filters.paginations import UserFilterResultPagination
@@ -423,6 +424,34 @@ class UserMinAgeApiView(APIView):
             "user_count": count,
             "users_informations": serializer.data
         }, status=status.HTTP_200_OK)
-        
-        
         return response
+    
+@method_decorator(never_cache, name="dispatch")
+class UserNameSearchApiView(APIView):
+    permission_classes = [
+        IsAdminUser
+    ]
+    authentication_classes = [
+        JWTAuthentication
+    ]
+    def get(self, request, *args, **kwargs):
+        try: 
+            search_query = request.query_params.get('name', None)
+
+            if search_query is None:
+                return Response({"detail":"Name query params is Required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            queryset = CustomUser.objects.filter(username__contains=search_query)
+            if not queryset.exists():
+                return Response({"detail": "No users found"}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = UserAllInformationSerializers(queryset, many=True)
+
+            return Response({
+                "search_query": search_query, 
+                "user_count": queryset.count(),
+                "users_informations": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

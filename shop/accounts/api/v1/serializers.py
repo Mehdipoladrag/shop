@@ -244,3 +244,40 @@ class UserPersonalInformationSerializer(serializers.ModelSerializer):
             "gender"
         ]
     
+
+
+class UserAllInformationSerializers(serializers.ModelSerializer):
+    age = serializers.CharField(source="profile.age")
+    gender = serializers.CharField(source = "profile.get_gender")
+    city =  serializers.CharField(source = "profile.city")
+    back_money = serializers.CharField(source="profile.back_money")
+    card_number = serializers.CharField(source="profile.card_number")
+    iban = serializers.CharField(source = "profile.iban")
+    national_code = serializers.CharField(source = "profile.national_code")
+    mobile = serializers.CharField(source = "profile.mobile")
+    date_joined = serializers.SerializerMethodField()
+    last_login = serializers.SerializerMethodField()
+    
+    def get_date_joined(self, obj):
+        return datetime2jalali(obj.date_joined).strftime("%Y/%m/%d %H:%M")
+    
+    def get_last_login(self,obj):
+        return datetime2jalali(obj.last_login).strftime("%Y/%m/%d %H:%M")
+    class Meta: 
+        model = CustomUser 
+        fields = [
+            "username",
+            "uuid", 
+            "first_name", 
+            "last_name",
+            "age",
+            "gender",
+            "city",
+            "back_money",
+            "card_number", 
+            "iban", 
+            "national_code", 
+            "mobile", 
+            "date_joined",
+            "last_login",
+        ]

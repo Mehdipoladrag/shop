@@ -16,6 +16,7 @@ from .views import (
     UserMaxAgeApiView,
     UserMinAgeApiView, 
     UserNameSearchApiView,
+    UserDateJoinedApiView,
 )
 
 
@@ -44,5 +45,5 @@ urlpatterns = [
     path("user-min-age/", UserMinAgeApiView.as_view()),
  
     path("users/search/username/", UserNameSearchApiView.as_view()), # Params /?name=user_name
-    
+    path("users/filter/created/", UserDateJoinedApiView.as_view()), # Params /?date=
 ]

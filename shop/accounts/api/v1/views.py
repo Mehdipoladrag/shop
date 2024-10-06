@@ -12,7 +12,7 @@ from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.db.models import Max, Min
-
+from datetime import datetime
 # Modules
 from .filters.user_join_filter import (
     UserProfileSearchFilter,
@@ -451,6 +451,44 @@ class UserNameSearchApiView(APIView):
                 "search_query": search_query, 
                 "user_count": queryset.count(),
                 "users_informations": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+@method_decorator(never_cache, name="dispatch")
+class UserDateJoinedApiView(APIView): 
+    permission_classes = [
+        IsAdminUser
+    ]
+    authentication_classes = [
+        JWTAuthentication
+    ]
+
+    def get(self, request, *args, **kwargs): 
+        try: 
+            queryset = CustomUser.objects.select_related()
+            if not queryset.exists(): 
+                return Response({"detail": "No users found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            users_data = []
+            current_time = datetime.now()
+
+            for user in queryset: 
+                time_difference  = current_time - user.date_joined.replace(tzinfo=None)
+                days_since_joined = time_difference.days
+
+
+                serialized_user = UserAllInformationSerializers(user).data
+                serialized_user['days_since_joined'] = days_since_joined
+                users_data.append(serialized_user)
+
+            return Response({
+                "user_count": queryset.count(),
+                "time_now": datetime.now().strftime("%Y/%m/%d %H:%M"),
+                "users_joined": users_data
             }, status=status.HTTP_200_OK)
 
         except Exception as e:

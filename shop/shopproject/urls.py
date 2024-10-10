@@ -26,6 +26,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Doc Routs
     path(
         "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"
     ),
@@ -35,13 +36,18 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+   
+    # Django Apps 
     path("", include("home.urls")),
     path("shop/", include("shop.urls")),
     path("accounts/", include("accounts.urls")),
     path("contact-us/", include("contact.urls")),
     path("blog/", include("blog.urls")),
     path("cart/", include("cart.urls")),
+    path("admin-panel/", include("adminpanel.urls")),
     path("api-auth/", include("rest_framework.urls")),
+
+    # Default Api Routs
     # path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),

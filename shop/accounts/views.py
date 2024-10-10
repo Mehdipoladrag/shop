@@ -17,6 +17,7 @@ from accounts.forms import (
     UserChangePassForm,
     CustomUserForm,
 )
+from .models import CustomUser
 from shop.models import Order
 
 
@@ -126,7 +127,7 @@ class UserProfileView(LoginRequiredMixin, View):
         }
         return render(request, self.template_name, context)
 
-from .models import CustomUser
+
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser  
     template_name = "accounts/updateuser.html"

@@ -4,8 +4,6 @@ from django.views.generic import TemplateView, ListView
 
 # Create your views here.
 
-# Class Base Views
-
 
 class HomePageView(ListView):
     template_name = "home/homepage.html"

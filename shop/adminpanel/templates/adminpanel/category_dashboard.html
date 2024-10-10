@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دسته‌بندی‌ها</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">دسته‌بندی‌ها</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>کد دسته بندی</th>
+                    <th>نام دسته بندی</th>
+                    <th>عکس دسته بندی</th>
+                    <th>آدرس دسته بندی</th>
+                </tr>
+            </thead>
+            <tbody id="category-table-body">
+        
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            loadCategories();
+
+            function loadCategories() {
+                $.ajax({
+                    url: 'http://127.0.0.1:8001/api/v2/categories/',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    success: function(data) {
+                        
+                        if (Array.isArray(data.results)) {
+                            populateTable(data.results); 
+                        } else {
+                            console.error('داده‌ها به صورت آرایه نیستند:', data);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('خطا در بارگذاری دسته‌ها:', textStatus, errorThrown);
+                    }
+                });
+
+          
+                setTimeout(function() {
+                    localStorage.removeItem('token'); 
+                    alert('توکن شما پاک شد و از سیستم خارج شدید!');
+                    window.location.href = '/'; 
+                }, 1000000); 
+            }
+
+            function populateTable(categories) {
+                const tableBody = $('#category-table-body');
+                tableBody.empty(); 
+
+                categories.forEach(function(cat) {
+                    const row = `
+                        <tr>
+                            <td>${cat.category_code}</td>
+                            <td>${cat.category_name}</td>
+                            <td><img src="${cat.category_pic}" alt="${cat.category_name}" style="width: 50px; height: auto;"></td>
+                            <td>${cat.category_slug}</td>
+                        </tr>
+                    `;
+                    tableBody.append(row); 
+                });
+            }
+        });
+    </script>
+</body>
+</html>

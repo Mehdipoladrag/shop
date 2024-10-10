@@ -44,22 +44,28 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+
     # Packages
+
     # 'jdatetime',
-    "jalali_date",  # برای تبدیل تاریخ به فارسی {% load jdatetime_tags %}
+    "jalali_date", 
     "rest_framework",
     "django_filters",
     "rest_framework_simplejwt",
     "drf_yasg",
     "django_celery_beat",
     "corsheaders",
+
     # Apps
-    "home",
-    "shop",
-    "accounts",
-    "contact",
-    "blog",
-    "cart",
+
+    "home.apps.HomeConfig",
+    "shop.apps.ShopConfig",
+    "accounts.apps.AccountsConfig",
+    "contact.apps.ContactConfig",
+    "blog.apps.BlogConfig",
+    "cart.apps.CartConfig",
+    "adminpanel.apps.AdminpanelConfig",
+
 ]
 
 MIDDLEWARE = [
@@ -273,8 +279,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from interpreting files a
 # DJANGO CORS HEADER
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = []
-CSRF_TRUSTED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8001",]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8001",]
 
 CORS_ALLOW_METHODS = (
     "DELETE",

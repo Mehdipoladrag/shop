@@ -1,0 +1,485 @@
+{% extends "admin_base.html" %}
+{% load static %}
+{% block admin_content %}
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">داشبورد</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-left">
+              <li class="breadcrumb-item"><a href="#">خانه</a></li>
+              <li class="breadcrumb-item active">داشبورد ورژن 2</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+    <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3 id="order-count">...</h3> 
+                    <p>سفارشات جدید</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
+                </div>
+                <a href="#" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+                </div>
+            </div>
+
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3 id="product-count">...<sup style="font-size: 20px">%</sup></h3>
+
+                <p>محصولات ثبت شده</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="#" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3 style="color:white;" id="user-count">...</h3> <!-- در ابتدا نمایش '...' به‌جای مقدار ثابت 44 -->
+
+                    <p>کاربران ثبت شده</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                </div>
+                <a href="#" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+            </div>
+        </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="admin-count">...</h3>
+
+                <p>تعداد ادمین ها</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="#" class="small-box-footer">اطلاعات بیشتر <i class="fa fa-arrow-circle-left"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+        </div>
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+          <section class="col-lg-7 connectedSortable">
+            <!-- Custom tabs (Charts with tabs)-->
+            <div class="card">
+              <div class="card-header d-flex p-0">
+                <h3 class="card-title p-3">
+                  <i class="fa fa-pie-chart mr-1"></i>
+                  فروش
+                </h3>
+                <ul class="nav nav-pills mr-auto p-2">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#revenue-chart" data-toggle="tab">نمودار</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#sales-chart" data-toggle="tab">چارت</a>
+                  </li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content p-0">
+                  <!-- Morris chart - Sales -->
+                  <div class="chart tab-pane active" id="revenue-chart"
+                       style="position: relative; height: 300px;"></div>
+                  <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;"></div>
+                </div>
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            
+            <!-- TO DO List -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="ion ion-clipboard mr-1"></i>
+                  لیست کارها
+                </h3>
+
+                <div class="card-tools">
+                  <ul class="pagination pagination-sm">
+                    <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
+                    <li class="page-item"><a href="#" class="page-link">1</a></li>
+                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                    <li class="page-item"><a href="#" class="page-link">3</a></li>
+                    <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+                  </ul>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <ul class="todo-list">
+                  <li>
+                    <!-- drag handle -->
+                    <span class="handle">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <i class="fa fa-ellipsis-v"></i>
+                    </span>
+                    <!-- checkbox -->
+                    <input type="checkbox" value="" name="">
+                    <!-- todo text -->
+                    <span class="text">طراحی یک قالب زیبا</span>
+                    <!-- Emphasis label -->
+                    <small class="badge badge-danger"><i class="fa fa-clock-o"></i> 2 دقیقه</small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                      <i class="fa fa-edit"></i>
+                      <i class="fa fa-trash-o"></i>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="handle">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <i class="fa fa-ellipsis-v"></i>
+                    </span>
+                    <input type="checkbox" value="" name="">
+                    <span class="text">رسپانسیو کردن قالب مورد نظر</span>
+                    <small class="badge badge-info"><i class="fa fa-clock-o"></i> 4 ساعت</small>
+                    <div class="tools">
+                      <i class="fa fa-edit"></i>
+                      <i class="fa fa-trash-o"></i>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="handle">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <i class="fa fa-ellipsis-v"></i>
+                    </span>
+                    <input type="checkbox" value="" name="">
+                    <span class="text">ارائه قالب برای استفاده بقیه</span>
+                    <small class="badge badge-warning"><i class="fa fa-clock-o"></i> 1 روز</small>
+                    <div class="tools">
+                      <i class="fa fa-edit"></i>
+                      <i class="fa fa-trash-o"></i>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="handle">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <i class="fa fa-ellipsis-v"></i>
+                    </span>
+                    <input type="checkbox" value="" name="">
+                    <span class="text">بهینه سازی بخش های بوجود اومده</span>
+                    <small class="badge badge-success"><i class="fa fa-clock-o"></i> 3 روز</small>
+                    <div class="tools">
+                      <i class="fa fa-edit"></i>
+                      <i class="fa fa-trash-o"></i>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="handle">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <i class="fa fa-ellipsis-v"></i>
+                    </span>
+                    <input type="checkbox" value="" name="">
+                    <span class="text">چک کردن پیام ها و نوتیفیکیشن ها</span>
+                    <small class="badge badge-primary"><i class="fa fa-clock-o"></i> 1 هفته</small>
+                    <div class="tools">
+                      <i class="fa fa-edit"></i>
+                      <i class="fa fa-trash-o"></i>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="handle">
+                      <i class="fa fa-ellipsis-v"></i>
+                      <i class="fa fa-ellipsis-v"></i>
+                    </span>
+                    <input type="checkbox" value="" name="">
+                    <span class="text">طراحی صفحه ایمیل جدید</span>
+                    <small class="badge badge-secondary"><i class="fa fa-clock-o"></i> 1 ماه</small>
+                    <div class="tools">
+                      <i class="fa fa-edit"></i>
+                      <i class="fa fa-trash-o"></i>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <button type="button" class="btn btn-info float-right"><i class="fa fa-plus"></i> جدید</button>
+              </div>
+            </div>
+            <!-- /.card -->
+          </section>
+          <!-- /.Left col -->
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+          <section class="col-lg-5 connectedSortable">
+
+            <!-- Map card -->
+            <div class="card bg-primary-gradient">
+              <div class="card-header no-border">
+                <h3 class="card-title">
+                  <i class="fa fa-map-marker mr-1"></i>
+                  بازدید‌ها
+                </h3>
+                <!-- card tools -->
+                <div class="card-tools">
+                  <button type="button"
+                          class="btn btn-primary btn-sm daterange"
+                          data-toggle="tooltip"
+                          title="Date range">
+                    <i class="fa fa-calendar"></i>
+                  </button>
+                  <button type="button"
+                          class="btn btn-primary btn-sm"
+                          data-widget="collapse"
+                          data-toggle="tooltip"
+                          title="Collapse">
+                    <i class="fa fa-minus"></i>
+                  </button>
+                </div>
+                <!-- /.card-tools -->
+              </div>
+              <div class="card-body">
+                <div id="world-map" style="height: 250px; width: 100%;"></div>
+              </div>
+              <!-- /.card-body-->
+              <div class="card-footer bg-transparent">
+                <div class="row">
+                  <div class="col-4 text-center">
+                    <div id="sparkline-1"></div>
+                    <div class="text-white">بازدید‌ها</div>
+                  </div>
+                  <!-- ./col -->
+                  <div class="col-4 text-center">
+                    <div id="sparkline-2"></div>
+                    <div class="text-white">آنلاین</div>
+                  </div>
+                  <!-- ./col -->
+                  <div class="col-4 text-center">
+                    <div id="sparkline-3"></div>
+                    <div class="text-white">فروش</div>
+                  </div>
+                  <!-- ./col -->
+                </div>
+                <!-- /.row -->
+              </div>
+            </div>
+            <!-- /.card -->
+
+            <!-- solid sales graph -->
+            <div class="card bg-info-gradient">
+              <div class="card-header no-border">
+                <h3 class="card-title">
+                  <i class="fa fa-th mr-1"></i>
+                  نمودار فروش
+                </h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn bg-info btn-sm" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn bg-info btn-sm" data-widget="remove">
+                    <i class="fa fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart" id="line-chart" style="height: 250px;"></div>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer bg-transparent">
+                <div class="row">
+                  <div class="col-4 text-center">
+                    <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
+                           data-fgColor="#39CCCC">
+
+                    <div class="text-white">سفارش ایمیلی</div>
+                  </div>
+                  <!-- ./col -->
+                  <div class="col-4 text-center">
+                    <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
+                           data-fgColor="#39CCCC">
+
+                    <div class="text-white">سفارش آنلاین</div>
+                  </div>
+                  <!-- ./col -->
+                  <div class="col-4 text-center">
+                    <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
+                           data-fgColor="#39CCCC">
+
+                    <div class="text-white">سفارش فیزیکی</div>
+                  </div>
+                  <!-- ./col -->
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+
+            <!-- Calendar -->
+            <div class="card bg-success-gradient">
+              <div class="card-header no-border">
+
+                <h3 class="card-title">
+                  <i class="fa fa-calendar"></i>
+                  تقویم
+                </h3>
+                <!-- tools card -->
+                <div class="card-tools">
+                  <!-- button with a dropdown -->
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                      <i class="fa fa-bars"></i></button>
+                    <div class="dropdown-menu float-right" role="menu">
+                      <a href="#" class="dropdown-item">رویداد تازه</a>
+                      <a href="#" class="dropdown-item">حذف رویدادها</a>
+                      <div class="dropdown-divider"></div>
+                      <a href="#" class="dropdown-item">نمایش تقویم</a>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-success btn-sm" data-widget="collapse">
+                    <i class="fa fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-success btn-sm" data-widget="remove">
+                    <i class="fa fa-times"></i>
+                  </button>
+                </div>
+                <!-- /. tools -->
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body p-0">
+                <!--The calendar -->
+                <div id="calendar" style="width: 100%"></div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </section>
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        const token = localStorage.getItem('jwtToken');
+
+        function convertToPersianDigits(number) {
+            const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return number.toString().replace(/\d/g, function(digit) {
+                return persianDigits[digit];
+            });
+        }
+
+        if (token) {
+
+            $.ajax({
+                url: 'http://127.0.0.1:8001/admin-panel/api/v2/user-count/',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token 
+                },
+                success: function(response) {
+                    console.log('API User Response:', response);
+
+                    if (response.counter && response.super_users) {
+                        const persianUserCount = convertToPersianDigits(response.counter);
+                        const persianAdminCount = convertToPersianDigits(response.super_users);
+
+                        $('#user-count').text(persianUserCount);
+                        $('#admin-count').text(persianAdminCount);
+                    } else {
+                        console.error('مقادیر مورد انتظار در پاسخ وجود ندارد.');
+                        $('#user-count').text('خطا در دریافت تعداد کاربران');
+                        $('#admin-count').text('خطا در دریافت تعداد ادمین‌ها');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('خطا در دریافت اطلاعات کاربران و ادمین‌ها:', error);
+                    $('#user-count').text('خطا در دریافت اطلاعات');
+                    $('#admin-count').text('خطا در دریافت اطلاعات');
+                }
+            });
+
+            $.ajax({
+                url: 'http://127.0.0.1:8001/admin-panel/api/v2/new-order/',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token 
+                },
+                success: function(response) {
+                    console.log('API Order Response:', response);
+
+                    // اصلاح فیلد از total_orders به order_count
+                    if (response.order_count) {
+                        const persianOrderCount = convertToPersianDigits(response.order_count);
+                        $('#order-count').text(persianOrderCount);
+                    } else {
+                        console.error('مقدار مورد انتظار در پاسخ وجود ندارد.');
+                        $('#order-count').text('خطا در دریافت تعداد سفارش‌ها');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('خطا در دریافت اطلاعات سفارش‌ها:', error);
+                    $('#order-count').text('خطا در دریافت اطلاعات سفارش‌ها');
+                }
+            });
+
+            $.ajax({
+                url: 'http://127.0.0.1:8001/admin-panel/api/v2/product-count/',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token 
+                },
+                success: function(response) {
+                    console.log('API Product Response:', response);
+
+                    if (response.product_count) {
+                        const persianProductCount = convertToPersianDigits(response.product_count);
+                        $('#product-count').text(persianProductCount);
+                    } else {
+                        console.error('مقدار مورد انتظار در پاسخ وجود ندارد.');
+                        $('#product-count').text('خطا در دریافت تعداد محصولات');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('خطا در دریافت اطلاعات محصولات:', error);
+                    $('#product-count').text('خطا در دریافت اطلاعات محصولات');
+                }
+            });
+
+        } else {
+            window.location.href = '/admin-panel/login/';
+        }
+    });
+</script>
+
+{% endblock %}

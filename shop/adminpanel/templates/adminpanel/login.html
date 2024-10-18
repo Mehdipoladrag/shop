@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>پنل مدیریت | صفحه ورود</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static "admin/dist/css/adminlte.min.css" %}">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{% static "admin/plugins/iCheck/square/blue.css" %}">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <!-- bootstrap rtl -->
+    <link rel="stylesheet" href="{% static "admin/dist/css/bootstrap-rtl.min.css" %}">
+    <!-- template rtl version -->
+    <link rel="stylesheet" href="{% static "admin/dist/css/custom-style.css" %}">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+    <div class="login-logo">
+        <a href="../../index2.html"><b>ورود به سایت</b></a>
+    </div>
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">فرم زیر را تکمیل کنید و ورود بزنید</p>
+
+            <form id="login-form" action="#" method="post">
+                <div class="input-group mb-3">
+                    <input type="text" name="username" class="form-control" placeholder="نام کاربری" required>
+                    <div class="input-group-append">
+                        <span class="fa fa-envelope input-group-text"></span>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" name="password" id="password" class="form-control" placeholder="رمز عبور" required>
+                    <div class="input-group-append">
+                        <span class="fa fa-lock input-group-text"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8">
+                        <div class="checkbox icheck">
+                            <label>
+                                <input type="checkbox"> یاد آوری من
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">ورود</button>
+                    </div>
+                </div>
+            </form>
+
+            <div id="error-msg" style="display: none; color: red;">خطا در ورود. لطفا نام کاربری و رمز عبور را بررسی کنید.</div>
+
+            <div class="social-auth-links text-center mb-3">
+                <p>- OR -</p>
+                <a href="#" class="btn btn-block btn-primary">
+                    <i class="fa fa-facebook mr-2"></i> ورود با اکانت فیسوبک
+                </a>
+                <a href="#" class="btn btn-block btn-danger">
+                    <i class="fa fa-google-plus mr-2"></i> ورود با اکانت گوگل
+                </a>
+            </div>
+
+            <p class="mb-1">
+                <a href="#">رمز عبورم را فراموش کرده ام.</a>
+            </p>
+            <p class="mb-0">
+                <a href="register.html" class="text-center">ثبت نام</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="{% static "admin/plugins/jquery/jquery.min.js" %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static "admin/plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+<!-- iCheck -->
+<script src="{% static "admin/plugins/iCheck/icheck.min.js" %}"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#login-form').on('submit', function(e) {
+            e.preventDefault(); // جلوگیری از ارسال پیش‌فرض فرم
+
+            const username = $('input[name="username"]').val();
+            const password = $('input[name="password"]').val();
+            const errorMsg = $('#error-msg');
+
+            if (username && password) {
+                $.ajax({
+                    url: 'http://127.0.0.1:8001/accounts/api/v1/login/',
+                    type: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    data: JSON.stringify({ username: username, password: password }),
+                    success: function(response) {
+                        const token = response.token || response.access || response.jwt;
+
+                        if (token) {
+                            localStorage.setItem('jwtToken', token);
+                            window.location.href = '/admin-panel/dashboard/'; // ریدایرکت به داشبورد
+                        } else {
+                            console.error('توکن در پاسخ یافت نشد.');
+                            errorMsg.show();
+                        }
+                    },
+                    error: function() {
+                        errorMsg.show();
+                    }
+                });
+            } else {
+                errorMsg.show();
+            }
+        });
+    });
+</script>
+</body>
+</html>

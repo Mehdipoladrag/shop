@@ -46,7 +46,7 @@ export default function UsersPage() {
         <input
           type="search"
           className="search-input"
-          placeholder="جست‌وجوی نام کاربری یا ایمیل…"
+          placeholder="جست‌وجوی کاربر…"
           aria-label="جست‌وجوی کاربران"
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
@@ -58,14 +58,14 @@ export default function UsersPage() {
           <>
             <DataTable columns={COLUMNS} rows={results} getRowKey={(user) => user.id} emptyText="کاربری پیدا نشد." />
             <nav className="pagination" aria-label="صفحه‌بندی">
-              <button type="button" className="btn btn--ghost" disabled={!next} onClick={() => setPage(page + 1)}>
-                صفحه‌ی بعد
-              </button>
-              <span>
-                صفحه {formatNumber(page)} · {formatNumber(count)} کاربر
-              </span>
               <button type="button" className="btn btn--ghost" disabled={!previous} onClick={() => setPage(page - 1)}>
                 صفحه‌ی قبل
+              </button>
+              <span>
+                صفحه <bdi>{formatNumber(page)}</bdi> · <bdi>{formatNumber(count)}</bdi> کاربر
+              </span>
+              <button type="button" className="btn btn--ghost" disabled={!next} onClick={() => setPage(page + 1)}>
+                صفحه‌ی بعد
               </button>
             </nav>
           </>

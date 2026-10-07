@@ -6,7 +6,7 @@
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 50;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -23,11 +23,11 @@
 
 .sidebar {
   position: fixed;
-  inset-block: 0;
+  inset-block: var(--topbar-height) 0;
   inset-inline-start: 0;
   z-index: 40;
   width: min(var(--sidebar-width), 82vw);
-  padding: calc(var(--topbar-height) + 12px) 12px 12px;
+  padding: 12px;
   background: var(--surface);
   border-inline-end: 1px solid var(--border);
   transform: translateX(100%);
@@ -95,18 +95,16 @@
   }
 
   .sidebar {
-    top: var(--topbar-height);
     z-index: 10;
     width: var(--sidebar-width);
     padding-top: 16px;
     transform: none;
   }
 
-  .shell {
-    padding-inline-start: var(--sidebar-width);
-  }
-
+  /* Only the content makes room for the sidebar, so the topbar spans the full width. */
   .content {
+    margin-inline-start: var(--sidebar-width);
+    max-width: none;
     padding: 24px;
   }
 }

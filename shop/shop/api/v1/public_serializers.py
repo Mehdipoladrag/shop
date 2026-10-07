@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
+from blog.models import Blogs
 from shop.models import Brand, Category, Product
 
 HUNDRED = Decimal(100)
@@ -87,3 +88,29 @@ class PublicProductDetailSerializer(PublicProductListSerializer):
             for picture in pictures
             if picture
         ]
+
+
+class PublicBlogListSerializer(serializers.ModelSerializer):
+    """Blog post card data."""
+
+    author = serializers.CharField(source="username.username")
+    category = serializers.CharField(source="category.name")
+    category_slug = serializers.CharField(source="category.slug_cat")
+
+    class Meta:
+        model = Blogs
+        fields = [
+            "id",
+            "blog_name",
+            "slug",
+            "blog_image",
+            "author",
+            "category",
+            "category_slug",
+            "create_date",
+        ]
+
+
+class PublicBlogDetailSerializer(PublicBlogListSerializer):
+    class Meta(PublicBlogListSerializer.Meta):
+        fields = PublicBlogListSerializer.Meta.fields + ["blog_description"]

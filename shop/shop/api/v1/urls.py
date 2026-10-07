@@ -1,8 +1,14 @@
 from django.urls import path
 from .public_views import (
+    PublicBlogCategoryListApiView,
+    PublicBlogDetailApiView,
+    PublicBlogListApiView,
     PublicBrandListApiView,
+    PublicCartApiView,
+    PublicCartItemApiView,
     PublicCategoryListApiView,
     PublicProductDetailApiView,
+    PublicProductFiltersApiView,
     PublicProductListApiView,
 )
 from .views import (
@@ -45,7 +51,13 @@ urlpatterns = [
     path("public/categories/", PublicCategoryListApiView.as_view()),
     path("public/brands/", PublicBrandListApiView.as_view()),
     path("public/products/", PublicProductListApiView.as_view()),
+    path("public/products/filters/", PublicProductFiltersApiView.as_view()),
     path("public/products/<slug:slug>/", PublicProductDetailApiView.as_view()),
+    path("public/cart/", PublicCartApiView.as_view()),
+    path("public/cart/<int:product_id>/", PublicCartItemApiView.as_view()),
+    path("public/blog/", PublicBlogListApiView.as_view()),
+    path("public/blog/categories/", PublicBlogCategoryListApiView.as_view()),
+    path("public/blog/<slug:slug>/", PublicBlogDetailApiView.as_view()),
     # Category Api Route
     path("category-list/", CategoryGetApiView.as_view()),
     path("category-create/", CategoryCreateApiView.as_view()),

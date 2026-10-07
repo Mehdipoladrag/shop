@@ -58,7 +58,6 @@ INSTALLED_APPS = [
 
     # Apps
 
-    "home.apps.HomeConfig",
     "shop.apps.ShopConfig",
     "accounts.apps.AccountsConfig",
     "contact.apps.ContactConfig",

@@ -37,13 +37,11 @@ urlpatterns = [
     ),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
    
-    # Django Apps 
-    path("", include("home.urls")),
+    # Django apps. They only expose APIs; the pages are served by the React frontend.
     path("shop/", include("shop.urls")),
     path("accounts/", include("accounts.urls")),
     path("contact-us/", include("contact.urls")),
     path("blog/", include("blog.urls")),
-    path("cart/", include("cart.urls")),
     path("admin-panel/", include("adminpanel.urls")),
     path("api-auth/", include("rest_framework.urls")),
 

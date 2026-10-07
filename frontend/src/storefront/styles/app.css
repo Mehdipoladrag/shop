@@ -77,3 +77,13 @@
   font: inherit;
   cursor: pointer;
 }
+
+/* Product pictures inside an order card; the theme leaves them at full size. */
+.order-delivered .profile-recent-fav-row img {
+  width: 72px;
+  height: 72px;
+  margin: 0 4px 8px;
+  border: 1px solid var(--navy-100);
+  border-radius: 8px;
+  object-fit: cover;
+}

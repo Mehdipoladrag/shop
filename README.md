@@ -19,6 +19,7 @@
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#Usage)
+- [Frontend](#Frontend)
 - [Project](#Project).
 - [Technologies](#Technologies)
 - [Refrence](#Refrence)
@@ -63,10 +64,43 @@
    ```
 
 
+## Frontend
+
+The user interface is a React (Vite) app in `frontend/`: the shop at `/` and the admin
+panel at `/panel`. Django only serves the API, `/admin/` and the media and static files.
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://127.0.0.1:5173, proxies the API to Django on port 8001
+```
+
+See [frontend/README.md](frontend/README.md) for the pages and the build, and
+[docs/design-colors.md](docs/design-colors.md) for the color palette. The IRANYekan font is
+licensed and not included; see `shop/static/assets/fonts/iranyekan/README.md`.
+
+### Run the backend without Docker
+Needs Python 3.12 (or 3.11), PostgreSQL and Redis. Use the same database values as
+`docker-compose.yml` (user `root`, password `root`, database `shop_db`).
+
+```bash
+cd shop
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt   # skip djangorestframework-jwt: it is unused and conflicts with PyJWT
+export DEBUG=True PG_HOST=127.0.0.1 REDIS_URL=redis://127.0.0.1:6379/1
+python manage.py migrate
+python manage.py runserver 8001
+```
+
+### Tests
+```bash
+cd shop && python -m pytest
+```
+
 ## Project
 
 #### User Section
-This project was written by me to showcase my skills on GitHub as part of my resume. This project is a shopping platform where users can register and log in. They can also make purchases and add products to their shopping cart.
+This project was written by me to showcase my skills on GitHub as part of my resume. This project is a shopping platform where users can register and log in. They can also make purchases and add products to their shopping cart. The pages are built in React and talk to the REST API with a session login (CSRF protected).
 
 Users can complete their profile to gain full access to their information for purchasing products. Once the user finalizes their purchase, they receive a tracking code.
 
@@ -88,7 +122,7 @@ Project is created with:
 * Python,Django,DjangoRest,CeleryBeat,Celery,Jwt
 * Postgresql,Pgadmin,Redis,RabbitMq,Flower
 * Docker,Postman
-* Html,Css,Js
+* React,Vite,Html,Css,Js
 * Swagger
 * flake8,black,pylint,pycodestyle
 

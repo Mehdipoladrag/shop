@@ -24,15 +24,22 @@ slide-in mobile menu, tabs) is reimplemented in React.
 | `/cart`                     | Cart (stored in the Django session)                |
 | `/blog`, `/blog/:slug`      | Blog list and post                                 |
 | `/about`, `/contact`        | Info pages; the contact form posts to the API      |
+| `/login`, `/register`       | Customer login and registration                    |
+| `/account`                  | Profile; `/account/edit` (with picture), `/account/password`, `/account/address` |
+| `/account/orders`           | Orders; `/account/orders/:id` status, `/account/orders/current` the latest |
+| `/checkout`                 | Checkout; `/checkout/success/:id` confirmation     |
 
 Filters, sort order and page are kept in the URL (`?brand=1&color=...&ordering=price`).
 
-Still served by Django, and linked from the header and the cart: login,
-registration, profile and checkout/payment. The cart lives in the Django session,
-so the checkout reads the same cart the React pages fill.
+Login uses the Django session cookie. Every change (login, registration, cart,
+profile, checkout) sends the CSRF token from the `csrftoken` cookie in the
+`X-CSRFToken` header; `src/storefront/api/client.js` does this and retries once
+when the token has gone stale. Online payment is not connected yet: an order is
+stored with a `pending` transaction.
 
-Data comes from the public, read-only API under `/shop/api/v1/public/`
-(categories, brands, products, filters, cart, blog, contact, session).
+Data comes from the public API under `/shop/api/v1/public/` (categories, brands,
+products, filters, cart, checkout, blog, contact, session) and the customer API under
+`/accounts/api/v1/customer/` (register, login, logout, profile, password, address, orders).
 
 ## Admin panel
 
@@ -61,8 +68,7 @@ npm run dev        # http://127.0.0.1:5173  (admin: http://127.0.0.1:5173/panel)
 The dev server proxies `/shop/api`, `/accounts/api`, `/admin-panel/api`,
 `/blog/api`, `/api`, `/media` and `/static` to the backend, so the browser sees a
 single origin: no CORS setup, and the session cookie used by the cart works.
-`VITE_BACKEND_URL` (see `.env.example`) sets the backend address, which is also
-used for links to the Django pages.
+`VITE_BACKEND_URL` (see `.env.example`) sets the backend address.
 
 ## Build
 
@@ -71,8 +77,7 @@ npm run build      # output in dist/ (index.html and panel/index.html)
 ```
 
 Serve `dist/` from the same origin as Django, with `/` and `/panel/` falling back
-to their `index.html`, and set `VITE_BACKEND_URL` to an empty string at build
-time so the Django links stay relative.
+to their `index.html`.
 
 ## Structure
 

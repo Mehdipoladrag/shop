@@ -6,7 +6,8 @@ import DataTable from "../components/DataTable";
 import { toPersianDigits } from "../../shared/format";
 
 const COLUMNS = [
-  { key: "customer", header: "مشتری" },
+  // Usernames start with "@", which would jump to the end in right-to-left text.
+  { key: "customer", header: "مشتری", render: (order) => <bdi>{order.customer}</bdi> },
   { key: "order_persian_date", header: "تاریخ سفارش", render: (order) => toPersianDigits(order.order_persian_date) },
   { key: "total_cost", header: "مبلغ کل", render: (order) => `${toPersianDigits(order.total_cost)} تومان` },
 ];

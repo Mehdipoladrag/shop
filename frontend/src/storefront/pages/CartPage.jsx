@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
-import { djangoUrl, staticUrl } from "../config";
+import { staticUrl } from "../config";
 import { formatPrice, toRelativeUrl } from "../format";
 
 const QUANTITY_OPTIONS = Array.from({ length: 9 }, (_, index) => index + 1);
@@ -205,10 +205,9 @@ export default function CartPage() {
                     </tr>
                     <tr>
                       <td colSpan="2">
-                        {/* Payment still runs on the Django site and reads the same session cart. */}
-                        <a href={djangoUrl("/shop/payment/checkout/")} className="btn big_btn btn-main-masai">
+                        <Link to="/checkout" className="btn big_btn btn-main-masai">
                           گام بعدی
-                        </a>
+                        </Link>
                       </td>
                     </tr>
                   </tbody>

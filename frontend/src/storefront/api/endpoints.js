@@ -32,7 +32,29 @@ export const contactApi = {
   send: (message) => request(`${API}/contact/`, { method: "POST", body: message }),
 };
 
+const CUSTOMER = "/accounts/api/v1/customer";
+
+export const customerApi = {
+  register: (values) => request(`${CUSTOMER}/register/`, { method: "POST", body: values }),
+  login: (username, password) => request(`${CUSTOMER}/login/`, { method: "POST", body: { username, password } }),
+  logout: () => request(`${CUSTOMER}/logout/`, { method: "POST" }),
+  // `FormData` so the profile picture can be uploaded together with the fields.
+  profile: () => request(`${CUSTOMER}/profile/`),
+  updateProfile: (formData) => request(`${CUSTOMER}/profile/`, { method: "PATCH", body: formData }),
+  changePassword: (values) => request(`${CUSTOMER}/password/`, { method: "POST", body: values }),
+  address: () => request(`${CUSTOMER}/address/`),
+  updateAddress: (values) => request(`${CUSTOMER}/address/`, { method: "PUT", body: values }),
+  orders: (page) => request(`${CUSTOMER}/orders/`, { params: { page } }),
+  order: (id) => request(`${CUSTOMER}/orders/${id}/`),
+  latestOrder: () => request(`${CUSTOMER}/orders/latest/`),
+};
+
+export const checkoutApi = {
+  summary: () => request(`${API}/checkout/`),
+  placeOrder: () => request(`${API}/checkout/`, { method: "POST" }),
+};
+
 export const sessionApi = {
-  // Login happens on the Django site; this only reports its state.
+  // Lightweight login state; the profile has its own endpoint.
   current: () => request(`${API}/session/`),
 };

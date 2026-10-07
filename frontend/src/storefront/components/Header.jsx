@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
-import { useSession } from "../session/SessionContext";
-import { djangoUrl, staticUrl } from "../config";
+import { useAuth } from "../auth/AuthContext";
+import { staticUrl } from "../config";
 import { formatPrice } from "../format";
 
 const SCROLL_SHRINK_PX = 60;
@@ -26,6 +26,11 @@ function useScrolledPast(thresholdPx) {
   return scrolled;
 }
 
+function handleLogout(event, onLogout) {
+  event.preventDefault();
+  onLogout();
+}
+
 function SearchForm({ className, onSearch }) {
   const [query, setQuery] = useState("");
 
@@ -44,8 +49,8 @@ function SearchForm({ className, onSearch }) {
   );
 }
 
-export function MobileHeader({ menuOpen, onToggleMenu, onNavigate, onSearch }) {
-  const session = useSession();
+export function MobileHeader({ menuOpen, onToggleMenu, onNavigate, onSearch, onLogout }) {
+  const { isAuthenticated } = useAuth();
   const scrolled = useScrolledPast(SCROLL_SHRINK_PX);
 
   return (
@@ -69,24 +74,24 @@ export function MobileHeader({ menuOpen, onToggleMenu, onNavigate, onSearch }) {
           <div className="search-nav default" style={scrolled ? { opacity: 0, visibility: "hidden" } : undefined}>
             <SearchForm onSearch={onSearch} />
             <ul>
-              {session.is_authenticated ? (
+              {isAuthenticated ? (
                 <>
                   <li>
-                    <a href={djangoUrl("/accounts/profile/")}>
+                    <Link to="/account" aria-label="پروفایل">
                       <i className="fa-regular fa-user colormain" aria-hidden="true" />
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href={djangoUrl("/accounts/logout/")} className="list__link">
+                    <a href="#logout" className="list__link" aria-label="خروج" onClick={(event) => handleLogout(event, onLogout)}>
                       <i className="fa fa-sign-out icon-icon icon-color-1" aria-hidden="true" />
                     </a>
                   </li>
                 </>
               ) : (
                 <li>
-                  <a href={djangoUrl("/accounts/login/")}>
+                  <Link to="/login" aria-label="ورود">
                     <i className="fa fa-sign-in colormain" aria-hidden="true" />
-                  </a>
+                  </Link>
                 </li>
               )}
             </ul>
@@ -106,9 +111,11 @@ export function MobileHeader({ menuOpen, onToggleMenu, onNavigate, onSearch }) {
                 </Link>
               </li>
             ))}
-            {!session.is_authenticated && (
+            {!isAuthenticated && (
               <li>
-                <a href={djangoUrl("/accounts/register/")}>ثبت نام</a>
+                <Link to="/register" onClick={onNavigate}>
+                  ثبت نام
+                </Link>
               </li>
             )}
           </ul>
@@ -148,17 +155,17 @@ function CartDropdown() {
           <Link to="/cart" className="btn btn_sabad" onClick={() => setOpen(false)}>
             مشاهده سبد
           </Link>
-          <a href={djangoUrl("/shop/payment/checkout/")} className="btn btn_pardakht btn-main-masai">
+          <Link to="/checkout" className="btn btn_pardakht btn-main-masai" onClick={() => setOpen(false)}>
             پرداخت
-          </a>
+          </Link>
         </div>
       </div>
     </div>
   );
 }
 
-export function PcHeader({ onSearch }) {
-  const session = useSession();
+export function PcHeader({ onSearch, onLogout }) {
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className="Masai-header default">
@@ -178,16 +185,16 @@ export function PcHeader({ onSearch }) {
           </div>
           <div className="col-md-2 col-sm-12">
             <div className="user_head">
-              {session.is_authenticated ? (
-                <a href={djangoUrl("/accounts/profile/")} className="iconhead">
+              {isAuthenticated ? (
+                <Link to="/account" className="iconhead">
                   <i className="fa fa-user icon-icon icon-color-1" aria-hidden="true">
                     <span>پروفایل </span>
                   </i>
-                </a>
+                </Link>
               ) : (
-                <a href={djangoUrl("/accounts/login/")} className="iconhead">
+                <Link to="/login" className="iconhead" aria-label="ورود">
                   <i className="fa fa-sign-in font-20" aria-hidden="true" />
-                </a>
+                </Link>
               )}
             </div>
             <CartDropdown />
@@ -216,16 +223,16 @@ export function PcHeader({ onSearch }) {
           ))}
           <ul className="nav_header-2">
             <li className="list_style">
-              {session.is_authenticated ? (
-                <a href={djangoUrl("/accounts/logout/")} className="list__link">
+              {isAuthenticated ? (
+                <a href="#logout" className="list__link" onClick={(event) => handleLogout(event, onLogout)}>
                   <i className="fa fa-sign-out icon-icon icon-color-1" aria-hidden="true">
                     <span>خروج</span>
                   </i>
                 </a>
               ) : (
-                <a href={djangoUrl("/accounts/register/")} className="list__link">
+                <Link to="/register" className="list__link" aria-label="ثبت نام">
                   <i className="fa fa-user-plus icon-icon icon-color-1" aria-hidden="true" />
-                </a>
+                </Link>
               )}
             </li>
           </ul>

@@ -280,3 +280,16 @@ def test_address_validation(logged_in_client):
 
 def test_address_requires_login(csrf_client):
     assert csrf_client.get(f"{BASE}/address/").status_code == 403
+
+
+def test_profile_reports_order_counts(logged_in_client, user):
+    from shop.models import Invoice, Order, Transaction
+
+    finished = Order.objects.create(customer=user)
+    Transaction.objects.create(invoice=Invoice.objects.create(order=finished), amount=1, status="completed")
+    Transaction.objects.create(invoice=Invoice.objects.create(order=finished), amount=1, status="completed")
+    Order.objects.create(customer=user)
+
+    data = logged_in_client.get(f"{BASE}/profile/").json()
+    assert data["orders_count"] == 2
+    assert data["completed_orders_count"] == 1, "an order with several completed transactions counts once"

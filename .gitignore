@@ -1,2 +1,4 @@
 data/
 shop/media/
+# Redis dumps are local runtime data
+*.rdb

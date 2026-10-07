@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { useFlash } from "./Flash";
 import { MobileHeader, PcHeader, TopBanner } from "./Header";
 import Footer from "./Footer";
 
@@ -8,6 +10,8 @@ export default function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { logout } = useAuth();
+  const flash = useFlash();
 
   // The slide-in mobile menu is driven by a class on <html>, as in the original theme.
   useEffect(() => {
@@ -28,6 +32,13 @@ export default function Layout() {
     if (query) navigate(`/search?q=${encodeURIComponent(query)}`);
   }
 
+  async function handleLogout() {
+    closeMenu();
+    await logout();
+    flash.show("از حساب کاربری خارج شدید");
+    navigate("/");
+  }
+
   return (
     <>
       <TopBanner />
@@ -36,10 +47,11 @@ export default function Layout() {
         onToggleMenu={() => setMenuOpen(!menuOpen)}
         onNavigate={closeMenu}
         onSearch={handleSearch}
+        onLogout={handleLogout}
       />
       {menuOpen && <div id="bodyClick" onClick={closeMenu} />}
       <div className="wrapper default">
-        <PcHeader onSearch={handleSearch} />
+        <PcHeader onSearch={handleSearch} onLogout={handleLogout} />
         <Outlet />
         <Footer />
       </div>

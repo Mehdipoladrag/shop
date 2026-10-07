@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from accounts.models import CustomProfileModel, CustomUser
+from shop.models import Order
 
 MIN_PASSWORD_LENGTH = 8
 USERNAME_PREFIX = "@"
@@ -186,13 +187,16 @@ class ProfileSerializer(PersianMessagesMixin, serializers.ModelSerializer):
         validators=[digits_only(16, "شماره کارت باید ۱۶ رقم باشد")],
     )
 
+    orders_count = serializers.SerializerMethodField()
+    completed_orders_count = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomProfileModel
         fields = [
             "username", "first_name", "last_name", "email",
             "national_code", "address", "zipcode", "street", "city", "mobile",
             "age", "gender", "gender_display", "card_number", "iban", "back_money",
-            "customer_image", "is_complete",
+            "customer_image", "is_complete", "orders_count", "completed_orders_count",
         ]
         read_only_fields = ["back_money", "is_complete"]
         extra_kwargs = {
@@ -202,6 +206,14 @@ class ProfileSerializer(PersianMessagesMixin, serializers.ModelSerializer):
             "iban": {"required": False, "allow_blank": True, "allow_null": True},
             "age": {"required": False, "allow_null": True},
         }
+
+    def get_orders_count(self, profile):
+        return Order.objects.filter(customer=profile.user).count()
+
+    def get_completed_orders_count(self, profile):
+        return Order.objects.filter(
+            customer=profile.user, invoice__transaction__status="completed"
+        ).distinct().count()
 
     def validate_email(self, value):
         taken = CustomUser.objects.filter(email__iexact=value).exclude(pk=self.instance.user_id)

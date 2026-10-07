@@ -2,17 +2,21 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from "./cart/CartContext";
-import { SessionProvider } from "./session/SessionContext";
+import { AuthProvider } from "./auth/AuthContext";
+import { FlashProvider } from "./components/Flash";
+import "./styles/app.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <SessionProvider>
+      <AuthProvider>
         <CartProvider>
-          <App />
+          <FlashProvider>
+            <App />
+          </FlashProvider>
         </CartProvider>
-      </SessionProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

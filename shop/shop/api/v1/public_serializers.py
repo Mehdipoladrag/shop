@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from blog.models import Blogs
 from contact.models import Contact
-from shop.models import Brand, Category, Product
+from shop.models import Brand, Category, OrderItem, Order, Product, Transaction
 
 HUNDRED = Decimal(100)
 
@@ -123,3 +123,63 @@ class PublicContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = ["name", "email", "phone", "subject", "desc"]
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    """One purchased product inside an order."""
+
+    product_name = serializers.SerializerMethodField()
+    product_slug = serializers.SerializerMethodField()
+    product_pic = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "id",
+            "product_name",
+            "product_slug",
+            "product_pic",
+            "product_price",
+            "discounted_price",
+            "product_count",
+            "product_cost",
+        ]
+
+    # The product is nullable: it can be deleted after the order was placed.
+    def get_product_name(self, item):
+        return item.product.product_name if item.product else ""
+
+    def get_product_slug(self, item):
+        return item.product.slug if item.product else ""
+
+    def get_product_pic(self, item):
+        if not item.product or not item.product.pic:
+            return ""
+        request = self.context.get("request")
+        url = item.product.pic.url
+        return request.build_absolute_uri(url) if request else url
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    """An order of the logged in customer with its items and payment status."""
+
+    items = OrderItemSerializer(source="orderitem_set", many=True, read_only=True)
+    total_cost = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    status_label = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ["id", "order_date", "total_cost", "status", "status_label", "items"]
+
+    def get_total_cost(self, order):
+        return sum(item.product_cost for item in order.orderitem_set.all())
+
+    def get_status(self, order):
+        transaction = (
+            Transaction.objects.filter(invoice__order=order).order_by("-id").first()
+        )
+        return transaction.status if transaction else "pending"
+
+    def get_status_label(self, order):
+        return dict(Transaction.STATUS_CHOICE)[self.get_status(order)]

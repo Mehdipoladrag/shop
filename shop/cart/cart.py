@@ -63,6 +63,35 @@ class Cart(object):
         )
         return total_price
 
+    def lines(self):
+        """
+        Read-only view of the cart as plain data.
+
+        Unlike iterating the cart, this does not store model instances in the
+        session. Prices come from the current product, so a price change made
+        after a product was added is reflected in the cart and in the order.
+        """
+        products = Product.objects.select_related("product_category", "product_brand").in_bulk(
+            [int(product_id) for product_id in self.cart]
+        )
+        lines = []
+        for product_id, entry in self.cart.items():
+            product = products.get(int(product_id))
+            if product is None:
+                continue
+            count = entry["product_count"]
+            unit_price = product.price - product.price * Decimal(product.offer or 0) / Decimal(100)
+            lines.append(
+                {
+                    "product": product,
+                    "product_count": count,
+                    "price": product.price,
+                    "unit_price": unit_price,
+                    "total_price": unit_price * count,
+                }
+            )
+        return lines
+
     def clear(self):
         self.session[settings.CART_SESSION_ID] = {}
         self.session.modified = True

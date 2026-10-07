@@ -1,4 +1,5 @@
 from django.urls import path
+from . import customer_views
 from .views import (
     UserListApiView,
     UserProfileListApiView,
@@ -21,6 +22,17 @@ from .views import (
 
 
 urlpatterns = [
+    # Customer area (session login, CSRF protected)
+    path("customer/csrf/", customer_views.CsrfCookieApiView.as_view()),
+    path("customer/register/", customer_views.RegisterApiView.as_view()),
+    path("customer/login/", customer_views.LoginApiView.as_view()),
+    path("customer/logout/", customer_views.LogoutApiView.as_view()),
+    path("customer/profile/", customer_views.ProfileApiView.as_view()),
+    path("customer/password/", customer_views.ChangePasswordApiView.as_view()),
+    path("customer/address/", customer_views.AddressApiView.as_view()),
+    path("customer/orders/", customer_views.OrderListApiView.as_view()),
+    path("customer/orders/latest/", customer_views.LatestOrderApiView.as_view()),
+    path("customer/orders/<int:pk>/", customer_views.OrderDetailApiView.as_view()),
     # List
     path("users-list/", UserListApiView.as_view()),
     path("users-profile/", UserProfileListApiView.as_view()),

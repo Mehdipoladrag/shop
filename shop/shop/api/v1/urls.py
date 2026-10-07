@@ -1,4 +1,5 @@
 from django.urls import path
+from .checkout_views import CheckoutApiView
 from .public_views import (
     PublicBlogCategoryListApiView,
     PublicBlogDetailApiView,
@@ -56,6 +57,7 @@ urlpatterns = [
     path("public/products/filters/", PublicProductFiltersApiView.as_view()),
     path("public/products/<slug:slug>/", PublicProductDetailApiView.as_view()),
     path("public/cart/", PublicCartApiView.as_view()),
+    path("public/checkout/", CheckoutApiView.as_view()),
     path("public/cart/<int:product_id>/", PublicCartItemApiView.as_view()),
     path("public/contact/", PublicContactApiView.as_view()),
     path("public/session/", PublicSessionApiView.as_view()),

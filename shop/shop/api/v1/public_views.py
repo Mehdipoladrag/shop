@@ -1,6 +1,5 @@
 from decimal import Decimal
 
-from django.conf import settings
 from django.db.models import DecimalField, ExpressionWrapper, F, Max, Min, Q, Value
 from django.db.models.functions import Coalesce
 from drf_yasg.utils import swagger_auto_schema
@@ -15,6 +14,7 @@ from rest_framework.views import APIView
 from blog.models import Blogs, Category_blog
 from cart.cart import Cart
 from shop.models import Brand, Category, Product
+from shopproject.security import CsrfProtectedMixin
 
 from .public_serializers import (
     PublicBlogDetailSerializer,
@@ -197,46 +197,35 @@ class PublicProductFiltersApiView(PublicApiMixin, APIView):
         )
 
 
-class PublicCartApiView(PublicApiMixin, APIView):
-    """
-    Shopping cart stored in the Django session, the same cart the existing
-    checkout uses. The session cookie identifies the visitor, so the cart is
-    shared with the server-rendered pages.
-    """
+def serialize_cart(request):
+    """Cart contents with prices, for the cart page and the header."""
+    lines = Cart(request).lines()
+    items = [
+        {
+            "product": PublicProductListSerializer(line["product"], context={"request": request}).data,
+            "product_color": line["product"].product_color,
+            "product_count": line["product_count"],
+            "unit_price": line["unit_price"],
+            "total_price": line["total_price"],
+        }
+        for line in lines
+    ]
+    return {
+        "items": items,
+        "total_count": sum(line["product_count"] for line in lines),
+        "total_price": sum((line["total_price"] for line in lines), Decimal(0)),
+    }
 
-    @staticmethod
-    def serialize_cart(request):
-        # Read the session directly: iterating `Cart` stores model instances
-        # in the session dict, which cannot be serialized.
-        session_cart = request.session.get(settings.CART_SESSION_ID) or {}
-        products = Product.objects.select_related("product_category", "product_brand").in_bulk(
-            [int(product_id) for product_id in session_cart]
-        )
 
-        items, total_price, total_count = [], Decimal(0), 0
-        for product_id, entry in session_cart.items():
-            product = products.get(int(product_id))
-            if product is None:
-                continue
-            count = entry["product_count"]
-            price = Decimal(entry["price"])
-            unit_price = price - price * Decimal(product.offer or 0) / Decimal(100)
-            items.append(
-                {
-                    "product": PublicProductListSerializer(product, context={"request": request}).data,
-                    "product_color": product.product_color,
-                    "product_count": count,
-                    "unit_price": unit_price,
-                    "total_price": unit_price * count,
-                }
-            )
-            total_price += unit_price * count
-            total_count += count
-        return {"items": items, "total_count": total_count, "total_price": total_price}
+class PublicCartApiView(CsrfProtectedMixin, PublicApiMixin, APIView):
+    """
+    Shopping cart stored in the Django session. The session cookie identifies
+    the visitor, and checkout reads the same cart. Changes need a CSRF token.
+    """
 
     @swagger_auto_schema(tags=["Storefront"])
     def get(self, request):
-        return Response(self.serialize_cart(request))
+        return Response(serialize_cart(request))
 
     @swagger_auto_schema(tags=["Storefront"])
     def post(self, request):
@@ -260,14 +249,14 @@ class PublicCartApiView(PublicApiMixin, APIView):
             product_count=max(MIN_CART_COUNT, min(new_count, MAX_CART_COUNT)),
             update_count=True,
         )
-        return Response(self.serialize_cart(request))
+        return Response(serialize_cart(request))
 
 
-class PublicCartItemApiView(PublicApiMixin, APIView):
+class PublicCartItemApiView(CsrfProtectedMixin, PublicApiMixin, APIView):
     @swagger_auto_schema(tags=["Storefront"])
     def delete(self, request, product_id):
         Cart(request).remove(product_id)
-        return Response(PublicCartApiView.serialize_cart(request))
+        return Response(serialize_cart(request))
 
 
 class PublicBlogListApiView(PublicApiMixin, generics.ListAPIView):

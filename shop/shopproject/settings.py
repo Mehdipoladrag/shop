@@ -284,8 +284,23 @@ SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from interpreting files a
 # DJANGO CORS HEADER
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8001",]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8001",]
+# Origins allowed to call the API with cookies. The Vite dev server (port 5173)
+# proxies to Django but keeps its own origin, so it must be trusted too.
+DEV_FRONTEND_ORIGINS = [
+    "http://127.0.0.1:8001",
+    "http://localhost:8001",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+]
+TRUSTED_ORIGINS = [
+    origin
+    for origin in os.environ.get("TRUSTED_ORIGINS", ",".join(DEV_FRONTEND_ORIGINS)).split(",")
+    if origin
+]
+
+CORS_ALLOWED_ORIGINS = TRUSTED_ORIGINS
+CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
+CSRF_FAILURE_VIEW = "shopproject.security.csrf_failure"
 
 CORS_ALLOW_METHODS = (
     "DELETE",

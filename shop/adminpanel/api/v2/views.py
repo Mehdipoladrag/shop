@@ -6,9 +6,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from accounts.models import CustomUser
 from shop.models import Order, Product
-from .serializers import (
-    NewOrderSerializer,
- )
 
 @method_decorator(never_cache, name="dispatch")
 class UserCountApiView(APIView):

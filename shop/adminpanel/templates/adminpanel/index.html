@@ -386,100 +386,62 @@
     </section>
     <!-- /.content -->
   </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
+{% endblock admin_content %}
+
+{% block scripts %}
+<script>
+    $(function () {
+        const LOGIN_URL = '/admin-panel/login/';
+        const PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+        // Each dashboard counter: API endpoint, the response field to read and the target element.
+        const COUNTERS = [
+            {url: '/admin-panel/api/v2/user-count/', field: 'counter', target: '#user-count'},
+            {url: '/admin-panel/api/v2/user-count/', field: 'super_users', target: '#admin-count'},
+            {url: '/admin-panel/api/v2/new-order/', field: 'order_count', target: '#order-count'},
+            {url: '/admin-panel/api/v2/product-count/', field: 'product_count', target: '#product-count'},
+        ];
 
         const token = localStorage.getItem('jwtToken');
 
-        function convertToPersianDigits(number) {
-            const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-            return number.toString().replace(/\d/g, function(digit) {
-                return persianDigits[digit];
-            });
+        // Anonymous visitors are sent to the login page.
+        if (!token) {
+            window.location.href = LOGIN_URL;
+            return;
         }
 
-        if (token) {
-
-            $.ajax({
-                url: 'http://127.0.0.1:8001/admin-panel/api/v2/user-count/',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token 
-                },
-                success: function(response) {
-                    console.log('API User Response:', response);
-
-                    if (response.counter && response.super_users) {
-                        const persianUserCount = convertToPersianDigits(response.counter);
-                        const persianAdminCount = convertToPersianDigits(response.super_users);
-
-                        $('#user-count').text(persianUserCount);
-                        $('#admin-count').text(persianAdminCount);
-                    } else {
-                        console.error('مقادیر مورد انتظار در پاسخ وجود ندارد.');
-                        $('#user-count').text('خطا در دریافت تعداد کاربران');
-                        $('#admin-count').text('خطا در دریافت تعداد ادمین‌ها');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('خطا در دریافت اطلاعات کاربران و ادمین‌ها:', error);
-                    $('#user-count').text('خطا در دریافت اطلاعات');
-                    $('#admin-count').text('خطا در دریافت اطلاعات');
-                }
-            });
-
-            $.ajax({
-                url: 'http://127.0.0.1:8001/admin-panel/api/v2/new-order/',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token 
-                },
-                success: function(response) {
-                    console.log('API Order Response:', response);
-
-                    // اصلاح فیلد از total_orders به order_count
-                    if (response.order_count) {
-                        const persianOrderCount = convertToPersianDigits(response.order_count);
-                        $('#order-count').text(persianOrderCount);
-                    } else {
-                        console.error('مقدار مورد انتظار در پاسخ وجود ندارد.');
-                        $('#order-count').text('خطا در دریافت تعداد سفارش‌ها');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('خطا در دریافت اطلاعات سفارش‌ها:', error);
-                    $('#order-count').text('خطا در دریافت اطلاعات سفارش‌ها');
-                }
-            });
-
-            $.ajax({
-                url: 'http://127.0.0.1:8001/admin-panel/api/v2/product-count/',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token 
-                },
-                success: function(response) {
-                    console.log('API Product Response:', response);
-
-                    if (response.product_count) {
-                        const persianProductCount = convertToPersianDigits(response.product_count);
-                        $('#product-count').text(persianProductCount);
-                    } else {
-                        console.error('مقدار مورد انتظار در پاسخ وجود ندارد.');
-                        $('#product-count').text('خطا در دریافت تعداد محصولات');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('خطا در دریافت اطلاعات محصولات:', error);
-                    $('#product-count').text('خطا در دریافت اطلاعات محصولات');
-                }
-            });
-
-        } else {
-            window.location.href = '/admin-panel/login/';
+        function toPersianDigits(number) {
+            return number.toString().replace(/\d/g, digit => PERSIAN_DIGITS[digit]);
         }
+
+        // Fetch every endpoint once, even when several counters share the same response.
+        const requests = {};
+        function fetchCounters(url) {
+            if (!requests[url]) {
+                requests[url] = $.ajax({
+                    url: url,
+                    method: 'GET',
+                    headers: {'Authorization': 'Bearer ' + token},
+                });
+            }
+            return requests[url];
+        }
+
+        COUNTERS.forEach(function (counter) {
+            fetchCounters(counter.url)
+                .done(function (response) {
+                    const value = response[counter.field];
+                    // A count of zero is a valid value, so only reject missing fields.
+                    if (value === undefined) {
+                        $(counter.target).text('خطا در دریافت اطلاعات');
+                        return;
+                    }
+                    $(counter.target).text(toPersianDigits(value));
+                })
+                .fail(function () {
+                    $(counter.target).text('خطا در دریافت اطلاعات');
+                });
+        });
     });
 </script>
-
-{% endblock %}
+{% endblock scripts %}

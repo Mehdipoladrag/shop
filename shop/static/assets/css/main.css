@@ -8,6 +8,10 @@
     font-family: 'vazir-bold-fd-wl';
     src: url('../fonts/vazir/vazir-bold-fd-wl.ttf') format('truetype');
 }
+html {
+    overflow-x: hidden;
+}
+
 body {
     direction: rtl;
     text-align: right;

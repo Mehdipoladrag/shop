@@ -1,0 +1,222 @@
+@font-face {
+  font-family: Vazir;
+  src: url("/fonts/Vazir.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Vazir;
+  src: url("/fonts/Vazir-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: Vazir;
+  src: url("/fonts/Vazir-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-muted: #f0f2f5;
+  --text: #1f2933;
+  --text-muted: #616e7c;
+  --border: #dde3ea;
+  --primary: #1e9d8b;
+  --primary-hover: #17806f;
+  --primary-contrast: #ffffff;
+  --danger: #d64545;
+  --danger-soft: #fdecec;
+  --info: #17a2b8;
+  --success: #28a745;
+  --warning: #e0a800;
+  --shadow: 0 1px 3px rgb(15 23 42 / 0.08), 0 4px 14px rgb(15 23 42 / 0.04);
+  --radius: 10px;
+  --gutter: 16px;
+  --sidebar-width: 248px;
+  --topbar-height: 56px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11161c;
+    --surface: #1a2129;
+    --surface-muted: #222b35;
+    --text: #e6ebf0;
+    --text-muted: #9aa7b4;
+    --border: #2d3844;
+    --primary: #2bb8a4;
+    --primary-hover: #4fcfbd;
+    --primary-contrast: #0b1512;
+    --danger: #f07178;
+    --danger-soft: #3a2124;
+    --shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Vazir, Tahoma, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.4;
+}
+
+h1 {
+  font-size: 1.4rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+}
+
+img {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--surface-muted);
+}
+
+.btn--danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn--danger-ghost {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn--danger-ghost:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: var(--surface-muted);
+}
+
+/* Forms */
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field label {
+  font-weight: 500;
+}
+
+.field input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.field input[type="file"] {
+  padding: 8px;
+}
+
+.field--invalid input {
+  border-color: var(--danger);
+}
+
+.field__error,
+.form-error {
+  color: var(--danger);
+}
+
+.form-error {
+  margin: 0;
+}

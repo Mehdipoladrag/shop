@@ -70,9 +70,17 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Vazir, Tahoma, sans-serif;
+  /* IRANYekan (see /static/assets/css/fonts.css) with Vazir as the fallback */
+  font-family: "IRANYekan", Vazir, Tahoma, sans-serif;
   font-size: 15px;
   line-height: 1.7;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 body.no-scroll {

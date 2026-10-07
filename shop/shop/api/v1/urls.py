@@ -7,9 +7,11 @@ from .public_views import (
     PublicCartApiView,
     PublicCartItemApiView,
     PublicCategoryListApiView,
+    PublicContactApiView,
     PublicProductDetailApiView,
     PublicProductFiltersApiView,
     PublicProductListApiView,
+    PublicSessionApiView,
 )
 from .views import (
     # Category
@@ -55,6 +57,8 @@ urlpatterns = [
     path("public/products/<slug:slug>/", PublicProductDetailApiView.as_view()),
     path("public/cart/", PublicCartApiView.as_view()),
     path("public/cart/<int:product_id>/", PublicCartItemApiView.as_view()),
+    path("public/contact/", PublicContactApiView.as_view()),
+    path("public/session/", PublicSessionApiView.as_view()),
     path("public/blog/", PublicBlogListApiView.as_view()),
     path("public/blog/categories/", PublicBlogCategoryListApiView.as_view()),
     path("public/blog/<slug:slug>/", PublicBlogDetailApiView.as_view()),

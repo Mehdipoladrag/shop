@@ -3,6 +3,7 @@ from decimal import Decimal
 from rest_framework import serializers
 
 from blog.models import Blogs
+from contact.models import Contact
 from shop.models import Brand, Category, Product
 
 HUNDRED = Decimal(100)
@@ -114,3 +115,11 @@ class PublicBlogListSerializer(serializers.ModelSerializer):
 class PublicBlogDetailSerializer(PublicBlogListSerializer):
     class Meta(PublicBlogListSerializer.Meta):
         fields = PublicBlogListSerializer.Meta.fields + ["blog_description"]
+
+
+class PublicContactSerializer(serializers.ModelSerializer):
+    """Contact form submitted from the storefront."""
+
+    class Meta:
+        model = Contact
+        fields = ["name", "email", "phone", "subject", "desc"]

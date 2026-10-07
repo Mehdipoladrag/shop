@@ -5,9 +5,11 @@ from django.db.models import DecimalField, ExpressionWrapper, F, Max, Min, Q, Va
 from django.db.models.functions import Coalesce
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
 from blog.models import Blogs, Category_blog
@@ -19,6 +21,7 @@ from .public_serializers import (
     PublicBlogListSerializer,
     PublicBrandSerializer,
     PublicCategorySerializer,
+    PublicContactSerializer,
     PublicProductDetailSerializer,
     PublicProductListSerializer,
 )
@@ -299,3 +302,35 @@ class PublicBlogCategoryListApiView(PublicApiMixin, APIView):
     def get(self, request):
         categories = Category_blog.objects.order_by("name")
         return Response([{"id": c.id, "name": c.name, "slug": c.slug_cat} for c in categories])
+
+
+class ContactThrottle(AnonRateThrottle):
+    """Keeps the public contact form from being used to flood the inbox."""
+
+    rate = "10/hour"
+
+
+class PublicContactApiView(PublicApiMixin, generics.CreateAPIView):
+    serializer_class = PublicContactSerializer
+    throttle_classes = [ContactThrottle]
+
+    @swagger_auto_schema(tags=["Storefront"])
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class PublicSessionApiView(PublicApiMixin, APIView):
+    """Tells the storefront whether the visitor is logged in through the Django site."""
+
+    # Reads the Django session cookie. The endpoint is read-only, so no CSRF risk.
+    authentication_classes = [SessionAuthentication]
+
+    @swagger_auto_schema(tags=["Storefront"])
+    def get(self, request):
+        user = request.user
+        return Response(
+            {
+                "is_authenticated": user.is_authenticated,
+                "username": user.get_username() if user.is_authenticated else "",
+            }
+        )

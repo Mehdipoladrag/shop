@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { userApi } from "../api/endpoints";
-import { useApi } from "../hooks/useApi";
+import { useApi } from "../../shared/useApi";
 import { AsyncContent } from "../components/Feedback";
 import PageHeader from "../components/PageHeader";
 import DataTable from "../components/DataTable";
-import { formatDate, formatNumber } from "../utils/format";
+import { formatDate, formatNumber } from "../../shared/format";
 
 const SEARCH_DEBOUNCE_MS = 350;
 

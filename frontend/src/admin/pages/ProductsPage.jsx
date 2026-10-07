@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { productApi } from "../api/endpoints";
-import { useApi } from "../hooks/useApi";
+import { useApi } from "../../shared/useApi";
 import { AsyncContent } from "../components/Feedback";
 import PageHeader from "../components/PageHeader";
 import DataTable from "../components/DataTable";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { formatNumber, formatPrice, toPersianDigits } from "../utils/format";
-import { toRelativeMediaUrl } from "../utils/media";
+import { formatNumber, formatPrice, toPersianDigits } from "../../shared/format";
+import { toRelativeMediaUrl } from "../../shared/media";
 
 const COLUMNS = [
   {

@@ -1,18 +1,51 @@
-# Shop admin frontend
+# Shop frontend (React + Vite)
 
-React (Vite) admin panel for the Django shop API. Right-to-left, Persian UI,
-responsive from phones (drawer menu, tables become cards) to desktops.
+One Vite project with two right-to-left, responsive apps for the Django shop:
 
-## Pages
+| App          | URL      | What it is                                                         |
+| ------------ | -------- | ------------------------------------------------------------------ |
+| Storefront   | `/`      | The customer site, rebuilt in React with the existing Masai design |
+| Admin panel  | `/panel` | Dashboard and management pages for staff                           |
 
-| Route         | What it does                                           |
+## Storefront
+
+It uses the theme's own stylesheets, fonts and images, served by Django under
+`/static/assets`, with the same class names and markup as the Django templates,
+so it looks like the current site. The jQuery behaviour (Owl carousels, countdown,
+slide-in mobile menu, tabs) is reimplemented in React.
+
+| Route                       | Page                                               |
+| --------------------------- | -------------------------------------------------- |
+| `/`                         | Home: hero slider, offers, best rated, categories, brands, blog |
+| `/products`, `/categories`  | Shop listing with filters, sorting, pagination     |
+| `/category/:slug`           | Products of one category                           |
+| `/search?q=`                | Search results                                     |
+| `/products/:slug`           | Product page with gallery, tabs and add to cart    |
+| `/cart`                     | Cart (stored in the Django session)                |
+| `/blog`, `/blog/:slug`      | Blog list and post                                 |
+| `/about`, `/contact`        | Info pages; the contact form posts to the API      |
+
+Filters, sort order and page are kept in the URL (`?brand=1&color=...&ordering=price`).
+
+Still served by Django, and linked from the header and the cart: login,
+registration, profile and checkout/payment. The cart lives in the Django session,
+so the checkout reads the same cart the React pages fill.
+
+Data comes from the public, read-only API under `/shop/api/v1/public/`
+(categories, brands, products, filters, cart, blog, contact, session).
+
+## Admin panel
+
+Log in with a user that has `is_staff` or `is_superuser`.
+
+| Route         | Page                                                   |
 | ------------- | ------------------------------------------------------ |
-| `/login`      | Admin login (JWT)                                      |
-| `/`           | Dashboard: counters and latest orders                  |
-| `/categories` | List, create, edit (with image) and delete categories  |
-| `/products`   | List and delete products                               |
-| `/orders`     | List orders                                            |
-| `/users`      | Paginated user list with debounced search              |
+| `/panel/login`      | Admin login (JWT, refreshed automatically)       |
+| `/panel`            | Dashboard: counters and latest orders            |
+| `/panel/categories` | List, create, edit (with image) and delete       |
+| `/panel/products`   | List and delete                                  |
+| `/panel/orders`     | List                                             |
+| `/panel/users`      | Paginated list with debounced search             |
 
 ## Run it (no Docker)
 
@@ -22,31 +55,36 @@ responsive from phones (drawer menu, tables become cards) to desktops.
 ```bash
 cd frontend
 npm install
-npm run dev        # http://127.0.0.1:5173
+npm run dev        # http://127.0.0.1:5173  (admin: http://127.0.0.1:5173/panel)
 ```
 
-The dev server proxies `/shop`, `/accounts`, `/admin-panel`, `/api` and
-`/media` to the backend, so no CORS setup is needed. Point it at another
-backend with `VITE_BACKEND_URL` (see `.env.example`).
-
-Log in with a user that has `is_staff` or `is_superuser` set.
+The dev server proxies `/shop/api`, `/accounts/api`, `/admin-panel/api`,
+`/blog/api`, `/api`, `/media` and `/static` to the backend, so the browser sees a
+single origin: no CORS setup, and the session cookie used by the cart works.
+`VITE_BACKEND_URL` (see `.env.example`) sets the backend address, which is also
+used for links to the Django pages.
 
 ## Build
 
 ```bash
-npm run build      # output in dist/
+npm run build      # output in dist/ (index.html and panel/index.html)
 ```
+
+Serve `dist/` from the same origin as Django, with `/` and `/panel/` falling back
+to their `index.html`, and set `VITE_BACKEND_URL` to an empty string at build
+time so the Django links stay relative.
 
 ## Structure
 
 ```
+index.html            storefront entry (theme stylesheets from /static)
+panel/index.html      admin entry
 src/
-  api/          fetch client with automatic token refresh, endpoint functions
-  auth/         AuthContext and ProtectedRoute
-  components/   DataTable, Modal, ConfirmDialog, Field, Feedback states
-  hooks/        useApi (loading/error state, latest request wins)
-  layout/       AdminLayout (topbar, sidebar / mobile drawer)
-  pages/        one component per route
-  styles/       design tokens, layout and component CSS (light and dark mode)
-  utils/        Persian number/date formatting, media URL helper
+  shared/             Persian formatting helpers, useApi hook
+  storefront/
+    api/              fetch client and endpoint functions
+    cart/             cart context (session cart)    session/  login state
+    components/       Layout, Header, Footer, Carousel, Countdown, ProductItem ...
+    pages/            one component per route
+  admin/              the admin app (api, auth, components, layout, pages, styles)
 ```

@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.views.csrf import csrf_failure as default_csrf_failure
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
@@ -20,8 +21,13 @@ class CsrfProtectedMixin:
 
 
 def csrf_failure(request, reason=""):
-    """Reports CSRF failures as JSON, which the React frontend can display."""
-    return JsonResponse(
-        {"detail": "اعتبار درخواست منقضی شده است. صفحه را دوباره بارگذاری کنید."},
-        status=403,
-    )
+    """
+    Reports CSRF failures of API calls as JSON, which the React frontend can
+    display. Pages such as the Django admin login keep Django's HTML page.
+    """
+    if "/api/" in request.path:
+        return JsonResponse(
+            {"detail": "اعتبار درخواست منقضی شده است. صفحه را دوباره بارگذاری کنید."},
+            status=403,
+        )
+    return default_csrf_failure(request, reason=reason)

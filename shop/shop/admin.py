@@ -12,6 +12,7 @@ from shop.models import (
     Comment,
     Transaction,
 )
+from django.conf import settings
 from django.utils.html import format_html
 
 
@@ -21,7 +22,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display_links = ["category_code", "category_name", "slug_cat"]
 
     def slug_cat(self, obj):
-        url_cat = "http://127.0.0.1:8000/shop/"
+        url_cat = f"{settings.FRONTEND_URL}/category/"
         return format_html(
             "<a href='{url}{slug}'>{url}{slug}</a>", url=url_cat, slug=obj.category_slug
         )
@@ -105,7 +106,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
     def slug_product(self, obj):
-        url_product = "http://127.0.0.1:8000/shop/product/"
+        url_product = f"{settings.FRONTEND_URL}/products/"
         return format_html(
             "<a href='{url}{slug}'>{url}{slug}</a>", url=url_product, slug=obj.slug
         )

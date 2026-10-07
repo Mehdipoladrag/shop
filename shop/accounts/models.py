@@ -32,7 +32,7 @@ class CustomProfileModel(models.Model):
     card_number = models.CharField(
         _("شماره کارت"), max_length=16, blank=True, null=True
     )
-    iban = models.CharField(_("شماره شبا"), max_length=16, blank=True, null=True)
+    iban = models.CharField(_("شماره شبا"), max_length=26, blank=True, null=True)
     back_money = models.CharField(
         _("روش بازگشت پول"), max_length=50, default="شماره شبا", blank=True, null=True
     )

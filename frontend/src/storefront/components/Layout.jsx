@@ -34,7 +34,12 @@ export default function Layout() {
 
   async function handleLogout() {
     closeMenu();
-    await logout();
+    try {
+      await logout();
+    } catch (error) {
+      flash.show(`خروج انجام نشد. ${error.message}`, "error");
+      return;
+    }
     flash.show("از حساب کاربری خارج شدید");
     navigate("/");
   }

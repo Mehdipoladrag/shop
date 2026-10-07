@@ -8,13 +8,13 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
 from accounts.models import CustomProfileModel
 from shop.api.v1.public_serializers import OrderSerializer
 from shop.models import Order
 from shopproject.security import CsrfProtectedMixin
+from shopproject.throttles import LoginThrottle, RegisterThrottle
 
 from .customer_serializers import (
     AddressSerializer,
@@ -25,18 +25,6 @@ from .customer_serializers import (
 )
 
 TAG = ["Customer"]
-
-
-class LoginThrottle(AnonRateThrottle):
-    """Slows down password guessing."""
-
-    scope = "customer_login"
-    rate = "10/min"
-
-
-class RegisterThrottle(AnonRateThrottle):
-    scope = "customer_register"
-    rate = "10/hour"
 
 
 class CustomerApiView(APIView):

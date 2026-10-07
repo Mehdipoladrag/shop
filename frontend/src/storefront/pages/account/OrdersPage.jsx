@@ -66,7 +66,7 @@ export default function OrdersPage() {
                         </div>
                         <div className="col-12">
                           <div className="row">
-                            {order.items.map((item) => (
+                            {order.items.filter((item) => item.product_slug).map((item) => (
                               <Link to={`/products/${item.product_slug}`} key={item.id}>
                                 <img src={toRelativeUrl(item.product_pic)} alt={item.product_name} />
                               </Link>

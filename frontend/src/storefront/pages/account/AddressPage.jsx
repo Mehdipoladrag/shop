@@ -25,13 +25,20 @@ export default function AddressPage() {
 
   const update = (event) => setValues({ ...values, [event.target.name]: event.target.value });
 
+  // Leaving the form discards edits that were not saved.
+  function toggleEditing() {
+    setValues(toFormValues(profile));
+    setErrors({});
+    setEditing(!editing);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     setSaving(true);
     setErrors({});
     try {
       await customerApi.updateAddress(values);
-      reloadProfile();
+      await reloadProfile();
       flash.show("آدرس شما ذخیره شد");
       setEditing(false);
     } catch (error) {
@@ -48,7 +55,7 @@ export default function AddressPage() {
             <span>آدرس‌ها</span>
           </h3>
           <div className="text-left">
-            <button type="button" className="btn btn-main-masai" onClick={() => setEditing(!editing)}>
+            <button type="button" className="btn btn-main-masai" onClick={toggleEditing}>
               {editing ? "انصراف" : "ویرایش آدرس"}
             </button>
           </div>

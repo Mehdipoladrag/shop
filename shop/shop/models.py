@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import gettext as _
 from decimal import Decimal
@@ -95,7 +96,12 @@ class Product(models.Model):
     price = models.DecimalField(
         _("قیمت محصول"), decimal_places=1, max_digits=10
     )  # قیمت
-    offer = models.IntegerField(_("درصد تخفیف"), null=True, blank=True)  # تخفیف
+    offer = models.IntegerField(
+        _("درصد تخفیف"),
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )  # تخفیف
     time_send = models.PositiveIntegerField(_("زمان ارسال"))  # زمان ارسال محصول
     product_offer = models.ForeignKey(
         Offers,
@@ -195,7 +201,7 @@ class OrderItem(models.Model):
         _("هزینه محصول"), max_digits=10, decimal_places=1
     )
     discounted_price = models.DecimalField(
-        _("تخفیف محصول"), max_digits=10, decimal_places=2, null=True, blank=True
+        _("تخفیف محصول"), max_digits=12, decimal_places=2, null=True, blank=True
     )
 
     def save(self, *args, **kwargs):

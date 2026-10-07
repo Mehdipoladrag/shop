@@ -10,8 +10,8 @@ One Vite project with two right-to-left, responsive apps for the Django shop:
 ## Storefront
 
 It uses the theme's own stylesheets, fonts and images, served by Django under
-`/static/assets`, with the same class names and markup as the Django templates,
-so it looks like the current site. The jQuery behaviour (Owl carousels, countdown,
+`/static/assets`. The markup and class names follow the original Masai design (the
+old server-rendered Django pages were removed), so the site looks the same. The jQuery behaviour (Owl carousels, countdown,
 slide-in mobile menu, tabs) is reimplemented in React.
 
 | Route                       | Page                                               |
@@ -66,7 +66,8 @@ npm run dev        # http://127.0.0.1:5173  (admin: http://127.0.0.1:5173/panel)
 ```
 
 The dev server proxies `/shop/api`, `/accounts/api`, `/admin-panel/api`,
-`/blog/api`, `/api`, `/media` and `/static` to the backend, so the browser sees a
+`/blog/api`, `/api`, `/media`, `/static`, `/admin/`, `/swagger`, `/redoc` and
+`/api-auth` to the backend, so the browser sees a
 single origin: no CORS setup, and the session cookie used by the cart works.
 `VITE_BACKEND_URL` (see `.env.example`) sets the backend address.
 
@@ -88,7 +89,8 @@ src/
   shared/             Persian formatting helpers, useApi hook
   storefront/
     api/              fetch client and endpoint functions
-    cart/             cart context (session cart)    session/  login state
+    cart/             cart context (session cart)
+    auth/             login state, route guard
     components/       Layout, Header, Footer, Carousel, Countdown, ProductItem ...
     pages/            one component per route
   admin/              the admin app (api, auth, components, layout, pages, styles)

@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from django.db.models import DecimalField, ExpressionWrapper, F, Max, Min, Q, Value
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Greatest, Least
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework.authentication import SessionAuthentication
@@ -37,24 +37,46 @@ ORDERING_ALIASES = {"price": "final", "-price": "-final"}
 MIN_CART_COUNT = 1
 MAX_CART_COUNT = 9
 
+# Values that mean "true" for a flag sent as JSON or form data.
+TRUE_VALUES = (True, 1, "1", "true", "True")
+
 PRICE_FIELD = DecimalField(max_digits=14, decimal_places=2)
+# Same clamp as shop.pricing.clamp_offer, evaluated by the database.
+OFFER_PERCENT = Least(Greatest(Coalesce("offer", Value(0)), Value(0)), Value(100))
 FINAL_PRICE = ExpressionWrapper(
-    F("price") * (Value(100) - Coalesce("offer", Value(0))) / Value(100),
+    F("price") * (Value(100) - OFFER_PERCENT) / Value(100),
     output_field=PRICE_FIELD,
 )
 
+# Limits that keep hostile query values away from the database.
+MAX_FILTER_PRICE = Decimal(10) ** 12
+MAX_ID_DIGITS = 18
+
 
 def parse_decimal(value):
-    """Returns a Decimal for a query parameter, or None when it is missing or invalid."""
+    """Returns a finite Decimal for a query parameter, or None when it is missing, invalid or absurd."""
     try:
-        return Decimal(value)
-    except (TypeError, ArithmeticError):
+        number = Decimal(value)
+    except (TypeError, ValueError, ArithmeticError):
         return None
+    if not number.is_finite() or abs(number) > MAX_FILTER_PRICE:
+        return None
+    return number
 
 
 def parse_int_list(value):
-    """Turns "1,2,x" into [1, 2]; invalid items are ignored."""
-    return [int(item) for item in (value or "").split(",") if item.strip().isdigit()]
+    """Turns "1,2,x" into [1, 2]; items that are not plain ASCII digits are ignored."""
+    ids = []
+    for item in (value or "").split(","):
+        item = item.strip()
+        if item.isascii() and item.isdigit() and len(item) <= MAX_ID_DIGITS:
+            ids.append(int(item))
+    return ids
+
+
+def clean_text(value):
+    """Query text without NUL bytes, which PostgreSQL cannot store or compare."""
+    return (value or "").replace("\x00", "").strip()
 
 
 class PublicApiMixin:
@@ -113,11 +135,11 @@ class PublicProductListApiView(PublicApiMixin, generics.ListAPIView):
             final=FINAL_PRICE
         )
 
-        category_slug = params.get("category")
+        category_slug = clean_text(params.get("category"))
         if category_slug:
             queryset = queryset.filter(product_category__category_slug=category_slug)
 
-        search = params.get("search", "").strip()
+        search = clean_text(params.get("search"))
         if search:
             queryset = queryset.filter(
                 Q(product_name__icontains=search) | Q(mini_description__icontains=search)
@@ -127,7 +149,7 @@ class PublicProductListApiView(PublicApiMixin, generics.ListAPIView):
         if brand_ids:
             queryset = queryset.filter(product_brand_id__in=brand_ids)
 
-        colors = [color for color in params.get("color", "").split(",") if color.strip()]
+        colors = [clean_text(color) for color in params.get("color", "").split(",") if clean_text(color)]
         if colors:
             queryset = queryset.filter(product_color__in=colors)
 
@@ -230,19 +252,23 @@ class PublicCartApiView(CsrfProtectedMixin, PublicApiMixin, APIView):
     @swagger_auto_schema(tags=["Storefront"])
     def post(self, request):
         """Adds a product, or replaces its count when `update` is true."""
-        product_ids = parse_int_list(str(request.data.get("product_id")))
+        data = request.data
+        if not isinstance(data, dict):
+            return Response({"detail": "Invalid request body."}, status=400)
+
+        product_ids = parse_int_list(str(data.get("product_id")))
         product = Product.objects.filter(pk=product_ids[0]).first() if product_ids else None
         if product is None:
             return Response({"detail": "Product not found."}, status=404)
 
         try:
-            count = int(request.data.get("product_count", 1))
-        except (TypeError, ValueError):
+            count = int(data.get("product_count", 1))
+        except (TypeError, ValueError, OverflowError):
             return Response({"detail": "Invalid product count."}, status=400)
 
         cart = Cart(request)
         existing = cart.cart.get(str(product.id), {}).get("product_count", 0)
-        update = bool(request.data.get("update"))
+        update = data.get("update") in TRUE_VALUES
         new_count = count if update else existing + count
         cart.add(
             product=product,
@@ -267,7 +293,7 @@ class PublicBlogListApiView(PublicApiMixin, generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Blogs.objects.select_related("username", "category").order_by("-create_date")
-        category_slug = self.request.query_params.get("category")
+        category_slug = clean_text(self.request.query_params.get("category"))
         if category_slug:
             queryset = queryset.filter(category__slug_cat=category_slug)
         return queryset

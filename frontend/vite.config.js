@@ -14,6 +14,11 @@ const BACKEND_PATHS = [
   "/api",
   "/media",
   "/static",
+  // Django's own pages
+  "/admin/",
+  "/swagger",
+  "/redoc",
+  "/api-auth",
 ];
 
 const ADMIN_BASE = "/panel";

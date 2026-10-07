@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import sys
+
+from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,13 +24,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-("
-)
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+
+# The secret key signs sessions and the admin JWTs. The built-in value is public
+# (it is in this repository), so it is only used for local development and tests.
+DEV_SECRET_KEY = "django-insecure-of640&szwnh)s-u$1o33&81v42g&m7#3=z-3w-=cfj6*4er#-("
+TESTING = "pytest" in sys.modules or sys.argv[1:2] == ["test"]
+
+SECRET_KEY = os.environ.get("SECRET_KEY") or (DEV_SECRET_KEY if DEBUG or TESTING else None)
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "Set the SECRET_KEY environment variable (or run with DEBUG=True for local development)."
+    )
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1").split(",")
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
@@ -142,6 +151,9 @@ DATABASES = {
 # }
 # REST_FRAMEWORK
 REST_FRAMEWORK = {
+    # Throttling identifies clients by REMOTE_ADDR. X-Forwarded-For is only trusted
+    # when it is set to the number of reverse proxies in front of Django.
+    "NUM_PROXIES": int(os.environ.get("NUM_PROXIES", "0")),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAdminUser",
     ],
@@ -300,6 +312,12 @@ TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = TRUSTED_ORIGINS
 CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
 CSRF_FAILURE_VIEW = "shopproject.security.csrf_failure"
+
+# Where a login through the browsable API (/api-auth/login/) ends when no ?next is given.
+LOGIN_REDIRECT_URL = "/swagger/"
+
+# Address of the React storefront, used for links in the Django admin.
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://127.0.0.1:5173").rstrip("/")
 
 CORS_ALLOW_METHODS = (
     "DELETE",

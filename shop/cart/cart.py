@@ -1,20 +1,21 @@
-from django.conf import settings
-from shop.models import Product
 from decimal import Decimal
+
+from django.conf import settings
+
+from shop.models import Product
+from shop.pricing import discounted_price
 
 
 class Cart(object):
+    """The shopping cart of a visitor, kept in the session."""
 
     def __init__(self, request):
-
         self.session = request.session
-        cart = self.session.get(settings.CART_SESSION_ID)
-        if not cart:
-            cart = self.session[settings.CART_SESSION_ID] = {}
-        self.cart = cart
+        # Reading the cart must not write to the session: that would create and
+        # store a new session for every anonymous request.
+        self.cart = self.session.get(settings.CART_SESSION_ID) or {}
 
     def add(self, product, product_count=1, update_count=False):
-
         product_id = str(product.id)
         if product_id not in self.cart:
             self.cart[product_id] = {"product_count": 0, "price": str(product.price)}
@@ -35,41 +36,13 @@ class Cart(object):
             del self.cart[product_id]
             self.save()
 
-    def __iter__(self):
-        product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids)
-        for product in products:
-            item = self.cart[str(product.id)]
-            item["product"] = product
-            item["price"] = Decimal(item["price"])
-
-            if product.offer:
-                discount_percent = Decimal(product.offer) / 100
-                discount_amount = item["price"] * discount_percent
-                item["discounted_price"] = item["price"] - discount_amount
-            else:
-                item["discounted_price"] = item["price"]
-
-            item["total_price"] = item["discounted_price"] * item["product_count"]
-            yield item
-
-    def __len__(self):
-        return sum(item["product_count"] for item in self.cart.values())
-
-    def get_total_price(self):
-        total_price = sum(
-            Decimal(item["discounted_price"]) * item["product_count"]
-            for item in self.cart.values()
-        )
-        return total_price
-
     def lines(self):
         """
         Read-only view of the cart as plain data.
 
-        Unlike iterating the cart, this does not store model instances in the
-        session. Prices come from the current product, so a price change made
-        after a product was added is reflected in the cart and in the order.
+        Nothing is stored back in the session, and prices come from the current
+        product, so a price change made after a product was added is reflected
+        in the cart and in the order.
         """
         products = Product.objects.select_related("product_category", "product_brand").in_bulk(
             [int(product_id) for product_id in self.cart]
@@ -80,7 +53,7 @@ class Cart(object):
             if product is None:
                 continue
             count = entry["product_count"]
-            unit_price = product.price - product.price * Decimal(product.offer or 0) / Decimal(100)
+            unit_price = discounted_price(product.price, product.offer)
             lines.append(
                 {
                     "product": product,
@@ -93,5 +66,9 @@ class Cart(object):
         return lines
 
     def clear(self):
-        self.session[settings.CART_SESSION_ID] = {}
-        self.session.modified = True
+        if settings.CART_SESSION_ID in self.session:
+            self.session[settings.CART_SESSION_ID] = {}
+            self.session.modified = True
+
+    def __len__(self):
+        return sum(item["product_count"] for item in self.cart.values())

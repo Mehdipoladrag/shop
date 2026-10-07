@@ -20,7 +20,7 @@ const PROFILE_FIELDS = [
   { name: "mobile", label: "شماره همراه", type: "tel", inputMode: "numeric", maxLength: 11, autoComplete: "tel" },
   { name: "age", label: "سن", type: "number", min: 0 },
   { name: "card_number", label: "شماره کارت", inputMode: "numeric", maxLength: 16 },
-  { name: "iban", label: "شماره شبا", maxLength: 16 },
+  { name: "iban", label: "شماره شبا", maxLength: 26 },
 ];
 
 const EDITABLE = [...ACCOUNT_FIELDS, ...PROFILE_FIELDS, { name: "gender" }].map((field) => field.name);
@@ -50,7 +50,7 @@ export default function ProfileEditPage() {
 
     try {
       await customerApi.updateProfile(formData);
-      reloadProfile();
+      await reloadProfile();
       flash.show("اطلاعات شما با موفقیت ذخیره شد");
       navigate("/account");
     } catch (error) {

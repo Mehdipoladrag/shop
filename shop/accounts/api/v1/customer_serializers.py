@@ -8,6 +8,12 @@ from shop.models import Order
 
 MIN_PASSWORD_LENGTH = 8
 USERNAME_PREFIX = "@"
+# After the "@": English letters, digits, "_" and "."; this keeps look-alike
+# characters and invisible direction marks out of usernames.
+USERNAME_PATTERN = re.compile(r"^@[A-Za-z0-9_.]{3,24}$")
+MAX_PROFILE_IMAGE_BYTES = 2 * 1024 * 1024
+
+PERSIAN_TO_ASCII_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789")
 
 FIELD_MESSAGES = {
     "required": "لطفاً این فیلد را پر کنید",
@@ -35,6 +41,13 @@ def validate_new_password(value):
     return value
 
 
+def require_text(value):
+    """Fields that are optional in a partial update may not be emptied."""
+    if not value or not value.strip():
+        raise serializers.ValidationError("لطفاً این فیلد را پر کنید")
+    return value
+
+
 class RegisterSerializer(PersianMessagesMixin, serializers.Serializer):
     """Same rules as the old registration form."""
 
@@ -50,6 +63,10 @@ class RegisterSerializer(PersianMessagesMixin, serializers.Serializer):
             raise serializers.ValidationError("نام کاربری نمی‌تواند با عدد شروع شود")
         if not value.startswith(USERNAME_PREFIX):
             raise serializers.ValidationError("نام کاربری باید با @ شروع شود")
+        if not USERNAME_PATTERN.match(value):
+            raise serializers.ValidationError(
+                "نام کاربری باید ۳ تا ۲۴ کاراکتر انگلیسی، عدد، _ یا . بعد از @ باشد"
+            )
         if CustomUser.objects.filter(username__iexact=value).exists():
             raise serializers.ValidationError("نام کاربری تکراری است")
         return value
@@ -123,9 +140,21 @@ class ChangePasswordSerializer(PersianMessagesMixin, serializers.Serializer):
         return user
 
 
+def normalize_digits(value):
+    """Persian and Arabic-Indic digits become ASCII digits, so numbers are stored one way."""
+    return value.translate(PERSIAN_TO_ASCII_DIGITS)
+
+
+class DigitsCharField(serializers.CharField):
+    """CharField for numbers typed with any keyboard: digits are normalized before validation."""
+
+    def to_internal_value(self, data):
+        return normalize_digits(super().to_internal_value(data))
+
+
 def digits_only(length, message):
-    """Builds a validator for fields that must be exactly `length` digits."""
-    pattern = re.compile(rf"^\d{{{length}}}$")
+    """Builds a validator for fields that must be exactly `length` ASCII digits."""
+    pattern = re.compile(rf"^[0-9]{{{length}}}$")
 
     def validate(value):
         if value and not pattern.match(value):
@@ -135,13 +164,19 @@ def digits_only(length, message):
     return validate
 
 
-MOBILE_PATTERN = re.compile(r"^09\d{9}$")
+MOBILE_PATTERN = re.compile(r"^09[0-9]{9}$")
 
 
 def validate_mobile(value):
     if value and not MOBILE_PATTERN.match(value):
         raise serializers.ValidationError("شماره همراه باید با ۰۹ شروع شود و ۱۱ رقم باشد")
     return value
+
+
+def validate_image_size(image):
+    if image.size > MAX_PROFILE_IMAGE_BYTES:
+        raise serializers.ValidationError("حجم تصویر نباید بیشتر از ۲ مگابایت باشد")
+    return image
 
 
 # Profile fields the old edit form required; the profile counts as complete
@@ -165,27 +200,30 @@ class ProfileSerializer(PersianMessagesMixin, serializers.ModelSerializer):
     """Editable profile, together with the account fields of the user."""
 
     username = serializers.CharField(source="user.username", read_only=True)
-    first_name = serializers.CharField(source="user.first_name", max_length=25, required=False)
-    last_name = serializers.CharField(source="user.last_name", max_length=25, required=False)
-    email = serializers.EmailField(source="user.email", required=False)
+    # `allow_blank` lets an empty value reach the validators below; otherwise DRF
+    # would silently skip it and report the profile as saved.
+    first_name = serializers.CharField(source="user.first_name", max_length=25, required=False, allow_blank=True)
+    last_name = serializers.CharField(source="user.last_name", max_length=25, required=False, allow_blank=True)
+    email = serializers.EmailField(source="user.email", required=False, allow_blank=True)
     gender = serializers.BooleanField(required=False)
     gender_display = serializers.CharField(source="get_gender_display", read_only=True)
-    customer_image = serializers.ImageField(required=False, allow_null=True)
-    national_code = serializers.CharField(
+    customer_image = serializers.ImageField(required=False, allow_null=True, validators=[validate_image_size])
+    national_code = DigitsCharField(
         max_length=10, required=False, allow_blank=True,
         validators=[digits_only(10, "کد ملی باید ۱۰ رقم باشد")],
     )
-    zipcode = serializers.CharField(
+    zipcode = DigitsCharField(
         max_length=20, required=False, allow_blank=True,
         validators=[digits_only(10, "کد پستی باید ۱۰ رقم باشد")],
     )
-    mobile = serializers.CharField(
+    mobile = DigitsCharField(
         max_length=11, required=False, allow_blank=True, validators=[validate_mobile]
     )
-    card_number = serializers.CharField(
+    card_number = DigitsCharField(
         max_length=16, required=False, allow_blank=True,
         validators=[digits_only(16, "شماره کارت باید ۱۶ رقم باشد")],
     )
+    iban = serializers.CharField(max_length=26, required=False, allow_blank=True, allow_null=True)
 
     orders_count = serializers.SerializerMethodField()
     completed_orders_count = serializers.SerializerMethodField()
@@ -203,7 +241,6 @@ class ProfileSerializer(PersianMessagesMixin, serializers.ModelSerializer):
             "address": {"required": False, "allow_blank": True, "allow_null": True},
             "street": {"required": False, "allow_blank": True, "allow_null": True},
             "city": {"required": False, "allow_blank": True, "allow_null": True},
-            "iban": {"required": False, "allow_blank": True, "allow_null": True},
             "age": {"required": False, "allow_null": True},
         }
 
@@ -215,7 +252,14 @@ class ProfileSerializer(PersianMessagesMixin, serializers.ModelSerializer):
             customer=profile.user, invoice__transaction__status="completed"
         ).distinct().count()
 
+    def validate_first_name(self, value):
+        return require_text(value)
+
+    def validate_last_name(self, value):
+        return require_text(value)
+
     def validate_email(self, value):
+        require_text(value)
         taken = CustomUser.objects.filter(email__iexact=value).exclude(pk=self.instance.user_id)
         if taken.exists():
             raise serializers.ValidationError("ایمیل تکراری است")
@@ -228,20 +272,25 @@ class ProfileSerializer(PersianMessagesMixin, serializers.ModelSerializer):
         if user_data:
             profile.user.save()
 
+        previous_image = profile.customer_image.name if profile.customer_image else ""
         for field, value in validated_data.items():
             setattr(profile, field, value)
         profile.is_complete = all(getattr(profile, field) for field in REQUIRED_PROFILE_FIELDS)
         profile.save()
+
+        # A replaced picture would otherwise stay on disk forever.
+        if previous_image and previous_image != (profile.customer_image.name if profile.customer_image else ""):
+            profile.customer_image.storage.delete(previous_image)
         return profile
 
 
 class AddressSerializer(PersianMessagesMixin, serializers.ModelSerializer):
     """The delivery address part of the profile."""
 
-    zipcode = serializers.CharField(
+    zipcode = DigitsCharField(
         max_length=20, allow_blank=True, validators=[digits_only(10, "کد پستی باید ۱۰ رقم باشد")]
     )
-    mobile = serializers.CharField(max_length=11, allow_blank=True, validators=[validate_mobile])
+    mobile = DigitsCharField(max_length=11, allow_blank=True, validators=[validate_mobile])
 
     class Meta:
         model = CustomProfileModel

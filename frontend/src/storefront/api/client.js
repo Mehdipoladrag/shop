@@ -1,4 +1,9 @@
+export const SESSION_EXPIRED_EVENT = "customer:session-expired";
+
 const CSRF_URL = "/accounts/api/v1/customer/csrf/";
+// Requests that need a logged in customer; a 403 on them means the session is gone.
+const SESSION_PATHS = ["/accounts/api/v1/customer/", "/shop/api/v1/public/checkout/"];
+const LOGIN_PATHS = ["/accounts/api/v1/customer/login/", "/accounts/api/v1/customer/register/"];
 const CSRF_COOKIE = "csrftoken";
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
@@ -7,11 +12,26 @@ const STATUS_MESSAGES = {
   401: "برای ادامه وارد حساب کاربری خود شوید.",
   403: "برای ادامه وارد حساب کاربری خود شوید.",
   429: "تعداد تلاش‌های شما بیش از حد مجاز است. کمی بعد دوباره امتحان کنید.",
+  409: "درخواست قبلی شما هنوز در حال انجام است. چند لحظه صبر کنید.",
 };
+const NETWORK_ERROR_MESSAGE = "ارتباط با سرور برقرار نشد. اینترنت خود را بررسی کنید.";
+const GENERIC_ERROR_MESSAGE = "خطایی رخ داد. دوباره تلاش کنید.";
+// What DRF answers (with status 403) when the session no longer identifies a user.
+const NOT_AUTHENTICATED_DETAIL = "Authentication credentials were not provided.";
+
+const CSRF_MESSAGE = "اعتبار درخواست منقضی شده است. صفحه را دوباره بارگذاری کنید.";
+
+// A 403 is "log in first" only when the server says so; a CSRF rejection has its own message.
+function messageFor(status, data) {
+  const detail = typeof data?.detail === "string" ? data.detail : "";
+  if (status === 403 && detail.startsWith("CSRF Failed")) return CSRF_MESSAGE;
+  if (status === 403 && detail && detail !== NOT_AUTHENTICATED_DETAIL) return detail;
+  return STATUS_MESSAGES[status] ?? firstMessage(data) ?? GENERIC_ERROR_MESSAGE;
+}
 
 export class ApiError extends Error {
   constructor(status, data) {
-    super(STATUS_MESSAGES[status] ?? firstMessage(data) ?? `Request failed with status ${status}`);
+    super(messageFor(status, data));
     this.name = "ApiError";
     this.status = status;
     this.data = data;
@@ -63,17 +83,22 @@ async function parseBody(response) {
 }
 
 async function send(path, method, body, { refreshCsrf = false } = {}) {
-  const headers = {};
-  if (!SAFE_METHODS.has(method)) headers["X-CSRFToken"] = await csrfToken({ refresh: refreshCsrf });
+  try {
+    const headers = {};
+    if (!SAFE_METHODS.has(method)) headers["X-CSRFToken"] = await csrfToken({ refresh: refreshCsrf });
 
-  let payload;
-  if (body instanceof FormData) {
-    payload = body; // the browser sets the multipart boundary
-  } else if (body !== undefined) {
-    headers["Content-Type"] = "application/json";
-    payload = JSON.stringify(body);
+    let payload;
+    if (body instanceof FormData) {
+      payload = body; // the browser sets the multipart boundary
+    } else if (body !== undefined) {
+      headers["Content-Type"] = "application/json";
+      payload = JSON.stringify(body);
+    }
+    return await fetch(path, { method, headers, body: payload });
+  } catch {
+    // fetch only rejects when the request could not be made at all.
+    throw new ApiError(0, { detail: NETWORK_ERROR_MESSAGE });
   }
-  return fetch(path, { method, headers, body: payload });
 }
 
 /**
@@ -90,14 +115,27 @@ export async function request(path, { method = "GET", body, params } = {}) {
   }
 
   const data = await parseBody(response);
-  if (!response.ok) throw new ApiError(response.status, data);
+  if (!response.ok) {
+    // The server no longer knows this customer (session expired or ended elsewhere).
+    const sessionGone =
+      response.status === 403 &&
+      data?.detail === NOT_AUTHENTICATED_DETAIL &&
+      SESSION_PATHS.some((prefix) => path.startsWith(prefix)) &&
+      !LOGIN_PATHS.includes(path);
+    if (sessionGone) {
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    }
+    throw new ApiError(response.status, data);
+  }
   return data;
 }
 
 // Only a CSRF rejection is worth retrying; a 403 for a missing login is final.
 async function isCsrfFailure(response) {
   const data = await parseBody(response.clone());
-  return typeof data?.detail === "string" && data.detail.includes("اعتبار درخواست");
+  const detail = typeof data?.detail === "string" ? data.detail : "";
+  // Ours comes from the CSRF middleware, "CSRF Failed" from DRF's session authentication.
+  return detail.includes("اعتبار درخواست") || detail.startsWith("CSRF Failed");
 }
 
 // Drops empty values so they do not end up as `?color=&brand=` in the URL.

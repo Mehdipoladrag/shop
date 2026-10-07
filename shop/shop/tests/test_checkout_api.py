@@ -130,11 +130,15 @@ def test_checkout_rejects_totals_the_database_cannot_store(logged_in_client, mak
     assert not Order.objects.exists()
 
 
-def test_checkout_get_reports_profile_state(logged_in_client, make_product):
+def test_checkout_get_reports_whether_the_address_is_complete(logged_in_client, make_product):
     add_to_cart(logged_in_client, make_product())
     data = logged_in_client.get(CHECKOUT).json()
-    assert data["profile_complete"] is False
+    assert data["address_complete"] is False
     assert data["cart"]["total_count"] == 1
+
+    address = {"address": "تهران", "zipcode": "1234567890", "street": "ولیعصر", "city": "تهران", "mobile": "09121234567"}
+    assert logged_in_client.put("/accounts/api/v1/customer/address/", address, format="json").status_code == 200
+    assert logged_in_client.get(CHECKOUT).json()["address_complete"] is True
 
 
 def test_order_ignores_client_supplied_prices(logged_in_client, make_product):

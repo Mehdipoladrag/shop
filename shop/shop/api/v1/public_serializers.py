@@ -1,12 +1,12 @@
-from decimal import Decimal
 
 from rest_framework import serializers
 
 from blog.models import Blogs
 from contact.models import Contact
 from shop.models import Brand, Category, OrderItem, Order, Product, Transaction
+from accounts.api.v1.customer_serializers import MOBILE_PATTERN, PERSIAN_TO_ASCII_DIGITS
+from shop.pricing import discounted_price
 
-HUNDRED = Decimal(100)
 
 
 class PublicCategorySerializer(serializers.ModelSerializer):
@@ -53,9 +53,7 @@ class PublicProductListSerializer(serializers.ModelSerializer):
 
     def get_final_price(self, product):
         """Price after the percentage discount, matching the cart logic."""
-        if not product.offer:
-            return product.price
-        return product.price - product.price * Decimal(product.offer) / HUNDRED
+        return discounted_price(product.price, product.offer)
 
 
 class PublicProductDetailSerializer(PublicProductListSerializer):
@@ -120,9 +118,18 @@ class PublicBlogDetailSerializer(PublicBlogListSerializer):
 class PublicContactSerializer(serializers.ModelSerializer):
     """Contact form submitted from the storefront."""
 
+    phone = serializers.CharField(max_length=20)
+
     class Meta:
         model = Contact
         fields = ["name", "email", "phone", "subject", "desc"]
+
+    def validate_phone(self, value):
+        # The periodic cleanup task deletes contacts whose phone does not start with 09.
+        phone = value.translate(PERSIAN_TO_ASCII_DIGITS)
+        if not MOBILE_PATTERN.match(phone):
+            raise serializers.ValidationError("شماره همراه باید با ۰۹ شروع شود و ۱۱ رقم باشد")
+        return phone
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

@@ -34,6 +34,7 @@ from .serializers import (
     UserAllInformationSerializers,
 )
 from shop.models import Order
+from shopproject.throttles import LoginThrottle
 from .filters.paginations import UserFilterResultPagination
 
 
@@ -46,6 +47,7 @@ class LoginApiView(APIView):
     """Login API View For authentication To a Panel Admin"""
 
     permission_classes = [AllowAny]
+    throttle_classes = [LoginThrottle]
 
     @swagger_auto_schema(
         operation_summary="Login endpoint for obtaining tokens",
@@ -492,4 +494,4 @@ class UserDateJoinedApiView(APIView):
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

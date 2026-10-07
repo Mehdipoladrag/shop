@@ -58,7 +58,7 @@ function CheckoutContent({ summary }) {
   const { reload: reloadCart } = useCart();
   const [plan, setPlan] = useState(PAYMENT_PLANS[0].id);
   const [placing, setPlacing] = useState(false);
-  const { cart, profile_complete: profileComplete } = summary;
+  const { cart, address_complete: addressComplete } = summary;
 
   async function handlePay(event) {
     event.preventDefault();
@@ -88,7 +88,7 @@ function CheckoutContent({ summary }) {
                 <span>انتخاب روش پرداخت</span>
               </h3>
             </header>
-            {!profileComplete && (
+            {!addressComplete && (
               <p className="txt_note">
                 <i className="fa fa-info" aria-hidden="true" /> آدرس و اطلاعات تحویل شما کامل نیست.{" "}
                 <Link to="/account/address">تکمیل آدرس</Link>

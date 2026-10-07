@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { SESSION_EXPIRED_EVENT } from "../api/client";
 import { customerApi, sessionApi } from "../api/endpoints";
 
 const ANONYMOUS = { is_authenticated: false, username: "" };
@@ -31,13 +32,22 @@ export function AuthProvider({ children }) {
     return loggedIn;
   }, []);
 
+  // If the request fails the server session is still alive, so the UI must not
+  // pretend to be logged out; the error goes to the caller.
   const logout = useCallback(async () => {
-    try {
-      await customerApi.logout();
-    } finally {
+    await customerApi.logout();
+    setUser(ANONYMOUS);
+    setSessionVersion((version) => version + 1);
+  }, []);
+
+  // The API client reports when the server stopped recognising the customer.
+  useEffect(() => {
+    const handleExpired = () => {
       setUser(ANONYMOUS);
       setSessionVersion((version) => version + 1);
-    }
+    };
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleExpired);
   }, []);
 
   const value = useMemo(

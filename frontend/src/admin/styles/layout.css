@@ -1,0 +1,135 @@
+/* Mobile first: the sidebar is a drawer that slides in from the right. */
+.shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--topbar-height);
+  padding: 0 8px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar__brand {
+  flex: 1;
+  font-weight: 700;
+}
+
+.sidebar {
+  position: fixed;
+  inset-block: var(--topbar-height) 0;
+  inset-inline-start: 0;
+  z-index: 40;
+  width: min(var(--sidebar-width), 82vw);
+  padding: 12px;
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  overflow-y: auto;
+}
+
+.sidebar nav {
+  display: grid;
+  gap: 4px;
+}
+
+.sidebar__link {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.sidebar__link:hover {
+  background: var(--surface-muted);
+}
+
+.sidebar__link.active {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  font-weight: 500;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(0 0 0 / 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.shell--menu-open .sidebar {
+  transform: none;
+}
+
+.shell--menu-open .scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.content {
+  padding: var(--gutter);
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+/* Desktop: permanent sidebar, no drawer controls. */
+@media (min-width: 900px) {
+  .topbar__menu,
+  .scrim {
+    display: none;
+  }
+
+  .topbar {
+    padding-inline: 20px;
+  }
+
+  .sidebar {
+    z-index: 10;
+    width: var(--sidebar-width);
+    padding-top: 16px;
+    transform: none;
+  }
+
+  /* Only the content makes room for the sidebar, so the topbar spans the full width. */
+  .content {
+    margin-inline-start: var(--sidebar-width);
+    max-width: none;
+    padding: 24px;
+  }
+}
+
+/* Login */
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+}
+
+.login__card {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding: 28px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.login__card h1 {
+  text-align: center;
+  font-size: 1.25rem;
+}

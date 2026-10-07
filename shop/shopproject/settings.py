@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", False)
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1").split(",")
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
@@ -70,6 +70,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.cache.UpdateCacheMiddleware",
+    "shopproject.middleware.NoCacheApiMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -234,7 +235,9 @@ JAZZMIN_SETTINGS = {
 }
 
 
-CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672/"
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/"
+)
 CELERY_RESULT_BACKEND = "rpc://"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -245,10 +248,12 @@ CELERY_TIMEZONE = "Asia/Tehran"
 
 # Caching Config
 
+REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/1")
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "TIMEOUT": 300,  # Timeout for Redis connections in seconds
@@ -260,12 +265,12 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"  # Use the 'default' cache for sessions
 SESSION_COOKIE_AGE = 3600  # Session cookie age in seconds (1 hour)
-SESSION_COOKIE_SECURE = True  # Ensure cookies are sent over HTTPS only
+SESSION_COOKIE_SECURE = not DEBUG  # Ensure cookies are sent over HTTPS only
 SESSION_COOKIE_NAME = (
     "massay_session_cookie"  # Define a custom name for the session cookie.
 )
 SESSION_COOKIE_SAMESITE = "Lax"  # Set SameSite attribute of session cookies to 'Lax' to limit cross-site request behavior.
-CSRF_COOKIE_SECURE = True  # Ensure CSRF cookies are sent over HTTPS only
+CSRF_COOKIE_SECURE = not DEBUG  # Ensure CSRF cookies are sent over HTTPS only
 X_FRAME_OPTIONS = "DENY"  # Prevent the site from being embedded in an iframe to protect against clickjacking attacks.
 SECURE_BROWSER_XSS_FILTER = True  # Enable the XSS filter built into modern browsers.
 SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent browsers from interpreting files as a different MIME type than specified.

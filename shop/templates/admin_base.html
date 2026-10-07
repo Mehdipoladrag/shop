@@ -24,7 +24,7 @@
   <!-- Daterange picker -->
   <link rel="stylesheet" href="{% static "admin/plugins/daterangepicker/daterangepicker-bs3.css" %}">
   <!-- bootstrap wysihtml5 - text editor -->
-  <link rel="stylesheet" href="{% static "adminplugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" %}">
+  <link rel="stylesheet" href="{% static "admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" %}">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- bootstrap rtl -->
@@ -99,7 +99,7 @@
 <!-- jQuery -->
 <script src="{% static "admin/plugins/jquery/jquery.min.js" %}"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="{% static "admin/plugins/jQueryUI/jquery-ui.min.js" %}"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
   $.widget.bridge('uibutton', $.ui.button)
@@ -107,7 +107,7 @@
 <!-- Bootstrap 4 -->
 <script src="{% static "admin/plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
 <!-- Morris.js charts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="{% static "admin/plugins/raphael/raphael.min.js" %}"></script>
 <script src="{% static "admin/plugins/morris/morris.min.js" %}"></script>
 <!-- Sparkline -->
 <script src="{% static "admin/plugins/sparkline/jquery.sparkline.min.js" %}"></script>
@@ -117,7 +117,7 @@
 <!-- jQuery Knob Chart -->
 <script src="{% static "admin/plugins/knob/jquery.knob.js" %}"></script>
 <!-- daterangepicker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+<script src="{% static "admin/plugins/daterangepicker/moment.min.js" %}"></script>
 <script src="{% static "admin/plugins/daterangepicker/daterangepicker.js" %}"></script>
 <!-- datepicker -->
 <script src="{% static "admin/plugins/datepicker/bootstrap-datepicker.js" %}"></script>
@@ -133,5 +133,6 @@
 <script src="{% static "admin/dist/js/pages/dashboard.js" %}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{% static "admin/dist/js/demo.js" %}"></script>
+{% block scripts %}{% endblock scripts %}
 </body>
 </html>

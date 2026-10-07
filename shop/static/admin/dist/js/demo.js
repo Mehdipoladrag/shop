@@ -240,7 +240,12 @@
     }
   });
 
-  let _sidebar_class = checkCookie('sidebar_class') ? getCookie('sidebar_class') : 'sidebar-open';
+  // On small screens the sidebar must start closed, otherwise it covers the content.
+  const MOBILE_BREAKPOINT = 768;
+  let _sidebar_class = '';
+  if ($(window).width() >= MOBILE_BREAKPOINT) {
+    _sidebar_class = checkCookie('sidebar_class') ? getCookie('sidebar_class') : 'sidebar-open';
+  }
   let _main_header_color = checkCookie('main_header_color') ? getCookie('main_header_color') : 'navbar-dark bg-success';
   let _main_header_border = checkCookie('main_header_border') ? getCookie('main_header_border') : 'border-bottom';
   let _main_sidebar_color = checkCookie('main_sidebar_color') ? getCookie('main_sidebar_color') : 'sidebar-dark-info';

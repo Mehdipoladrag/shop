@@ -213,7 +213,7 @@ export function PcHeader({ onSearch, onLogout }) {
             <li className="list_style" key={link.to}>
               <i
                 className={`fa ${link.icon} icon-icon`}
-                style={link.icon === "fa-address-card" ? { color: "#46A9AE" } : undefined}
+                style={link.icon === "fa-address-card" ? { color: "var(--color-primary)" } : undefined}
                 aria-hidden="true"
               />
               <Link to={link.to} className="list__link">

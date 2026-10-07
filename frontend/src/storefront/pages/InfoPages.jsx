@@ -116,7 +116,7 @@ function ContactForm() {
             value={message[field.name]}
             onChange={update}
           />
-          {errors[field.name] && <small style={{ color: "#d64545" }}>{errors[field.name]}</small>}
+          {errors[field.name] && <small style={{ color: "var(--color-danger)" }}>{errors[field.name]}</small>}
         </p>
       ))}
       <p>
@@ -130,10 +130,10 @@ function ContactForm() {
           value={message.desc}
           onChange={update}
         />
-        {errors.desc && <small style={{ color: "#d64545" }}>{errors.desc}</small>}
+        {errors.desc && <small style={{ color: "var(--color-danger)" }}>{errors.desc}</small>}
       </p>
-      {errors.form && <p role="alert" style={{ color: "#d64545" }}>{errors.form}</p>}
-      {status === "sent" && <p role="status" style={{ color: "#46A9AE" }}>پیام شما ارسال شد. با تشکر!</p>}
+      {errors.form && <p role="alert" style={{ color: "var(--color-danger)" }}>{errors.form}</p>}
+      {status === "sent" && <p role="status" style={{ color: "var(--color-primary)" }}>پیام شما ارسال شد. با تشکر!</p>}
       <button type="submit" className="btn big_btn btn-main-masai" disabled={status === "sending"}>
         ارسال پیام
       </button>

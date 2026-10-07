@@ -120,7 +120,7 @@ export function BlogListPage() {
                       </div>
                     </div>
                   ))}
-                  {results.length === 0 && <h3 style={{ color: "#46A9AE", padding: 120 }}>وبلاگی وجود ندارد</h3>}
+                  {results.length === 0 && <h3 style={{ color: "var(--color-primary)", padding: 120 }}>وبلاگی وجود ندارد</h3>}
                   <div className="row">
                     <div className="col-sm-9 padding-right">
                       <Pagination page={page} pageCount={Math.ceil(count / BLOG_PAGE_SIZE)} onChange={changePage} />

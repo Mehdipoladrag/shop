@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 /** Placeholder shown while data loads, laid out inside the page container. */
 export function Loading() {
   return (
-    <div className="container text-center" style={{ padding: "80px 0", color: "#46A9AE" }} role="status">
+    <div className="container text-center" style={{ padding: "80px 0", color: "var(--color-primary)" }} role="status">
       در حال بارگذاری…
     </div>
   );

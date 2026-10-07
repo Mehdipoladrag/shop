@@ -1,0 +1,66 @@
+/*
+ * Color palette of the whole frontend (storefront and admin panel).
+ *
+ * Everything brand-colored is navy. Change the scale below to re-theme the
+ * site; component rules refer to the `--navy-*` scale or the semantic names.
+ *
+ * Contrast on white: navy-500 5.6:1, navy-600 8.2:1, navy-700 11.1:1
+ * (WCAG AA needs 4.5:1 for text). White text on navy-500 and darker passes too.
+ *
+ * Colors that still come from images (logo, banners, icons) are not controlled
+ * from here; see docs/design-colors.md.
+ */
+:root {
+    /* Navy scale: 700 is the main brand color, 900 the darkest shade used for text. */
+    --navy-50: #f3f6fb;
+    --navy-100: #e3eaf6;
+    --navy-200: #c7d4ec;
+    --navy-300: #9db4de;
+    --navy-400: #6b8cc9;
+    --navy-500: #3f66b0;
+    --navy-600: #2b4d8f;
+    --navy-700: #1f3a6e;
+    --navy-800: #172d5c;
+    --navy-900: #0f1f44;
+    --navy-950: #0a1429;
+
+    /* The same colors as "r, g, b" for rgba(var(--navy-700-rgb), 0.2). */
+    --navy-50-rgb: 243, 246, 251;
+    --navy-100-rgb: 227, 234, 246;
+    --navy-200-rgb: 199, 212, 236;
+    --navy-300-rgb: 157, 180, 222;
+    --navy-400-rgb: 107, 140, 201;
+    --navy-500-rgb: 63, 102, 176;
+    --navy-600-rgb: 43, 77, 143;
+    --navy-700-rgb: 31, 58, 110;
+    --navy-800-rgb: 23, 45, 92;
+    --navy-900-rgb: 15, 31, 68;
+    --navy-950-rgb: 10, 20, 41;
+
+    /* Semantic names for new code. */
+    --color-primary: var(--navy-700);
+    --color-primary-hover: var(--navy-800);
+    --color-primary-light: var(--navy-600);
+    --color-primary-tint: var(--navy-50);
+    --color-on-primary: #ffffff;
+    --color-heading: var(--navy-900);
+    --color-focus: var(--navy-500);
+
+    /* Status colors keep their usual meaning; they are not part of the brand. */
+    --color-success: #1d6b2f;
+    --color-success-bg: #dff2bf;
+    --color-warning: #8a5a00;
+    --color-warning-bg: #fff3cd;
+    --color-danger: #b42318;
+    --color-danger-bg: #fdecec;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+::selection {
+    color: var(--navy-950);
+    background: var(--navy-200);
+}

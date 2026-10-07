@@ -10,14 +10,14 @@
 }
 
 .required-mark {
-  color: #d64545;
+  color: var(--color-danger);
 }
 
 .errorlist {
   margin: 6px 0 0;
   padding: 0;
   list-style: none;
-  color: #d64545;
+  color: var(--color-danger);
   font-size: 0.9em;
 }
 
@@ -38,13 +38,13 @@
 }
 
 .flash--success {
-  color: #1d5e1d;
-  background-color: #dff2bf;
+  color: var(--color-success);
+  background-color: var(--color-success-bg);
 }
 
 .flash--error {
-  color: #d8000c;
-  background-color: #ffbaba;
+  color: var(--color-danger);
+  background-color: var(--color-danger-bg);
 }
 
 .status-badge {
@@ -55,18 +55,18 @@
 }
 
 .status-badge--pending {
-  color: #8a5a00;
-  background: #fff3cd;
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
 }
 
 .status-badge--completed {
-  color: #1d5e1d;
-  background: #dff2bf;
+  color: var(--color-success);
+  background: var(--color-success-bg);
 }
 
 .status-badge--failed {
-  color: #8c1c1c;
-  background: #fdecec;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
 }
 
 .link-button {

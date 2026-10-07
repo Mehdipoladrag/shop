@@ -298,7 +298,7 @@ export default function ShopPage({ mode }) {
                         <ProductBox product={product} key={product.id} />
                       ))}
                       {products.data.results.length === 0 && (
-                        <p className="col-12" style={{ padding: "60px 0", color: "#46A9AE" }}>
+                        <p className="col-12" style={{ padding: "60px 0", color: "var(--color-primary)" }}>
                           محصولی با این مشخصات پیدا نشد.
                         </p>
                       )}

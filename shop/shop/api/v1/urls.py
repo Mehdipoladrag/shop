@@ -1,4 +1,10 @@
 from django.urls import path
+from .public_views import (
+    PublicBrandListApiView,
+    PublicCategoryListApiView,
+    PublicProductDetailApiView,
+    PublicProductListApiView,
+)
 from .views import (
     # Category
     CategoryGetApiView,
@@ -35,6 +41,11 @@ from .views import (
 
 
 urlpatterns = [
+    # Public storefront routes (read-only, no authentication)
+    path("public/categories/", PublicCategoryListApiView.as_view()),
+    path("public/brands/", PublicBrandListApiView.as_view()),
+    path("public/products/", PublicProductListApiView.as_view()),
+    path("public/products/<slug:slug>/", PublicProductDetailApiView.as_view()),
     # Category Api Route
     path("category-list/", CategoryGetApiView.as_view()),
     path("category-create/", CategoryCreateApiView.as_view()),

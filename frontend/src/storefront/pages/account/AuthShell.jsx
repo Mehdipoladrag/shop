@@ -18,6 +18,7 @@ export default function AuthShell({ title, subtitle, lead, footer, testId, child
       <div className="container">
         <div className="auth-card card" data-testid={testId}>
           <aside className="auth-brand">
+            <span className="auth-brand__rings" aria-hidden="true" />
             <Logo variant="light" />
             <p className="auth-brand__lead">{lead}</p>
             <ul className="auth-brand__list">

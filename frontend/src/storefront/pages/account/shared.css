@@ -1,0 +1,13 @@
+/* Small pieces used by both the account area and the checkout (spinner in buttons, status chip). */
+
+.account-spin {
+    animation: account-spin 0.9s linear infinite;
+}
+
+@keyframes account-spin {
+    to { transform: rotate(360deg); }
+}
+
+.account-status {
+    gap: 0.35em;
+}

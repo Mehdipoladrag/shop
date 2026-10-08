@@ -80,7 +80,7 @@ export function AddToCart({ product, purchase, compact = false }) {
   if (soldOut) {
     return (
       <div className="product-buy__add">
-        <button type="button" className="btn btn--accent btn--lg btn--block" disabled data-testid="product-add-to-cart">
+        <button type="button" className="btn btn--secondary btn--lg btn--block product-buy__button is-sold-out" disabled data-testid="product-add-to-cart">
           <Ban size={20} aria-hidden="true" />
           ناموجود
         </button>

@@ -45,43 +45,47 @@ export default function ProductSummary({ product }) {
 
   return (
     <div className="product-summary" data-testid="product-summary">
-      {product.brand && (
-        <p className="product-summary__brand" data-testid="product-brand" dir="auto">
-          {product.brand}
-        </p>
-      )}
-      <h1 className="product-summary__title" data-testid="product-title">
-        {product.product_name}
-      </h1>
-
-      <div className="product-summary__meta">
-        {rated && (
-          <span className="product-summary__rate" data-testid="product-rating">
-            <Rating value={product.product_rate} />
-            <span>امتیاز کاربران از {MAX_RATE}</span>
-          </span>
+      <div className="product-summary__head">
+        {product.brand && (
+          <p className="product-summary__brand" data-testid="product-brand" dir="auto">
+            {product.brand}
+          </p>
         )}
-        <StockChip product={product} />
+        <h1 className="product-summary__title" data-testid="product-title">
+          {product.product_name}
+        </h1>
+
+        <div className="product-summary__meta">
+          {rated && (
+            <span className="product-summary__rate" data-testid="product-rating">
+              <Rating value={product.product_rate} />
+              <span>امتیاز کاربران از {MAX_RATE}</span>
+            </span>
+          )}
+          <StockChip product={product} />
+        </div>
       </div>
 
-      {product.mini_description && <p className="product-summary__lead">{product.mini_description}</p>}
+      <div className="product-summary__body">
+        {product.mini_description && <p className="product-summary__lead">{product.mini_description}</p>}
 
-      {facts.length > 0 && (
-        <dl className="product-summary__facts" data-testid="product-facts">
-          {facts.map((fact) => {
-            const Icon = FACT_ICONS[fact.key];
-            return (
-              <div className="product-fact" key={fact.key} data-testid={`product-fact-${fact.key}`}>
-                <dt>
-                  <Icon size={16} aria-hidden="true" />
-                  {fact.label}
-                </dt>
-                <dd>{fact.value}</dd>
-              </div>
-            );
-          })}
-        </dl>
-      )}
+        {facts.length > 0 && (
+          <dl className="product-summary__facts" data-testid="product-facts">
+            {facts.map((fact) => {
+              const Icon = FACT_ICONS[fact.key];
+              return (
+                <div className="product-fact" key={fact.key} data-testid={`product-fact-${fact.key}`}>
+                  <dt>
+                    <Icon size={16} aria-hidden="true" />
+                    {fact.label}
+                  </dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              );
+            })}
+          </dl>
+        )}
+      </div>
     </div>
   );
 }

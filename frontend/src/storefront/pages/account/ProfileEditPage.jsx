@@ -115,7 +115,7 @@ export default function ProfileEditPage() {
                 نام کاربری: <bdi>{profile.username}</bdi>
               </p>
               <div className="account-picture__actions">
-                <label className="btn btn--secondary btn--sm account-upload">
+                <label className="btn btn--secondary account-upload">
                   <Camera size={16} aria-hidden="true" />
                   {profile.customer_image || picture ? "تغییر تصویر" : "انتخاب تصویر"}
                   <input
@@ -127,7 +127,7 @@ export default function ProfileEditPage() {
                   />
                 </label>
                 {picture && (
-                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => setPicture(null)} data-testid="profile-edit-avatar-clear">
+                  <button type="button" className="btn btn--ghost" onClick={() => setPicture(null)} data-testid="profile-edit-avatar-clear">
                     <X size={16} aria-hidden="true" />
                     لغو انتخاب
                   </button>
@@ -151,7 +151,7 @@ export default function ProfileEditPage() {
           <h2 className="card__title">اطلاعات تکمیلی</h2>
           <fieldset className="account-fieldset">
             <legend>اطلاعات شخصی</legend>
-            <div className="account-form__grid">
+            <div className="account-form__grid account-form__grid--pairs">
               {renderFields(PERSONAL_FIELDS)}
               <FormField label="جنسیت" error={errors.gender}>
                 {(aria) => (
@@ -182,7 +182,7 @@ export default function ProfileEditPage() {
           </fieldset>
           <fieldset className="account-fieldset">
             <legend>اطلاعات بانکی</legend>
-            <div className="account-form__grid">{renderFields(BANK_FIELDS)}</div>
+            <div className="account-form__grid account-form__grid--pairs">{renderFields(BANK_FIELDS)}</div>
           </fieldset>
         </section>
 

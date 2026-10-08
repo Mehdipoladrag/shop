@@ -25,7 +25,7 @@ function discountSaving(items) {
 function CartList({ cart, pending, onChangeCount, onRemove }) {
   return (
     <section className="cart-layout" aria-labelledby="cart-items-title">
-      <div className="cart-items">
+      <div>
         <h2 className="visually-hidden" id="cart-items-title">
           کالاهای سبد خرید
         </h2>

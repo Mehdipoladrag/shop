@@ -68,7 +68,15 @@ export default function ProductPage() {
 
   useDocumentTitle(current ? current.product.product_name : notFound ? "محصول پیدا نشد" : "محصول");
 
-  if (notFound) return <NotFound />;
+  if (notFound) {
+    // The kit's NotFound has no h1 of its own, and every page needs exactly one.
+    return (
+      <>
+        <h1 className="visually-hidden">محصول پیدا نشد</h1>
+        <NotFound />
+      </>
+    );
+  }
   if (state.error) {
     return (
       <main className="page">

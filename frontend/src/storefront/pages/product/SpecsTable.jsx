@@ -17,6 +17,10 @@ export default function SpecsTable({ product }) {
     <div className="product-specs">
       <table className="product-specs__table" data-testid="product-specs-table">
         <caption className="visually-hidden">مشخصات فنی {product.product_name}</caption>
+        <colgroup>
+          <col className="product-specs__key" />
+          <col />
+        </colgroup>
         <tbody>
           {rows.map((row) =>
             row.key ? (

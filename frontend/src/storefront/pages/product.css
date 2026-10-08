@@ -166,11 +166,49 @@
 
 /* ---------- Title, rating, facts ---------- */
 
+/* On phones the wrapper dissolves: the title block comes first, then the picture, the facts and the options. */
 .product-summary {
+    display: contents;
+}
+
+.product-summary__head,
+.product-summary__body {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
     min-width: 0;
+}
+
+.product-summary__head {
+    order: 1;
+}
+
+.product-summary__body {
+    order: 3;
+}
+
+.product-media {
+    order: 2;
+}
+
+.product-buy {
+    order: 4;
+}
+
+@media (min-width: 768px) {
+    .product-summary {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        min-width: 0;
+    }
+
+    .product-summary__head,
+    .product-summary__body,
+    .product-media,
+    .product-buy {
+        order: 0;
+    }
 }
 
 .product-summary__brand {
@@ -348,6 +386,14 @@
     box-shadow: none;
 }
 
+/* A sold out product keeps a calm, readable button instead of a faded coral one. */
+.product-buy__button.is-sold-out:disabled {
+    color: var(--color-muted);
+    background: var(--navy-100);
+    border-color: transparent;
+    opacity: 1;
+}
+
 .product-buy__spinner {
     animation: product-spin 900ms linear infinite;
 }
@@ -449,6 +495,10 @@ body.product-has-bar .back-to-top {
     overflow: hidden;
 }
 
+.product-related {
+    margin-bottom: 0;
+}
+
 .product-details__tabs {
     display: flex;
     gap: var(--space-1);
@@ -533,8 +583,11 @@ body.product-has-bar .back-to-top {
     overflow-wrap: anywhere;
 }
 
-.product-specs__table th {
+.product-specs__key {
     width: 34%;
+}
+
+.product-specs__table th {
     color: var(--color-muted);
     font-weight: 600;
 }

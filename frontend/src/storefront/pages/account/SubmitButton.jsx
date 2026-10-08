@@ -1,4 +1,5 @@
 import { Loader2 } from "lucide-react";
+import "./shared.css";
 
 /** Primary button with a spinner and its own text while a request is running. */
 export default function SubmitButton({ loading, loadingText, children, className = "btn btn--primary", ...props }) {

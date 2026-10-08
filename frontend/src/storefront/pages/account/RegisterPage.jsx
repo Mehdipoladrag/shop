@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { AtSign, Mail, User } from "lucide-react";
+import { AtSign, Check, Mail, User } from "lucide-react";
 import { BRAND } from "../../../shared/brand";
 import { customerApi } from "../../api/endpoints";
 import { fieldErrors } from "../../api/client";
@@ -152,6 +152,9 @@ export default function RegisterPage() {
             data-testid="register-terms"
             onChange={(event) => setAgreed(event.target.checked)}
           />
+          <span className="auth-terms__box" aria-hidden="true">
+            <Check size={14} strokeWidth={3} />
+          </span>
           <span>تمامی شرایط و قوانین استفاده از سرویس‌های سایت {BRAND.name} را به دقت مطالعه کرده‌ام و می‌پذیرم</span>
         </label>
         {termsError && (

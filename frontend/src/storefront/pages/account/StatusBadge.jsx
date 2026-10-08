@@ -1,4 +1,5 @@
 import { CircleCheck, CircleX, Clock } from "lucide-react";
+import "./shared.css";
 
 const ICONS = { pending: Clock, completed: CircleCheck, failed: CircleX };
 

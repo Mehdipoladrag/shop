@@ -1,0 +1,66 @@
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--navy-900);
+}
+
+.logo:hover {
+    color: var(--navy-900);
+}
+
+.logo__mark {
+    width: 40px;
+    height: 40px;
+    flex: none;
+}
+
+.logo__mark-bg {
+    fill: var(--navy-700);
+}
+
+.logo__mark-glyph {
+    stroke: #fff;
+}
+
+.logo__mark-dot {
+    fill: var(--color-accent);
+}
+
+.logo__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.logo__name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.logo__latin {
+    margin-top: 2px;
+    color: var(--color-muted);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    direction: ltr;
+}
+
+.logo--light,
+.logo--light:hover {
+    color: #fff;
+}
+
+.logo--light .logo__mark-bg {
+    fill: #fff;
+}
+
+.logo--light .logo__mark-glyph {
+    stroke: var(--navy-700);
+}
+
+.logo--light .logo__latin {
+    color: var(--navy-300);
+}

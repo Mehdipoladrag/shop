@@ -1,0 +1,12 @@
+.rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-muted);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+}
+
+.rating svg {
+    color: var(--color-rating);
+}

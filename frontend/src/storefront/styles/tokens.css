@@ -1,0 +1,87 @@
+/*
+ * Design tokens of the storefront. Colors come from shared/palette.css
+ * (navy scale and coral accent); everything else a component needs to look
+ * the same everywhere lives here: surfaces, text, radii, shadows, spacing,
+ * type scale, motion and layers.
+ */
+:root {
+    /* Surfaces and lines */
+    --color-bg: #f5f7fc;
+    --color-surface: #ffffff;
+    --color-surface-muted: var(--navy-50);
+    --color-line: #e2e8f4;
+    --color-line-strong: #c9d4ea;
+
+    /* Text: all of these pass WCAG AA (4.5:1) on white and on --color-bg */
+    --color-text: #14213d;
+    --color-heading: var(--navy-900);
+    --color-muted: #566686;
+    --color-link: var(--navy-600);
+
+    /* Accent */
+    --color-accent: var(--coral-500);
+    --color-accent-strong: var(--coral-700);
+    --color-on-accent: var(--navy-950);
+    --color-rating: #e8a317;
+
+    /* Info color for neutral notices */
+    --color-info: var(--navy-700);
+    --color-info-bg: var(--navy-100);
+
+    /* Shape */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-pill: 999px;
+
+    /* Elevation: tinted with the brand color so shadows never look gray */
+    --shadow-xs: 0 1px 2px rgba(var(--navy-900-rgb), 0.06);
+    --shadow-sm: 0 1px 3px rgba(var(--navy-900-rgb), 0.07), 0 4px 12px rgba(var(--navy-900-rgb), 0.05);
+    --shadow-md: 0 6px 18px rgba(var(--navy-900-rgb), 0.1);
+    --shadow-lg: 0 18px 40px rgba(var(--navy-900-rgb), 0.18);
+    --shadow-brand: 0 8px 20px rgba(var(--navy-700-rgb), 0.28);
+    --ring: 0 0 0 3px rgba(var(--navy-500-rgb), 0.28);
+
+    /* Spacing (4px base) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+
+    /* Type scale */
+    --fs-xs: 0.8125rem;
+    --fs-sm: 0.875rem;
+    --fs-md: 0.9375rem;
+    --fs-lg: 1.0625rem;
+    --fs-xl: 1.25rem;
+    --fs-2xl: clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+    --fs-3xl: clamp(1.625rem, 1.2rem + 1.7vw, 2.5rem);
+    --lh-body: 1.85;
+    --lh-tight: 1.4;
+
+    /* Layout */
+    --container: 1240px;
+    --gutter: 1rem;
+    --header-h: 72px;
+
+    /* Motion */
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --dur: 180ms;
+
+    /* Layers */
+    --z-header: 50;
+    --z-overlay: 70;
+    --z-drawer: 80;
+    --z-toast: 100;
+}
+
+@media (min-width: 768px) {
+    :root {
+        --gutter: 1.5rem;
+    }
+}

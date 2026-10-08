@@ -1,146 +1,132 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Children, useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import "./Carousel.css";
 
-const SWIPE_THRESHOLD_PX = 40;
+const AUTOPLAY_MS = 6000;
+const EDGE_TOLERANCE_PX = 4;
+const PAGE_RATIO = 0.9;
 
-/** Number of items shown at the given screen width, from a `{minWidth: items}` map. */
-function itemsForWidth(responsive, screenWidth) {
-  const matching = Object.keys(responsive)
-    .map(Number)
-    .filter((minWidth) => minWidth <= screenWidth)
-    .sort((a, b) => b - a);
-  return responsive[matching[0] ?? 0] ?? { items: 1 };
-}
+const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * Right-to-left carousel that renders the same markup as Owl Carousel, so the
- * existing Owl stylesheet (`owl-theme`, `owl-nav`, `owl-dots`) styles it.
+ * Horizontal carousel built on CSS scroll snapping: touch swipe, mouse wheel
+ * and keyboard scrolling work natively, buttons and dots only call scrollTo.
  *
- * `responsive` maps a minimum screen width to `{items, slideBy?, dots?}`.
+ * `variant` sets how many items fit per screen width (see Carousel.css):
+ * "cards" (products), "posts" (blog cards), "brands" and "hero" (one slide).
  */
-export default function Carousel({
-  children,
-  className = "",
-  responsive = { 0: { items: 1 } },
-  margin = 0,
-  nav = false,
-  navText,
-  dots = false,
-  loop = false,
-  autoplay = false,
-  autoplayTimeout = 5000,
-}) {
-  const slides = Array.isArray(children) ? children : [children];
-  const outerRef = useRef(null);
-  const [width, setWidth] = useState(0);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const [index, setIndex] = useState(0);
+export default function Carousel({ children, variant = "cards", label, autoplay = false, dots = false, arrows = true, className = "" }) {
+  const trackRef = useRef(null);
+  const [edge, setEdge] = useState({ atStart: true, atEnd: true });
+  const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const swipeStart = useRef(null);
+  const items = Children.toArray(children);
 
-  useEffect(() => {
-    const element = outerRef.current;
-    const update = () => {
-      setWidth(element.clientWidth);
-      setScreenWidth(window.innerWidth);
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(element);
-    return () => observer.disconnect();
+  // In right-to-left layout the scroll offset runs into negative numbers.
+  const direction = () => (getComputedStyle(trackRef.current).direction === "rtl" ? -1 : 1);
+
+  const itemStep = useCallback(() => {
+    const track = trackRef.current;
+    const first = track?.firstElementChild;
+    if (!first) return track?.clientWidth ?? 0;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    return first.getBoundingClientRect().width + gap;
   }, []);
 
-  const { items, slideBy = 1, dots: showDotsHere = dots } = itemsForWidth(responsive, screenWidth);
-  const maxIndex = Math.max(0, slides.length - items);
-  const currentIndex = Math.min(index, maxIndex);
-
-  const goTo = useCallback(
-    (target) => {
-      if (target > maxIndex) setIndex(loop ? 0 : maxIndex);
-      else if (target < 0) setIndex(loop ? maxIndex : 0);
-      else setIndex(target);
-    },
-    [maxIndex, loop]
-  );
+  const measure = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const offset = Math.abs(track.scrollLeft);
+    const maxOffset = track.scrollWidth - track.clientWidth;
+    setEdge({ atStart: offset <= EDGE_TOLERANCE_PX, atEnd: offset >= maxOffset - EDGE_TOLERANCE_PX });
+    setActive(Math.round(offset / (itemStep() || 1)));
+  }, [itemStep]);
 
   useEffect(() => {
-    if (!autoplay || paused || maxIndex === 0) return undefined;
-    const timer = setInterval(() => goTo(currentIndex + slideBy), autoplayTimeout);
+    measure();
+    const track = trackRef.current;
+    const observer = new ResizeObserver(measure);
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [measure, items.length]);
+
+  const scrollToOffset = (offset) => trackRef.current.scrollTo({ left: direction() * offset, behavior: "smooth" });
+
+  const scrollByPage = (sign) => {
+    const track = trackRef.current;
+    const page = variant === "hero" ? itemStep() : Math.max(itemStep(), track.clientWidth * PAGE_RATIO);
+    track.scrollBy({ left: direction() * sign * page, behavior: "smooth" });
+  };
+
+  const goTo = (index) => scrollToOffset(index * itemStep());
+
+  // Autoplay advances one item and starts over at the end.
+  useEffect(() => {
+    if (!autoplay || paused || items.length < 2 || prefersReducedMotion()) return undefined;
+    const timer = setInterval(() => {
+      if (document.hidden) return;
+      const track = trackRef.current;
+      const offset = Math.abs(track.scrollLeft);
+      const atEnd = offset >= track.scrollWidth - track.clientWidth - EDGE_TOLERANCE_PX;
+      if (atEnd) scrollToOffset(0);
+      else scrollByPage(1);
+    }, AUTOPLAY_MS);
     return () => clearInterval(timer);
-  }, [autoplay, paused, maxIndex, currentIndex, slideBy, autoplayTimeout, goTo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoplay, paused, items.length]);
 
-  const itemWidth = width / items - margin;
-  const step = itemWidth + margin;
-  const dotCount = maxIndex + 1;
-
-  const handlePointerDown = (event) => {
-    swipeStart.current = event.clientX;
-  };
-  const handlePointerUp = (event) => {
-    if (swipeStart.current === null) return;
-    const distance = event.clientX - swipeStart.current;
-    swipeStart.current = null;
-    // In right-to-left layout, dragging right reveals the next items.
-    if (Math.abs(distance) > SWIPE_THRESHOLD_PX) goTo(currentIndex + (distance > 0 ? slideBy : -slideBy));
-  };
-
-  const [prevText, nextText] = navText ?? [
-    <i key="prev" className="now-ui-icons arrows-1_minimal-right" />,
-    <i key="next" className="now-ui-icons arrows-1_minimal-left" />,
-  ];
+  const scrollable = !(edge.atStart && edge.atEnd);
 
   return (
-    <div
-      className={`owl-carousel owl-theme owl-loaded owl-rtl owl-drag ${className}`}
+    <section
+      className={`carousel carousel--${variant} ${className}`}
+      aria-roledescription="carousel"
+      aria-label={label}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
     >
-      <div className="owl-stage-outer" ref={outerRef} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp}>
-        <div
-          className="owl-stage"
-          style={{
-            transform: `translate3d(${currentIndex * step}px, 0px, 0px)`,
-            transition: "all 0.4s ease",
-            width: step * slides.length,
-          }}
-        >
-          {slides.map((slide, position) => (
-            <div
-              key={slide.key ?? position}
-              className={`owl-item${position >= currentIndex && position < currentIndex + items ? " active" : ""}`}
-              style={{ width: itemWidth, marginLeft: margin }}
-            >
-              {slide}
-            </div>
-          ))}
-        </div>
+      <div className="carousel__track" ref={trackRef} onScroll={measure} tabIndex={0}>
+        {items.map((child, position) => (
+          <div
+            className="carousel__item"
+            key={child.key ?? position}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${position + 1} از ${items.length}`}
+          >
+            {child}
+          </div>
+        ))}
       </div>
 
-      {nav && maxIndex > 0 && (
-        <div className="owl-nav">
-          <button type="button" className="owl-prev" aria-label="قبلی" onClick={() => goTo(currentIndex - slideBy)}>
-            {prevText}
+      {arrows && scrollable && (
+        <>
+          <button type="button" className="carousel__arrow carousel__arrow--prev" aria-label="قبلی" disabled={edge.atStart} onClick={() => scrollByPage(-1)}>
+            <ChevronRight size={22} aria-hidden="true" />
           </button>
-          <button type="button" className="owl-next" aria-label="بعدی" onClick={() => goTo(currentIndex + slideBy)}>
-            {nextText}
+          <button type="button" className="carousel__arrow carousel__arrow--next" aria-label="بعدی" disabled={edge.atEnd} onClick={() => scrollByPage(1)}>
+            <ChevronLeft size={22} aria-hidden="true" />
           </button>
-        </div>
+        </>
       )}
 
-      {showDotsHere && dotCount > 1 && (
-        <div className="owl-dots">
-          {Array.from({ length: dotCount }, (_, position) => (
+      {dots && items.length > 1 && (
+        <div className="carousel__dots">
+          {items.map((child, position) => (
             <button
-              key={position}
+              key={child.key ?? position}
               type="button"
               aria-label={`اسلاید ${position + 1}`}
-              className={`owl-dot${position === currentIndex ? " active" : ""}`}
+              aria-current={position === active ? "true" : undefined}
+              className={`carousel__dot${position === active ? " is-active" : ""}`}
               onClick={() => goTo(position)}
-            >
-              <span />
-            </button>
+            />
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

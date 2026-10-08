@@ -1,10 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { CircleAlert, CircleCheck } from "lucide-react";
+import "./Flash.css";
 
 const FLASH_DURATION_MS = 4000;
 
 const FlashContext = createContext(null);
 
-/** Short-lived success and error messages in the corner of the screen. */
+/** Short-lived success and error messages at the bottom of the screen. */
 export function FlashProvider({ children }) {
   const [message, setMessage] = useState(null);
 
@@ -16,13 +18,15 @@ export function FlashProvider({ children }) {
 
   const show = useCallback((text, type = "success") => setMessage({ text, type, id: Date.now() }), []);
   const value = useMemo(() => ({ show }), [show]);
+  const Icon = message?.type === "error" ? CircleAlert : CircleCheck;
 
   return (
     <FlashContext.Provider value={value}>
       {children}
       {message && (
         <div className={`flash flash--${message.type}`} role={message.type === "error" ? "alert" : "status"} key={message.id}>
-          <i className={`fa ${message.type === "error" ? "fa-times-circle" : "fa-check-circle"}`} aria-hidden="true" /> {message.text}
+          <Icon size={20} aria-hidden="true" />
+          <span>{message.text}</span>
         </div>
       )}
     </FlashContext.Provider>

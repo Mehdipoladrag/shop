@@ -7,8 +7,8 @@
  * Contrast on white: navy-500 5.6:1, navy-600 8.2:1, navy-700 11.1:1
  * (WCAG AA needs 4.5:1 for text). White text on navy-500 and darker passes too.
  *
- * Colors that still come from images (logo, banners, icons) are not controlled
- * from here; see docs/design-colors.md.
+ * The storefront draws its logo, banners and icons with CSS and SVG, so every
+ * color on screen comes from this file; see docs/design-colors.md.
  */
 :root {
     /* Navy scale: 700 is the main brand color, 900 the darkest shade used for text. */
@@ -23,6 +23,15 @@
     --navy-800: #172d5c;
     --navy-900: #0f1f44;
     --navy-950: #0a1429;
+
+    /* Accent: warm coral from the theme. Use it sparingly (badges, highlights).
+       --coral-500 is a fill color, put navy-950 text on it (6.5:1). For coral
+       text or a button with white text use --coral-700 (5.0:1 on white). */
+    --coral-50: #fff1ed;
+    --coral-100: #ffe0d8;
+    --coral-500: #ff6b4a;
+    --coral-600: #ee5532;
+    --coral-700: #c93f1f;
 
     /* The same colors as "r, g, b" for rgba(var(--navy-700-rgb), 0.2). */
     --navy-50-rgb: 243, 246, 251;

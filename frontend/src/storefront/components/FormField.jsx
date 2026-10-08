@@ -1,34 +1,50 @@
 import { useId } from "react";
 
 /**
- * Label, input and error message of one form row, laid out like the
- * `{{ form.as_p }}` rows of the Django forms (`input_second input_all`).
+ * Label, input and error message of one form row.
+ *
+ * Pass the input's props (name, type, value, onChange ...) directly, or a
+ * render function as `children` to draw another control (select, file input);
+ * it receives the id and aria props the control needs. `icon` (a lucide
+ * element) is drawn inside the input on the starting side.
  */
-export default function FormField({ label, error, type = "text", required, children, ...inputProps }) {
+export default function FormField({ label, error, hint, type = "text", required, icon, children, ...inputProps }) {
   const id = useId();
-  const describedBy = error ? `${id}-error` : undefined;
+  const messageId = `${id}-message`;
+  const aria = { id, "aria-invalid": Boolean(error), "aria-describedby": error || hint ? messageId : undefined };
+
+  const control = children ? (
+    children(aria)
+  ) : (
+    <input type={type} className="input" {...aria} {...inputProps} />
+  );
 
   return (
-    <div className="form-field">
-      <label htmlFor={id}>
-        {required && <span className="required-mark">*</span>} {label}
+    <div className="field">
+      <label className="field__label" htmlFor={id}>
+        {label}
+        {required && <span className="required-mark"> *</span>}
       </label>
-      {children ? (
-        children({ id, "aria-invalid": Boolean(error), "aria-describedby": describedBy })
+      {icon ? (
+        <div className="input-group">
+          <span className="input-group__icon" aria-hidden="true">
+            {icon}
+          </span>
+          {control}
+        </div>
       ) : (
-        <input
-          id={id}
-          type={type}
-          className="input_second input_all"
-          aria-invalid={Boolean(error)}
-          aria-describedby={describedBy}
-          {...inputProps}
-        />
+        control
       )}
-      {error && (
-        <ul className="errorlist" id={`${id}-error`}>
+      {error ? (
+        <ul className="errorlist" id={messageId}>
           <li>{error}</li>
         </ul>
+      ) : (
+        hint && (
+          <span className="field__hint" id={messageId}>
+            {hint}
+          </span>
+        )
       )}
     </div>
   );

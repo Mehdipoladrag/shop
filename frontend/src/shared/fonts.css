@@ -1,0 +1,23 @@
+/*
+ * Typography of the whole frontend, in one place.
+ *
+ * IRANYekan (licensed, see fonts/iranyekan/README.md) is registered by
+ * fonts.js when its files are present. Until then Vazirmatn is used: it is
+ * free (SIL Open Font License), has the same Persian digits and all weights.
+ */
+@import "vazirmatn/misc/UI-Farsi-Digits/Vazirmatn-UI-FD-font-face.css";
+
+:root {
+    --font-main: "IRANYekan", "Vazirmatn UI FD", Tahoma, sans-serif;
+}
+
+/* Form controls do not inherit the page font by default. */
+html,
+body,
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: var(--font-main);
+}

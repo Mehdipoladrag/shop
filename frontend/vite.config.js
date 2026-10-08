@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), adminFallback()],
-    server: { port: 5173, proxy },
+    server: { port: 5173, proxy, hmr: { overlay: false } },
     build: {
       rollupOptions: {
         input: {

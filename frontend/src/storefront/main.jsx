@@ -4,8 +4,11 @@ import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from "./cart/CartContext";
 import { AuthProvider } from "./auth/AuthContext";
 import { FlashProvider } from "./components/Flash";
-import "./styles/app.css";
+import { installFonts } from "../shared/fonts";
+import "./styles/index.css";
 import App from "./App";
+
+installFonts();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

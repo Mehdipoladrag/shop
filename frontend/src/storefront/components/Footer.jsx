@@ -1,116 +1,112 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { staticUrl } from "../config";
+import { ArrowUp, Check, Headphones, RotateCcw, ShieldCheck, Truck, Wallet } from "lucide-react";
+import Logo from "./Logo";
+import "./Footer.css";
 
-const SERVICES = [
-  ["png-4.png", "ضمانت اصل بودن"],
-  ["png-1.png", "پرداخت در محل"],
-  ["png-2.png", "ارسال سریع"],
-  ["png-5.png", "فرصت 7 روزه استرداد"],
-  ["png-3.png", "پشتیبانی تلفنی"],
-  ["png-7.png", "هدیه نقدی"],
+const BENEFITS = [
+  { icon: ShieldCheck, title: "ضمانت اصل بودن کالا", text: "تمام محصولات اورجینال هستند" },
+  { icon: Truck, title: "ارسال سریع", text: "ارسال به سراسر کشور" },
+  { icon: Wallet, title: "پرداخت در محل", text: "پس از دریافت کالا پرداخت کنید" },
+  { icon: RotateCcw, title: "۷ روز فرصت بازگشت", text: "بازگشت کالا بدون دردسر" },
+  { icon: Headphones, title: "پشتیبانی تلفنی", text: "پاسخگوی سوال‌های شما" },
 ];
 
-function FooterWidget({ title, children }) {
-  return (
-    <div className="col-12 col-md-6 col-lg-3">
-      <div className="widget-menu widget card">
-        <div className="card-header">
-          <h3 className="card-title">{title}</h3>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
+const QUICK_LINKS = [
+  { to: "/products", label: "فروشگاه" },
+  { to: "/blog", label: "وبلاگ" },
+  { to: "/cart", label: "سبد خرید" },
+  { to: "/account", label: "حساب کاربری" },
+  { to: "/contact", label: "تماس با ما" },
+  { to: "/about", label: "درباره ما" },
+];
 
-function scrollToTop(event) {
-  event.preventDefault();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+const CUSTOMER_SERVICES = ["ارسال فوری", "پشتیبانی سریع", "بازگشت وجه", "بسته‌بندی ایمن کالا"];
+
+const SHOW_TOP_BUTTON_PX = 600;
+
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handle = () => setVisible(window.scrollY > SHOW_TOP_BUTTON_PX);
+    handle();
+    window.addEventListener("scroll", handle, { passive: true });
+    return () => window.removeEventListener("scroll", handle);
+  }, []);
+
+  return (
+    <button
+      type="button"
+      className={`back-to-top${visible ? " is-visible" : ""}`}
+      aria-label="بازگشت به بالای صفحه"
+      tabIndex={visible ? 0 : -1}
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    >
+      <ArrowUp size={22} aria-hidden="true" />
+    </button>
+  );
 }
 
 export default function Footer() {
   return (
-    <footer className="main-footer default">
-      <div className="back-to-top">
-        <a href="#top" onClick={scrollToTop}>
-          <span className="icon">
-            <i className="fa fa-chevron-up" />
-          </span>
-          <span>بازگشت بالا</span>
-        </a>
-      </div>
-      <div className="servicesbg">
-        <div className="footer-services container space-10">
-          <div className="row">
-            {SERVICES.map(([icon, label]) => (
-              <div className="service-item col-2 contact-box text-center" key={icon}>
-                <img src={staticUrl(`img/ico/${icon}`)} className="width-40" alt="" />
-                <span className="title-1 light-black">{label}</span>
+    <footer className="site-footer">
+      <div className="container">
+        <ul className="benefits">
+          {BENEFITS.map(({ icon: Icon, title, text }) => (
+            <li className="benefits__item" key={title}>
+              <span className="benefits__icon">
+                <Icon size={26} aria-hidden="true" />
+              </span>
+              <div>
+                <strong>{title}</strong>
+                <span>{text}</span>
               </div>
-            ))}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="site-footer__main">
+        <div className="container site-footer__grid">
+          <section className="site-footer__about">
+            <Logo variant="light" />
+            <p>
+              مَسای شاپ فروشگاه اینترنتی کالای دیجیتال است؛ گوشی، تبلت، لوازم جانبی و کنسول بازی با ضمانت اصالت، قیمت منصفانه و ارسال سریع.
+            </p>
+          </section>
+
+          <nav aria-label="دسترسی سریع">
+            <h2 className="site-footer__heading">دسترسی سریع</h2>
+            <ul className="site-footer__list">
+              {QUICK_LINKS.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to}>{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <section>
+            <h2 className="site-footer__heading">خدمات مشتریان</h2>
+            <ul className="site-footer__list site-footer__list--checks">
+              {CUSTOMER_SERVICES.map((label) => (
+                <li key={label}>
+                  <Check size={16} aria-hidden="true" /> {label}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
+        <div className="site-footer__bottom">
+          <div className="container site-footer__bottom-inner">
+            <p>این وب‌سایت به وسیله مهدی پولادرگ پشتیبانی می‌شود.</p>
           </div>
         </div>
       </div>
-      <div className="container-fluid space-30 bg-map">
-        <div className="footer-widgets container">
-          <div className="row">
-            <FooterWidget title="درباره ما">
-              <p className="about_footer">
-                قالب مَسای یک پکیج کامل ایرانی با هدف بی نهایت قالب HTML و WordPress و به روز رسانی همیشگی است، که
-                تمام ویژگی های لازم طراحی سایت را در نظر میگیرد
-              </p>
-            </FooterWidget>
-            <FooterWidget title="خدمات مشتریان">
-              <ul className="footer-menu">
-                {["ارسال فوری", "پشتیبانی سریع", "بازگشت وجه", "بسته بندی کالا"].map((label) => (
-                  <li key={label}>
-                    <a href="#top" onClick={(event) => event.preventDefault()}>
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </FooterWidget>
-            <FooterWidget title="با مَسای شاپ">
-              <ul className="footer-menu">
-                <li>
-                  <a href="#top" onClick={(event) => event.preventDefault()}>
-                    تامین کالا همکار
-                  </a>
-                </li>
-                <li>
-                  <a href="#top" onClick={(event) => event.preventDefault()}>
-                    تخفیف سازمانی
-                  </a>
-                </li>
-                <li>
-                  <Link to="/contact">تماس با ما</Link>
-                </li>
-                <li>
-                  <Link to="/about">درباره ما</Link>
-                </li>
-              </ul>
-            </FooterWidget>
-            <FooterWidget title="مجوزات">
-              <div className="License_img">
-                <a href="#top" onClick={(event) => event.preventDefault()}>
-                  <img src={staticUrl("img/License_2.png")} alt="" />
-                </a>
-                <a href="#top" onClick={(event) => event.preventDefault()}>
-                  <img src={staticUrl("img/License_1.png")} alt="" />
-                </a>
-              </div>
-            </FooterWidget>
-          </div>
-        </div>
-      </div>
-      <div className="copyright">
-        <div className="container">
-          <p>
-            این وب سایت به وسیله <a href="#top" onClick={(event) => event.preventDefault()}>مهدی پولادرگ</a> پشتیبانی میشود.
-          </p>
-        </div>
-      </div>
+
+      <BackToTop />
     </footer>
   );
 }

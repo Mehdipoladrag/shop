@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./Countdown.css";
 
 const SECOND_MS = 1000;
 const MINUTE_S = 60;
@@ -15,8 +16,10 @@ function endOfToday() {
   return end;
 }
 
-/** Countdown timer styled like the one of the Django site. Defaults to the end of today. */
-export default function Countdown({ target }) {
+const pad = (value) => String(value).padStart(2, "0");
+
+/** Countdown timer; `target` is a Date and defaults to the end of today. `tone="light"` is for dark backgrounds. */
+export default function Countdown({ target, tone = "dark" }) {
   const [deadline] = useState(() => target ?? endOfToday());
   const [remaining, setRemaining] = useState(() => secondsUntil(deadline));
 
@@ -33,12 +36,12 @@ export default function Countdown({ target }) {
   ];
 
   return (
-    <div className="countdown-timer">
+    <div className={`countdown countdown--${tone}`} role="timer" aria-label="زمان باقی‌مانده">
       {units.map(([value, label]) => (
-        <ul className="text_countdown" key={label}>
-          <li className="number_countdown">{value}</li>
-          <li>{label}</li>
-        </ul>
+        <div className="countdown__unit" key={label}>
+          <strong>{pad(value)}</strong>
+          <span>{label}</span>
+        </div>
       ))}
     </div>
   );

@@ -20,9 +20,9 @@ export default function OrderItems({ items, totalCount }) {
           const discounted = Number(product.offer) > 0;
           return (
             <li className="checkout-line" key={`${product.id}-${item.product_color}`} data-testid="checkout-item">
-              <Link to={`/products/${product.slug}`} className="checkout-line__pic" tabIndex={-1} aria-hidden="true">
+              <div className="checkout-line__pic">
                 <img src={toRelativeUrl(product.pic)} alt="" width="72" height="72" loading="lazy" />
-              </Link>
+              </div>
               <div className="checkout-line__info">
                 <Link to={`/products/${product.slug}`} className="checkout-line__name">
                   {product.product_name}

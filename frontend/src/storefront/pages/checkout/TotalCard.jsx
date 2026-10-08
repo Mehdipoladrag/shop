@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { ArrowLeft, Info } from "lucide-react";
 import { formatPrice } from "../../format";
 import SubmitButton from "../account/SubmitButton";
@@ -61,9 +60,6 @@ export default function TotalCard({ cart, placing, error, onPlace }) {
         <Info size={18} aria-hidden="true" />
         <span>پرداخت آنلاین هنوز فعال نشده است؛ سفارش شما ثبت می‌شود و در وضعیت «انتظار» می‌ماند.</span>
       </p>
-      <Link to="/cart" className="btn btn--ghost btn--block">
-        بازگشت به سبد خرید
-      </Link>
     </section>
   );
 }

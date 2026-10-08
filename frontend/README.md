@@ -1,22 +1,21 @@
-# Shop frontend (React + Vite)
+# TechShop frontend (React + Vite)
 
 One Vite project with two right-to-left, responsive apps for the Django shop:
 
-| App          | URL      | What it is                                                         |
-| ------------ | -------- | ------------------------------------------------------------------ |
-| Storefront   | `/`      | The customer site, rebuilt in React with the existing Masai design |
-| Admin panel  | `/panel` | Dashboard and management pages for staff                           |
+| App          | URL      | What it is                                       |
+| ------------ | -------- | ------------------------------------------------ |
+| Storefront   | `/`      | The customer site (تک‌شاپ)                         |
+| Admin panel  | `/panel` | Dashboard and management pages for staff         |
+
+The shop name lives in `src/shared/brand.js`; the colors in `src/shared/palette.css`;
+the fonts in `src/shared/fonts.css`. Design rules and the list of shared building
+blocks are in [`DESIGN.md`](DESIGN.md); in development `/design-kit` shows them live.
 
 ## Storefront
 
-It uses the theme's own stylesheets, fonts and images, served by Django under
-`/static/assets`. The markup and class names follow the original Masai design (the
-old server-rendered Django pages were removed), so the site looks the same. The jQuery behaviour (Owl carousels, countdown,
-slide-in mobile menu, tabs) is reimplemented in React.
-
 | Route                       | Page                                               |
 | --------------------------- | -------------------------------------------------- |
-| `/`                         | Home: hero slider, offers, best rated, categories, brands, blog |
+| `/`                         | Home: hero, offers, best rated, categories, brands, blog |
 | `/products`, `/categories`  | Shop listing with filters, sorting, pagination     |
 | `/category/:slug`           | Products of one category                           |
 | `/search?q=`                | Search results                                     |
@@ -30,6 +29,7 @@ slide-in mobile menu, tabs) is reimplemented in React.
 | `/checkout`                 | Checkout; `/checkout/success/:id` confirmation     |
 
 Filters, sort order and page are kept in the URL (`?brand=1&color=...&ordering=price`).
+Every page is its own chunk (loaded on first visit).
 
 Login uses the Django session cookie. Every change (login, registration, cart,
 profile, checkout) sends the CSRF token from the `csrftoken` cookie in the
@@ -40,6 +40,10 @@ stored with a `pending` transaction.
 Data comes from the public API under `/shop/api/v1/public/` (categories, brands,
 products, filters, cart, checkout, blog, contact, session) and the customer API under
 `/accounts/api/v1/customer/` (register, login, logout, profile, password, address, orders).
+
+The storefront does not use any file from Django's `/static`: the logo, icons and
+illustrations are SVG and CSS, icons come from `lucide-react`, and only uploaded
+pictures are loaded from `/media`.
 
 ## Admin panel
 
@@ -54,6 +58,14 @@ Log in with a user that has `is_staff` or `is_superuser`.
 | `/panel/orders`     | List                                             |
 | `/panel/users`      | Paginated list with debounced search             |
 
+## Fonts
+
+The site uses **IRANYekan** when its files are present and **Vazirmatn** (free,
+SIL Open Font License, bundled through npm) otherwise. IRANYekan is a licensed
+font, so its files are not in the repository: put the four `woff2` files in
+`src/shared/fonts/iranyekan/` (names in the README of that folder) and rebuild;
+nothing else changes.
+
 ## Run it (no Docker)
 
 1. Start the Django backend on port 8001 (see the root README).
@@ -67,9 +79,9 @@ npm run dev        # http://127.0.0.1:5173  (admin: http://127.0.0.1:5173/panel)
 
 The dev server proxies `/shop/api`, `/accounts/api`, `/admin-panel/api`,
 `/blog/api`, `/api`, `/media`, `/static`, `/admin/`, `/swagger`, `/redoc` and
-`/api-auth` to the backend, so the browser sees a
-single origin: no CORS setup, and the session cookie used by the cart works.
-`VITE_BACKEND_URL` (see `.env.example`) sets the backend address.
+`/api-auth` to the backend, so the browser sees a single origin: no CORS setup,
+and the session cookie used by the cart works. `VITE_BACKEND_URL` (see
+`.env.example`) sets the backend address.
 
 ## Build
 
@@ -83,15 +95,17 @@ to their `index.html`.
 ## Structure
 
 ```
-index.html            storefront entry (theme stylesheets from /static)
+index.html            storefront entry
 panel/index.html      admin entry
+public/               favicon
+DESIGN.md             design principles and the kit
 src/
-  shared/             Persian formatting helpers, useApi hook
+  shared/             brand name, palette, fonts, formatting helpers, useApi hook
   storefront/
+    styles/           tokens.css and base.css (reset, buttons, forms, cards ...)
+    components/       the kit: Header, Footer, ProductCard, Carousel, FormField, States ...
     api/              fetch client and endpoint functions
-    cart/             cart context (session cart)
-    auth/             login state, route guard
-    components/       Layout, Header, Footer, Carousel, Countdown, ProductItem ...
-    pages/            one component per route
+    cart/  auth/      session cart, login state and route guard
+    pages/            one component per route (+ a folder and a css file per area)
   admin/              the admin app (api, auth, components, layout, pages, styles)
 ```

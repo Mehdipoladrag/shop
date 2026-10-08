@@ -1,39 +1,38 @@
 # Colors of the frontend
 
+The storefront and the admin panel draw everything with CSS, SVG and icons, so
+every color on screen comes from one file.
+
 ## Where the colors are defined
 
-| What                                   | File                                                        |
-| -------------------------------------- | ----------------------------------------------------------- |
-| Navy scale, semantic names, focus ring | `shop/static/assets/css/palette.css`                        |
-| Theme rules (buttons, header, footer…) | `shop/static/assets/css/main.css`, `style.css`, `main_ui.css` use `var(--navy-*)` |
-| React-only styles                      | `frontend/src/storefront/styles/app.css` (semantic names)   |
-| Admin panel                            | `frontend/src/admin/styles/base.css` (`--primary` = `--navy-700`) |
+| What | File |
+| ---- | ---- |
+| Navy scale, coral accent, status colors, focus ring | `frontend/src/shared/palette.css` |
+| Surfaces, text, lines, shadows and the other design tokens | `frontend/src/storefront/styles/tokens.css` |
+| Admin panel (`--primary` = `--navy-700`) | `frontend/src/admin/styles/base.css` |
 
-To re-theme the site change the `--navy-*` (and matching `--navy-*-rgb`) values in
-`palette.css`. Contrast on white: navy-500 5.6:1, navy-600 8.2:1, navy-700 11.1:1.
+To re-theme the site change the `--navy-*` (and the matching `--navy-*-rgb`)
+values in `palette.css`; the coral accent is `--coral-*`.
+
+| Role | Token | Notes |
+| ---- | ----- | ----- |
+| Brand, primary buttons, prices | `--navy-700` (`#1f3a6e`) | 11.1:1 on white |
+| Headings, footer | `--navy-900` / `--navy-950` | |
+| Links | `--navy-600` | 8.2:1 on white |
+| Discount badges, cart counter | `--coral-500` (`#ff6b4a`) | fill color: put `--navy-950` text on it (6.5:1) |
+| Coral text or coral button with white text | `--coral-700` (`#c93f1f`) | 5.0:1 on white |
+| Muted text | `--color-muted` (`#566686`) | 5.8:1 on white |
+
+All text colors pass WCAG AA (4.5:1). `frontend/DESIGN.md` explains how the
+colors are used.
 
 ## Colors that do not come from CSS
 
-These raster images are mostly teal (the old brand color) and are **not** affected
-by the palette. Replace them with navy versions to finish the re-theme.
-
-| Group | Files (under `shop/static/assets/img/`) |
-| ----- | ---------------------------------------- |
-| Logo and icons | `logo.png`, `favicon.png` |
-| Top strip and banners | `banner_img/bg_top.jpg`, `banner_img/img-3.jpg` … `img-9.jpg`, `banner_img/01/*.jpg`, `banner_img/02/*.jpg` |
-| Section titles | `shegeft_1.png`, `seller_1.png` |
-| Shortcut icons on the home page | `Masai/minilogo/1.png` … `8.png` |
-| Payment method icons | `ico/png-8.png` … `png-11.png` |
-| Licence badges | `License_1.png`, `License_2.png` |
-| Illustrations | `empty-cart.png`, `successful-cart.png`, `about.png` (partly) |
-| Footer background | `map.png` |
-
-Product, category, brand and blog pictures are uploaded content (`media/`) and keep
-their own colors.
+Product, category, brand and blog pictures are uploaded content (`media/`) and
+keep their own colors. Everything else (logo, banners, icons, illustrations) is
+drawn in code and follows the palette.
 
 ## Colors that stay as they are
 
 Status colors keep their usual meaning: success green, warning amber, danger red
-(see `--color-success`, `--color-warning`, `--color-danger`). Neutral greys of the
-theme were left alone except the ones that failed the AA contrast check (old
-prices, small captions, disabled pagination).
+(`--color-success`, `--color-warning`, `--color-danger`).

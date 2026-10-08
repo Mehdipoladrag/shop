@@ -1,80 +1,41 @@
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { ArrowRight, CalendarDays, Clock, FileText, User } from "lucide-react";
 import { blogApi } from "../api/endpoints";
-import { useApi } from "../../shared/useApi";
-import { formatJalaliDate, toRelativeUrl } from "../format";
-import Pagination from "../components/Pagination";
-import { AsyncContent, NotFound } from "../components/States";
 import { ApiError } from "../api/client";
+import { useApi } from "../../shared/useApi";
+import { BRAND } from "../../shared/brand";
+import { formatJalaliDate, toRelativeUrl } from "../format";
+import Breadcrumb from "../components/Breadcrumb";
+import Pagination from "../components/Pagination";
+import SectionHeader from "../components/SectionHeader";
+import { AsyncContent, EmptyState, NotFound } from "../components/States";
+import { useDocumentTitle } from "../components/useDocumentTitle";
+import PostCard from "./content/PostCard";
+import "./content.css";
 
 const BLOG_PAGE_SIZE = 6;
-const LATEST_POSTS_LIMIT = 6;
+const RELATED_POSTS = 3;
+const WORDS_PER_MINUTE = 180;
 
-function Breadcrumb({ items }) {
-  return (
-    <div className="col-12">
-      <nav>
-        <ul className="breadcrumb">
-          <Link to="/">
-            <li>
-              <i className="fa fa-home" aria-hidden="true" />
-            </li>
-          </Link>
-          {items.map((item) => (
-            <li key={item}>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </div>
-  );
-}
-
-function Sidebar() {
+function CategoryChips({ active }) {
   const categories = useApi(blogApi.categories);
-  const latest = useApi(() => blogApi.posts({ page_size: LATEST_POSTS_LIMIT }));
-
   return (
-    <div className="col-12 col-lg-3">
-      <div className="sidebar_blog">
-        <div className="widget_blog">
-          <div className="widget_blog_headbox">
-            <h3>دسته بندی ها</h3>
-          </div>
-          <div className="blog_list_widget_blog">
-            <div className="widget_blog_groups">
-              {(categories.data ?? []).map((category) => (
-                <ul className="widget_blog_posts" key={category.id}>
-                  <li>
-                    <Link className="widget_blog_title_link" to={`/blog?category=${category.slug}`}>
-                      {category.name}
-                    </Link>
-                  </li>
-                </ul>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="widget_blog marg_top20">
-          <div className="widget_blog_headbox">
-            <h3>آخرین مقالات</h3>
-          </div>
-          <div className="blog_list_widget_blog">
-            <div className="widget_blog_groups">
-              <ul className="widget_blog_posts">
-                {(latest.data?.results ?? []).map((post) => (
-                  <li key={post.id}>
-                    <Link className="widget_blog_title_link" to={`/blog/${post.slug}`}>
-                      {post.blog_name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <nav className="chips" aria-label="دسته‌بندی مطالب" data-testid="blog-categories" data-allow-overflow>
+      <Link to="/blog" className="chip" aria-current={active ? undefined : "page"} data-testid="blog-category-all">
+        همه مطالب
+      </Link>
+      {(categories.data ?? []).map((category) => (
+        <Link
+          key={category.id}
+          to={`/blog?category=${category.slug}`}
+          className="chip"
+          aria-current={active === category.slug ? "page" : undefined}
+          data-testid="blog-category-chip"
+        >
+          {category.name}
+        </Link>
+      ))}
+    </nav>
   );
 }
 
@@ -82,6 +43,7 @@ export function BlogListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const category = searchParams.get("category") ?? "";
+  useDocumentTitle("وبلاگ");
 
   const posts = useApi(() => blogApi.posts({ page, category }), [page, category]);
 
@@ -89,102 +51,124 @@ export function BlogListPage() {
     const next = new URLSearchParams(searchParams);
     next.set("page", String(target));
     setSearchParams(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
-    <main className="category-blog default space-top-30">
+    <main className="page" data-testid="blog-page">
       <div className="container">
-        <div className="row">
-          <Breadcrumb items={["وبلاگ", "اخبار روز تکنولوژی"]} />
-          <div className="single_blog_content cat_blog_content col-12 col-lg-9 mx-auto order-1 order-sm-1">
-            <AsyncContent state={posts}>
-              {({ results, count }) => (
-                <div className="row listing-items Blog-category">
+        <Breadcrumb items={[{ label: "وبلاگ" }]} />
+        <header className="blog-header">
+          <h1>وبلاگ {BRAND.name}</h1>
+          <p>راهنمای خرید، مقایسه و نکته‌های کاربردی درباره‌ی گوشی، تبلت و لوازم دیجیتال</p>
+        </header>
+        <CategoryChips active={category} />
+
+        <AsyncContent state={posts} variant="grid">
+          {({ results, count }) =>
+            results.length === 0 ? (
+              <EmptyState icon={FileText} title="وبلاگی وجود ندارد" text="هنوز مطلبی در این دسته منتشر نشده است.">
+                <Link to="/blog" className="btn btn--primary">
+                  همه مطالب
+                </Link>
+              </EmptyState>
+            ) : (
+              <>
+                <div className="post-grid">
                   {results.map((post) => (
-                    <div className="col-xl-6 col-lg-6 col-md-6 col-12" key={post.id}>
-                      <div className="blog_tag">
-                        <Link to={`/blog/${post.slug}`}>
-                          <img src={toRelativeUrl(post.blog_image)} className="img-fluid" alt={post.blog_name} />
-                        </Link>
-                        <Link to={`/blog/${post.slug}`}>
-                          <h2 className="Blog_title">{post.blog_name}</h2>
-                        </Link>
-                        <div className="Blog_list">
-                          <span className="Blog_author">
-                            <i className="fa fa-user" /> {post.author}
-                          </span>
-                          <span className="Blog_Date">
-                            <i className="fa fa-calendar" /> {formatJalaliDate(post.create_date, { withTime: true })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <PostCard post={post} key={post.id} />
                   ))}
-                  {results.length === 0 && <h3 style={{ color: "var(--color-primary)", padding: 120 }}>وبلاگی وجود ندارد</h3>}
-                  <div className="row">
-                    <div className="col-sm-9 padding-right">
-                      <Pagination page={page} pageCount={Math.ceil(count / BLOG_PAGE_SIZE)} onChange={changePage} />
-                    </div>
-                  </div>
                 </div>
-              )}
-            </AsyncContent>
-          </div>
-          <Sidebar />
-        </div>
+                <Pagination page={page} pageCount={Math.ceil(count / BLOG_PAGE_SIZE)} onChange={changePage} />
+              </>
+            )
+          }
+        </AsyncContent>
       </div>
     </main>
+  );
+}
+
+function RelatedPosts({ currentSlug }) {
+  const latest = useApi(() => blogApi.posts({}));
+  const related = (latest.data?.results ?? []).filter((post) => post.slug !== currentSlug).slice(0, RELATED_POSTS);
+  if (related.length === 0) return null;
+
+  return (
+    <section className="section">
+      <SectionHeader title="مطالب مرتبط" to="/blog" linkLabel="همه مطالب" />
+      <div className="post-grid">
+        {related.map((post) => (
+          <PostCard post={post} key={post.id} headingLevel={3} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const readingMinutes = (text) => Math.max(1, Math.ceil(String(text).split(/\s+/).filter(Boolean).length / WORDS_PER_MINUTE));
+
+function PostArticle({ post }) {
+  const paragraphs = String(post.blog_description).split(/\n{2,}/).filter((paragraph) => paragraph.trim());
+
+  return (
+    <>
+      <Breadcrumb
+        items={[
+          { label: "وبلاگ", to: "/blog" },
+          { label: post.category, to: `/blog?category=${post.category_slug}` },
+          { label: post.blog_name },
+        ]}
+      />
+      <article className="blog-post" data-testid="blog-post-page">
+        <header className="blog-post__header">
+          <Link to={`/blog?category=${post.category_slug}`} className="badge">
+            {post.category}
+          </Link>
+          <h1>{post.blog_name}</h1>
+          <div className="blog-post__meta">
+            <span>
+              <User size={16} aria-hidden="true" /> ارسال شده توسط <bdi>{post.author}</bdi>
+            </span>
+            <span>
+              <CalendarDays size={16} aria-hidden="true" /> {formatJalaliDate(post.create_date)}
+            </span>
+            <span>
+              <Clock size={16} aria-hidden="true" /> زمان مطالعه: {readingMinutes(post.blog_description)} دقیقه
+            </span>
+          </div>
+        </header>
+
+        <figure className="blog-post__cover">
+          <img src={toRelativeUrl(post.blog_image)} alt={post.blog_name} width="1200" height="640" />
+        </figure>
+
+        <div className="prose blog-post__body">
+          {paragraphs.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+
+        <Link to="/blog" className="btn btn--secondary blog-post__back">
+          <ArrowRight size={18} aria-hidden="true" /> بازگشت به وبلاگ
+        </Link>
+      </article>
+      <RelatedPosts currentSlug={post.slug} />
+    </>
   );
 }
 
 export function BlogDetailPage() {
   const { slug } = useParams();
   const state = useApi(() => blogApi.post(slug), [slug]);
+  useDocumentTitle(state.data?.blog_name);
 
   if (state.error instanceof ApiError && state.error.status === 404) return <NotFound />;
 
   return (
-    <main className="cart-page default">
+    <main className="page">
       <div className="container">
-        <div className="row">
-          <div className="single_blog_content col-12 col-lg-9 mx-auto order-1 order-sm-1">
-            <AsyncContent state={state}>
-              {(post) => (
-                <>
-                  <header className="card-header">
-                    <h3 className="card-title">
-                      <span>{post.blog_name}</span>
-                    </h3>
-                  </header>
-                  <div className="single_blog_page">
-                    <div className="single_blog_box_content">
-                      <div className="form-account">
-                        <div className="row">
-                          <div className="col-md-12 col-sm-12">
-                            <img src={toRelativeUrl(post.blog_image)} alt={post.blog_name} />
-                            <div className="data_det">
-                              <span className="publish_date">
-                                <i className="fa fa-clock" /> {formatJalaliDate(post.create_date, { withTime: true })}
-                              </span>
-                              <span className="author">
-                                <i className="fa fa-user-alt" /> ارسال شده توسط {post.author}
-                              </span>
-                              <span className="categoey">
-                                <i className="fa fa-folder" /> {post.category}
-                              </span>
-                            </div>
-                            <p style={{ whiteSpace: "pre-line" }}>{post.blog_description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </AsyncContent>
-          </div>
-          <Sidebar />
-        </div>
+        <AsyncContent state={state}>{(post) => <PostArticle post={post} />}</AsyncContent>
       </div>
     </main>
   );

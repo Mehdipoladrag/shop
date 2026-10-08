@@ -10,8 +10,9 @@ from django.core.management import call_command
 from PIL import Image
 
 from accounts.models import CustomUser
-from blog.models import Blogs
+from blog.models import Blogs, Category_blog
 from conftest import make_image
+from shop.management.commands import seed_demo_blog as blog_seed
 from shop.management.commands import seed_demo_catalog as seed
 from shop.management.commands.seed_demo_blog import EDITOR_NAME, EDITOR_USERNAME, LEGACY_EDITOR_USERNAME
 from shop.models import Brand, Category, Info, Product
@@ -298,7 +299,7 @@ def test_blog_seed_creates_posts_once():
     call_command("seed_demo_blog")
     call_command("seed_demo_blog")
 
-    assert Blogs.objects.filter(slug__in=["how-to-choose-iphone", "iphone-14-vs-13", "iphone-care-tips"]).count() == 3
+    assert Blogs.objects.filter(slug__in=["choose-the-right-iphone", "iphone-16-vs-15", "device-care-guide"]).count() == 3
     assert CustomUser.objects.filter(username=EDITOR_USERNAME).count() == 1
 
 
@@ -322,3 +323,37 @@ def test_blog_seed_keeps_both_accounts_when_the_new_editor_already_exists():
 
     assert CustomUser.objects.filter(username=LEGACY_EDITOR_USERNAME).exists()
     assert Blogs.objects.filter(username=current).count() == 3
+
+
+def test_blog_seed_covers_exist_and_are_images():
+    static = Path(settings.BASE_DIR) / "static" / "assets" / "img" / "blog"
+    for row in blog_seed.POSTS:
+        with Image.open(static / row["image"]) as picture:
+            picture.verify()
+
+
+def test_blog_prune_old_removes_only_the_legacy_demo_posts():
+    editor = CustomUser.objects.create(username="someone", is_staff=True)
+    category = Category_blog.objects.create(slug_cat="misc", name="misc")
+    for slug in (blog_seed.LEGACY_SLUGS[0], "my-own-post"):
+        Blogs.objects.create(
+            username=editor, blog_name=slug, category=category, blog_description="text", slug=slug,
+            blog_image="blog_images/demo-post-1.jpg" if slug in blog_seed.LEGACY_SLUGS else "blog_images/mine.jpg",
+        )
+
+    call_command("seed_demo_blog", "--prune-old")
+
+    assert not Blogs.objects.filter(slug__in=blog_seed.LEGACY_SLUGS).exists()
+    assert Blogs.objects.filter(slug="my-own-post").exists()
+    assert Blogs.objects.filter(slug__in=[row["slug"] for row in blog_seed.POSTS]).count() == len(blog_seed.POSTS)
+
+
+def test_blog_seed_never_deletes_without_the_flag():
+    editor = CustomUser.objects.create(username="someone", is_staff=True)
+    category = Category_blog.objects.create(slug_cat="misc", name="misc")
+    Blogs.objects.create(username=editor, blog_name="old", category=category, blog_description="text",
+                         slug=blog_seed.LEGACY_SLUGS[0], blog_image="blog_images/demo-post-1.jpg")
+
+    call_command("seed_demo_blog")
+
+    assert Blogs.objects.filter(slug=blog_seed.LEGACY_SLUGS[0]).exists()

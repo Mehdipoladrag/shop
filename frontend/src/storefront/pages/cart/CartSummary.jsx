@@ -56,12 +56,12 @@ export default function CartSummary({ cart, saving }) {
       <dl className="cart-summary__rows">
         <div className="cart-summary__row">
           <dt>تعداد کالا</dt>
-          <dd data-testid="cart-count">{cart.total_count}</dd>
+          <dd data-testid="cart-summary-count">{cart.total_count}</dd>
         </div>
         {saving > 0 && (
           <div className="cart-summary__row cart-summary__row--saving">
             <dt>سود شما از تخفیف</dt>
-            <dd data-testid="cart-saving">{formatPrice(saving)} تومان</dd>
+            <dd data-testid="cart-summary-saving">{formatPrice(saving)} تومان</dd>
           </div>
         )}
         <div className="cart-summary__row">
@@ -70,7 +70,7 @@ export default function CartSummary({ cart, saving }) {
         </div>
         <div className="cart-summary__row cart-summary__row--total">
           <dt>قیمت قابل پرداخت</dt>
-          <dd data-testid="cart-total">
+          <dd data-testid="cart-summary-total">
             <strong>{formatPrice(total)}</strong>
             <span>تومان</span>
           </dd>

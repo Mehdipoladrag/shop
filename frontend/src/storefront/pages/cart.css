@@ -195,20 +195,17 @@
 }
 
 .cart-item__title {
+    display: -webkit-box;
+    overflow: hidden;
     font-size: var(--fs-md);
     font-weight: 700;
     line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .cart-item__title a {
-    display: -webkit-box;
-    /* Padding grows the tap area to 36px; the negative margin keeps the layout. */
-    padding-block: var(--space-2);
-    margin-block: calc(-1 * var(--space-2));
-    overflow: hidden;
     color: var(--color-heading);
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
 }
 
 .cart-item__title a:hover {

@@ -6,6 +6,7 @@ from shop.views import (
     CategoryListView,
     CategoryDetailView,
     CheckOutView,
+    CurrentOrderView,
 )
 
 app_name = "shop"
@@ -17,5 +18,6 @@ urlpatterns = [
     path("all-categories/", CategoryListView.as_view(), name="categorylist1"),
     path("<str:category_slug>/", CategoryDetailView.as_view(), name="categorydetail1"),
     path("payment/checkout/", CheckOutView.as_view(), name="checkout1"),
+    path("payment/checkout/order-current.html", CurrentOrderView.as_view(), name="order_current"),
     path("api/v1/", include("shop.api.v1.urls")),
 ]

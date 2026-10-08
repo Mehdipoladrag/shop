@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}وضعیت سفارش{% endblock title %}
+{% block content %}
+<main class="cart-page default">
+    <div class="container py-4">
+        {% if order %}
+        <h5 class="mb-3">سفارش شماره {{ order.id }}</h5>
+        <p>تاریخ سفارش: {{ order.order_date|date:"Y/m/d H:i" }}</p>
+        <p>وضعیت: <b>{{ status }}</b></p>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr><th>محصول</th><th>تعداد</th><th>قیمت واحد</th><th>هزینه</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{% if item.product %}<a href="{% url 'shop:detailpro' item.product.slug %}">{{ item.product.product_name }}</a>{% else %}محصول حذف شده{% endif %}</td>
+                        <td>{{ item.product_count }}</td>
+                        <td>{{ item.product_price }}</td>
+                        <td>{{ item.product_cost }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="text-start"><b>جمع کل: {{ total_cost }} تومان</b></p>
+        {% else %}
+        <div class="text-center cart_empty">
+            <img src="{% static 'assets/img/empty-cart.png' %}" alt="" />
+            <h6>هنوز سفارشی ثبت نکرده‌اید</h6>
+            <a href="{% url 'shop:shoplist' %}" class="btn btn-main-masai">رفتن به فروشگاه</a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock content %}

@@ -183,3 +183,22 @@ class CheckOutView(LoginRequiredMixin, View):
             )
 
         return render(request, "shop/checkout.html", {"cart": cart})
+
+
+class CurrentOrderView(LoginRequiredMixin, View):
+    """Status page for the user's most recent order."""
+
+    STATUS_LABELS = {"pending": "در انتظار پرداخت", "failed": "ناموفق", "completed": "تکمیل شده"}
+
+    def get(self, request):
+        order = Order.objects.filter(customer=request.user).order_by("-order_date").first()
+        context = {"order": order}
+        if order:
+            invoice = Invoice.objects.filter(order=order).first()
+            transaction = Transaction.objects.filter(invoice=invoice).first() if invoice else None
+            context.update(
+                items=order.orderitem_set.select_related("product"),
+                total_cost=order.total_cost(),
+                status=self.STATUS_LABELS.get(transaction.status, transaction.status) if transaction else "نامشخص",
+            )
+        return render(request, "shop/order_current.html", context)

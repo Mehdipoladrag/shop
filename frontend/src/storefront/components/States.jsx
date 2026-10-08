@@ -26,7 +26,8 @@ export function Loading({ variant = "page" }) {
 }
 
 /** Centered message with an icon and optional action, used for errors, empty lists and 404. */
-export function EmptyState({ icon: Icon = SearchX, title, text, children, tone = "neutral", contained = true }) {
+export function EmptyState({ icon: Icon = SearchX, title, text, children, tone = "neutral", contained = true, level = 2 }) {
+  const Title = `h${level}`;
   const Wrapper = contained ? "div" : Fragment;
   return (
     <Wrapper {...(contained ? { className: "container" } : {})}>
@@ -34,7 +35,7 @@ export function EmptyState({ icon: Icon = SearchX, title, text, children, tone =
         <span className="empty-state__icon">
           <Icon size={36} aria-hidden="true" />
         </span>
-        <h2 className="empty-state__title">{title}</h2>
+        <Title className="empty-state__title">{title}</Title>
         {text && <p className="empty-state__text">{text}</p>}
         {children && <div className="empty-state__actions">{children}</div>}
       </div>
@@ -66,7 +67,7 @@ export function AsyncContent({ state, children, variant }) {
 export function NotFound() {
   return (
     <main className="page">
-      <EmptyState title="صفحه‌ی مورد نظر پیدا نشد." text="ممکن است آدرس را اشتباه وارد کرده باشید یا صفحه حذف شده باشد.">
+      <EmptyState level={1} title="صفحه‌ی مورد نظر پیدا نشد." text="ممکن است آدرس را اشتباه وارد کرده باشید یا صفحه حذف شده باشد.">
         <Link to="/" className="btn btn--primary">
           صفحه نخست
         </Link>

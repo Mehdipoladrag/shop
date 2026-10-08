@@ -70,7 +70,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  /* IRANYekan (see /static/assets/css/fonts.css) with Vazir as the fallback */
+  /* IRANYekan (see src/shared/fonts.css) with Vazirmatn as the fallback */
   font-family: "IRANYekan", Vazir, Tahoma, sans-serif;
   font-size: 15px;
   line-height: 1.7;

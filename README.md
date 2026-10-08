@@ -106,7 +106,11 @@ with the same environment as the dev server; both are safe to run repeatedly.
 python manage.py seed_demo_catalog              # the 2023+ product catalog
 python manage.py seed_demo_catalog --prune-old  # same, and also remove the previous seed's products
 python manage.py seed_demo_blog                 # three blog posts by the editor account "techshop_editor"
+python manage.py seed_demo_blog --prune-old     # same, and also remove the previous seed's three posts
 ```
+
+The blog covers are composed from the same illustrations by `scripts/generate_blog_covers.py` (run
+`generate_demo_art.py` first); a real photo can replace any `cover-*.jpg` in `shop/static/assets/img/blog/`.
 
 **`seed_demo_catalog`** creates about 40 products released in 2023 or later: iPhone 15 to 17 (including
 16e and Air), Galaxy S24 Ultra and S25 Ultra, iPad Pro (M4 and M5), iPad Air, iPad mini and iPad (A16),

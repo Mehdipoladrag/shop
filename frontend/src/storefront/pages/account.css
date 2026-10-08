@@ -1173,6 +1173,12 @@
     line-height: 1.7;
 }
 
+a.account-line__name {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+}
+
 a.account-line__name:hover {
     color: var(--navy-600);
 }

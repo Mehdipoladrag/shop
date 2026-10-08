@@ -17,7 +17,7 @@ import "./checkout.css";
 function EmptyCheckout() {
   return (
     <main className="page checkout-page" data-testid="checkout-empty">
-      <EmptyState icon={ShoppingCart} title="سبد خرید شما در حال حاضر خالی است." text="کالاهای مورد نظر را به سبد خرید اضافه کنید و دوباره برگردید.">
+      <EmptyState level={1} icon={ShoppingCart} title="سبد خرید شما در حال حاضر خالی است." text="کالاهای مورد نظر را به سبد خرید اضافه کنید و دوباره برگردید.">
         <Link to="/" className="btn btn--primary">
           صفحه نخست
         </Link>

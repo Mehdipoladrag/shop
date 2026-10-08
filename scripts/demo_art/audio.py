@@ -28,7 +28,12 @@ SPRITE_MARGIN = 40
 BUD_SCALE = 1.62  # earbuds are drawn larger than life so that they stay readable next to the case
 CASE_SCALE = 1.3
 PLASTIC = (color("#ffffff"), color("#eceff4"), color("#c2c8d3"))
-SHADE_OVERLAY = ((0.0, color("#ffffff", 150)), (0.35, color("#ffffff", 0)), (0.72, color("#0b1630", 0)), (1.0, color("#0b1630", 46)))
+SHADE_OVERLAY = (
+    (0.0, color("#ffffff", 150)),
+    (0.35, color("#ffffff", 0)),
+    (0.72, color("#0b1630", 0)),
+    (1.0, color("#0b1630", 46)),
+)
 
 
 @dataclass(frozen=True)
@@ -99,7 +104,12 @@ def draw_earbud(style: EarbudStyle, scale: float = 1.0) -> Layer:
     if style.tip:
         _tip(layer, ox, oy, s, style)
     head = ellipse((ox - rx, oy - ry, ox + rx, oy + ry))
-    stem = capsule((ox + 12 * s, oy + 8 * s), (ox + 20 * s, oy + style.stem_length * s), style.stem_radius[0] * s, style.stem_radius[1] * s)
+    stem = capsule(
+        (ox + 12 * s, oy + 8 * s),
+        (ox + 20 * s, oy + style.stem_length * s),
+        style.stem_radius[0] * s,
+        style.stem_radius[1] * s,
+    )
     body = head.union(stem).smoothed(6 * s)
     layer.shadow(body, blur=7 * s, offset=(5 * s, 10 * s), opacity=0.24)
     layer.fill(body, Radial.of(*PLASTIC, center=(0.36, 0.2), radius=0.95))
@@ -112,13 +122,17 @@ def draw_earbud(style: EarbudStyle, scale: float = 1.0) -> Layer:
 def _bud_details(layer: Layer, ox: float, oy: float, s: float, style: EarbudStyle) -> None:
     ink = color("#4a5160")
     layer.fill(circle(ox + 22 * s, oy - 28 * s, 3.2 * s), ink, 0.8)
-    layer.fill(circle(ox + 20 * s + style.stem_length * 0.03 * s, oy + (style.stem_length - 12) * s, 3.4 * s), ink, 0.85)
+    layer.fill(
+        circle(ox + 20 * s + style.stem_length * 0.03 * s, oy + (style.stem_length - 12) * s, 3.4 * s), ink, 0.85
+    )
     sensor = capsule((ox + 17 * s, oy + 52 * s), (ox + 18.5 * s, oy + 84 * s), 2.2 * s)
     layer.fill(sensor, color("#9aa3b2"), 0.5)
     if style.tip is None:  # open-ear speaker grille on the inner side
         center = (ox - 30 * s, oy + 6 * s)
         layer.fill(rotated_ellipse(*center, 7 * s, 10 * s, 12), Radial.of(color("#7a8294"), color("#4a505c")))
-        layer.fill(rotated_ellipse(*center, 4.6 * s, 7.4 * s, 12), Radial.of(color("#383d48"), color("#596071"), radius=0.7))
+        layer.fill(
+            rotated_ellipse(*center, 4.6 * s, 7.4 * s, 12), Radial.of(color("#383d48"), color("#596071"), radius=0.7)
+        )
     if style.extra_mics:
         layer.fill(circle(ox + 4 * s, oy - 36 * s, 2.6 * s), ink, 0.8)
     if style.sensor:
@@ -136,17 +150,28 @@ def draw_case(style: CaseStyle, scale: float = 1.0) -> Layer:
     box = (SPRITE_MARGIN, SPRITE_MARGIN, SPRITE_MARGIN + width, SPRITE_MARGIN + height)
     body = rounded_rect(box, style.corner * height, 2.6)
     layer.shadow(body, blur=12 * s, offset=(8 * s, 16 * s), opacity=0.28)
-    layer.fill(body, Linear(((0.0, color("#ffffff")), (0.55, color("#eef0f4")), (1.0, color("#c9cfda"))), angle=DIAGONAL + 15))
+    layer.fill(
+        body, Linear(((0.0, color("#ffffff")), (0.55, color("#eef0f4")), (1.0, color("#c9cfda"))), angle=DIAGONAL + 15)
+    )
     layer.fill(body, Linear(SHADE_OVERLAY, angle=DIAGONAL))
     seam_y = box[1] + style.seam * height
     layer.fill(capsule((box[0], seam_y), (box[2], seam_y), 1.3 * s), color("#8d96a6"), 0.55, clip=body)
     layer.fill(capsule((box[0], seam_y + 2.4 * s), (box[2], seam_y + 2.4 * s), 1.1 * s), WHITE, 0.8, clip=body)
-    layer.fill(rotated_ellipse(box[0] + width * 0.2, box[1] + height * 0.14, width * 0.13, height * 0.045, -18), WHITE, 0.8, clip=body)
+    layer.fill(
+        rotated_ellipse(box[0] + width * 0.2, box[1] + height * 0.14, width * 0.13, height * 0.045, -18),
+        WHITE,
+        0.8,
+        clip=body,
+    )
     center_x = (box[0] + box[2]) / 2
-    layer.fill(circle(center_x, box[1] + height * 0.56, 5 * s), Radial.of(color("#cfd4dd"), color("#8c95a5"), radius=0.6))
+    layer.fill(
+        circle(center_x, box[1] + height * 0.56, 5 * s), Radial.of(color("#cfd4dd"), color("#8c95a5"), radius=0.6)
+    )
     if style.speaker:
         for index in range(5):
-            layer.fill(circle(box[2] - width * 0.18 - index * 9 * s, box[3] - height * 0.16, 2.1 * s), color("#8d96a6"), 0.8)
+            layer.fill(
+                circle(box[2] - width * 0.18 - index * 9 * s, box[3] - height * 0.16, 2.1 * s), color("#8d96a6"), 0.8
+            )
     if style.loop:
         hole = capsule((box[2] - 2 * s, box[1] + height * 0.52), (box[2] - 2 * s, box[1] + height * 0.72), 5 * s)
         layer.fill(hole, color("#7c8596"), 0.55, clip=body)

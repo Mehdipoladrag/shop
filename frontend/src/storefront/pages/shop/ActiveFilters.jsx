@@ -32,7 +32,7 @@ export default function ActiveFilters({ filters, brands, onChange, onClear }) {
   if (chips.length === 0) return null;
 
   return (
-    <div className="shop-active" role="group" aria-label="فیلترهای فعال" data-testid="shop-active-filters">
+    <div className="shop-active" role="group" aria-label="فیلترهای فعال" data-testid="shop-active-filters" data-allow-overflow>
       <button type="button" className="link-button shop-active__clear" onClick={onClear} data-testid="shop-clear-all">
         پاک کردن همه
       </button>

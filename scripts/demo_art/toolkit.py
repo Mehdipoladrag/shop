@@ -189,7 +189,9 @@ class Shape:
         padded = Image.new("L", (self.mask.width + 2 * pad, self.mask.height + 2 * pad), 0)
         padded.paste(self.mask, (pad, pad))
         blurred = padded.filter(ImageFilter.GaussianBlur(radius * SUPERSAMPLE))
-        crisp = blurred.point([max(0, min(MAX_LEVEL, round((level - 128) * SMOOTH_GAIN + 128))) for level in range(MAX_LEVEL + 1)])
+        crisp = blurred.point(
+            [max(0, min(MAX_LEVEL, round((level - 128) * SMOOTH_GAIN + 128))) for level in range(MAX_LEVEL + 1)]
+        )
         return Shape(crisp, self.x - pad, self.y - pad)
 
 
@@ -215,10 +217,12 @@ def _corner_points(cx: float, cy: float, radius: float, sign_x: int, sign_y: int
     points = []
     for step in range(CORNER_STEPS + 1):
         angle = (math.pi / 2) * step / CORNER_STEPS
-        points.append((
-            cx + sign_x * radius * math.cos(angle) ** exponent,
-            cy + sign_y * radius * math.sin(angle) ** exponent,
-        ))
+        points.append(
+            (
+                cx + sign_x * radius * math.cos(angle) ** exponent,
+                cy + sign_y * radius * math.sin(angle) ** exponent,
+            )
+        )
     return points
 
 
@@ -249,7 +253,9 @@ def rounded_rect(box, radius: float, squareness: float = 2.0) -> Shape:
 
 
 def ellipse(box) -> Shape:
-    return _rasterise(box, lambda draw, to_mask: draw.ellipse([*to_mask(box[0], box[1]), *to_mask(box[2], box[3])], fill=MAX_LEVEL))
+    return _rasterise(
+        box, lambda draw, to_mask: draw.ellipse([*to_mask(box[0], box[1]), *to_mask(box[2], box[3])], fill=MAX_LEVEL)
+    )
 
 
 def circle(cx: float, cy: float, radius: float) -> Shape:
@@ -259,8 +265,10 @@ def circle(cx: float, cy: float, radius: float) -> Shape:
 def polygon(points) -> Shape:
     xs = [p[0] for p in points]
     ys = [p[1] for p in points]
-    return _rasterise((min(xs), min(ys), max(xs), max(ys)),
-                      lambda draw, to_mask: draw.polygon([to_mask(*p) for p in points], fill=MAX_LEVEL))
+    return _rasterise(
+        (min(xs), min(ys), max(xs), max(ys)),
+        lambda draw, to_mask: draw.polygon([to_mask(*p) for p in points], fill=MAX_LEVEL),
+    )
 
 
 def rotated_ellipse(cx: float, cy: float, rx: float, ry: float, degrees: float = 0.0) -> Shape:
@@ -279,8 +287,12 @@ def capsule(start: tuple, end: tuple, start_radius: float, end_radius: float | N
     """Rounded bar between two points; the radii may differ to taper it."""
     end_radius = start_radius if end_radius is None else end_radius
     pad = max(start_radius, end_radius)
-    bounds = (min(start[0], end[0]) - pad, min(start[1], end[1]) - pad,
-              max(start[0], end[0]) + pad, max(start[1], end[1]) + pad)
+    bounds = (
+        min(start[0], end[0]) - pad,
+        min(start[1], end[1]) - pad,
+        max(start[0], end[0]) + pad,
+        max(start[1], end[1]) + pad,
+    )
     angle = math.atan2(end[1] - start[1], end[0] - start[0]) + math.pi / 2
     nx, ny = math.cos(angle), math.sin(angle)
 
@@ -304,8 +316,13 @@ def arc_band(box, start_angle: float, end_angle: float, width: float) -> Shape:
     bounds = (box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad)
 
     def paint(draw, to_mask):
-        draw.arc([*to_mask(box[0], box[1]), *to_mask(box[2], box[3])], start_angle, end_angle,
-                 fill=MAX_LEVEL, width=max(1, round(width * SUPERSAMPLE * MASK_SUPERSAMPLE)))
+        draw.arc(
+            [*to_mask(box[0], box[1]), *to_mask(box[2], box[3])],
+            start_angle,
+            end_angle,
+            fill=MAX_LEVEL,
+            width=max(1, round(width * SUPERSAMPLE * MASK_SUPERSAMPLE)),
+        )
 
     return _rasterise(bounds, paint)
 
@@ -317,10 +334,12 @@ def bezier(points: list[tuple[float, float]], steps: int = 24) -> list[tuple[flo
     for step in range(steps + 1):
         t = step / steps
         u = 1 - t
-        sampled.append((
-            u ** 3 * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t ** 3 * x3,
-            u ** 3 * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t ** 3 * y3,
-        ))
+        sampled.append(
+            (
+                u**3 * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t**3 * x3,
+                u**3 * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t**3 * y3,
+            )
+        )
     return sampled
 
 
@@ -354,14 +373,23 @@ class Layer:
         source.putalpha(alpha)
         self._blit(source, shape.x, shape.y)
 
-    def shadow(self, shape: Shape, blur: float, offset: tuple = (0, 0), opacity: float = 0.3,
-               ink: Color = SHADOW_INK, clip: Shape | None = None) -> None:
+    def shadow(
+        self,
+        shape: Shape,
+        blur: float,
+        offset: tuple = (0, 0),
+        opacity: float = 0.3,
+        ink: Color = SHADOW_INK,
+        clip: Shape | None = None,
+    ) -> None:
         """Soft shadow of a silhouette; `blur` is the Gaussian sigma in output pixels."""
         pad = math.ceil(blur * SUPERSAMPLE * 3)
         mask = Image.new("L", (shape.mask.width + 2 * pad, shape.mask.height + 2 * pad), 0)
         mask.paste(shape.mask, (pad, pad))
         mask = mask.filter(ImageFilter.GaussianBlur(blur * SUPERSAMPLE))
-        blurred = Shape(mask, shape.x - pad + round(offset[0] * SUPERSAMPLE), shape.y - pad + round(offset[1] * SUPERSAMPLE))
+        blurred = Shape(
+            mask, shape.x - pad + round(offset[0] * SUPERSAMPLE), shape.y - pad + round(offset[1] * SUPERSAMPLE)
+        )
         self.fill(blurred, ink, opacity, clip)
 
     def paste(self, other: "Layer", x: float, y: float, opacity: float = 1.0) -> None:
@@ -394,7 +422,9 @@ class Layer:
         return self.image.resize(size, Image.Resampling.LANCZOS)
 
 
-def blurred_layer_fill(layer: Layer, shape: Shape, paint: Paint, blur: float, opacity: float = 1.0, clip: Shape | None = None) -> None:
+def blurred_layer_fill(
+    layer: Layer, shape: Shape, paint: Paint, blur: float, opacity: float = 1.0, clip: Shape | None = None
+) -> None:
     """Fills `shape` with a paint whose edges are softened; used for glows and wallpaper blobs."""
     pad = math.ceil(blur * SUPERSAMPLE * 3)
     mask = Image.new("L", (shape.mask.width + 2 * pad, shape.mask.height + 2 * pad), 0)
@@ -414,7 +444,9 @@ ALPHA_STEP_LIMIT = 2  # transparency never gets coarser than this, soft shadows 
 def _precision_table(step: int) -> list[int]:
     """Lookup table that rounds a channel to a multiple of `step`, keeping pure white exact."""
     snap = MAX_LEVEL - step / 2
-    return [MAX_LEVEL if level >= snap else min(MAX_LEVEL, round(level / step) * step) for level in range(MAX_LEVEL + 1)]
+    return [
+        MAX_LEVEL if level >= snap else min(MAX_LEVEL, round(level / step) * step) for level in range(MAX_LEVEL + 1)
+    ]
 
 
 def _reduced(image: Image.Image, step: int) -> Image.Image:
@@ -422,7 +454,9 @@ def _reduced(image: Image.Image, step: int) -> Image.Image:
     red, green, blue, alpha = image.split()
     color_table = _precision_table(step)
     alpha_table = _precision_table(min(step, ALPHA_STEP_LIMIT))
-    return Image.merge("RGBA", [red.point(color_table), green.point(color_table), blue.point(color_table), alpha.point(alpha_table)])
+    return Image.merge(
+        "RGBA", [red.point(color_table), green.point(color_table), blue.point(color_table), alpha.point(alpha_table)]
+    )
 
 
 def encode_png(image: Image.Image, budget: int = SIZE_BUDGET) -> tuple[bytes, int]:

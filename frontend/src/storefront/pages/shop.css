@@ -43,12 +43,19 @@
 
 /* ---------- Layout ---------- */
 
+/* The kit's home link in the breadcrumb is only 24 px wide; give it a finger-sized target here. */
+.shop .breadcrumb__list a {
+    min-width: 36px;
+    justify-content: center;
+}
+
 .shop-layout {
     display: block;
 }
 
 .shop-results {
     min-width: 0;
+    outline: none;
     scroll-margin-top: var(--shop-sticky-top, 9.5rem);
 }
 
@@ -98,10 +105,6 @@
 
 .shop-sidebar__title svg {
     color: var(--navy-600);
-}
-
-.shop-sidebar__clear {
-    font-size: var(--fs-sm);
 }
 
 /* ---------- Filter panel (sidebar and sheet) ---------- */
@@ -605,6 +608,18 @@
 @media (min-width: 640px) {
     .shop-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* The kit's card footer holds the price and the cart button side by side; on very narrow cards a long price pushes the button out, so it wraps. */
+@media (max-width: 479px) {
+    .shop-grid .product-card__footer {
+        flex-wrap: wrap;
+        row-gap: var(--space-2);
+    }
+
+    .shop-grid .product-card__add {
+        margin-inline-start: auto;
     }
 }
 

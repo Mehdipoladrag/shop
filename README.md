@@ -97,6 +97,38 @@ python manage.py runserver 8001
 cd shop && python -m pytest
 ```
 
+## Demo data
+
+Two management commands fill an empty TechShop with demo content. Run them from the `shop/` folder
+with the same environment as the dev server; both are safe to run repeatedly.
+
+```bash
+python manage.py seed_demo_catalog              # the 2023+ product catalog
+python manage.py seed_demo_catalog --prune-old  # same, and also remove the previous seed's products
+python manage.py seed_demo_blog                 # three blog posts by the editor account "techshop_editor"
+```
+
+**`seed_demo_catalog`** creates about 40 products released in 2023 or later: iPhone 15 to 17 (including
+16e and Air), Galaxy S24 Ultra and S25 Ultra, iPad Pro (M4 and M5), iPad Air, iPad mini and iPad (A16),
+and AirPods Pro 2 and 3, AirPods 4 and AirPods Max. The categories are phones, tablets and headphones
+(`mobile`, `tablet`, `audio`) and the brands are Apple and Samsung. The newest models are listed first.
+
+- Model names and specifications follow the manufacturers' public information; every product links to
+  the official page. Prices (in toman), stock, discounts, ratings and delivery times are **sample data**,
+  and the product notice says so.
+- The pictures are **original illustrations, not photographs**. They are drawn by
+  `scripts/generate_demo_art.py` (Pillow only) into `shop/static/assets/img/product_img/new/`; see the
+  README in that folder. Regenerate them with `python scripts/generate_demo_art.py`, or replace any file
+  with a real photo by keeping the same file name (check the photo's license first). The seed copies the
+  pictures to `MEDIA_ROOT/images/demo-catalog/`.
+- Existing slugs are skipped, so a second run creates nothing. The seed never deletes anything unless
+  you pass `--prune-old`, which removes only the products created by the previous version of this seed
+  (iPhone 12/13/14, Galaxy A52 and S21 Ultra, POCO X4 Pro, PlayStation 5) together with their pictures.
+  Categories, brands, other products and users are left alone.
+
+**`seed_demo_blog`** adds three Persian blog posts with local images. An editor account created under the
+shop's old name is renamed to `techshop_editor` instead of being duplicated.
+
 ## Project
 
 #### User Section

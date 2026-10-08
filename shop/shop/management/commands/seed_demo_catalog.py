@@ -136,10 +136,23 @@ def build_spec(variant):
         image += f"-{variant.color}"
     lines += list(model.specs) + [f"رنگ: {color}"]
     return ProductSpec(
-        slug="-".join(slug_parts), name=name, brand=model.brand, category=model.category, color=color,
-        image=f"{image}.png", price=variant.price, offer=variant.offer, stock=variant.stock, rate=variant.rate,
-        camera=model.camera, os=model.os, tech=f"{model.chip} / {model.network}", capability=model.capability,
-        mini=model.mini, specs="\n".join(lines) + f"\n\nمنبع مشخصات سازنده: {model.source}", desc=model.desc,
+        slug="-".join(slug_parts),
+        name=name,
+        brand=model.brand,
+        category=model.category,
+        color=color,
+        image=f"{image}.png",
+        price=variant.price,
+        offer=variant.offer,
+        stock=variant.stock,
+        rate=variant.rate,
+        camera=model.camera,
+        os=model.os,
+        tech=f"{model.chip} / {model.network}",
+        capability=model.capability,
+        mini=model.mini,
+        specs="\n".join(lines) + f"\n\nمنبع مشخصات سازنده: {model.source}",
+        desc=model.desc,
         year=model.year,
     )
 
@@ -198,7 +211,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--prune-old", action="store_true",
+            "--prune-old",
+            action="store_true",
             help="Also delete the products created by the previous version of this seed, with their pictures.",
         )
 
@@ -226,7 +240,9 @@ class Command(BaseCommand):
             (Path(settings.MEDIA_ROOT) / name).unlink(missing_ok=True)
         self.stdout.write(self.style.SUCCESS(f"Created {created} products; {len(CATALOG) - created} already existed."))
         if options["prune_old"]:
-            self.stdout.write(self.style.SUCCESS(f"Removed {removed} legacy products and {len(old_pictures)} picture files."))
+            self.stdout.write(
+                self.style.SUCCESS(f"Removed {removed} legacy products and {len(old_pictures)} picture files.")
+            )
 
     def ensure_categories(self):
         categories = {}
@@ -273,14 +289,27 @@ class Command(BaseCommand):
             stored = copy_picture(picture, f"{spec.slug}.png")
             new_files.append(Path(settings.MEDIA_ROOT) / stored)
             product = Product(
-                slug=spec.slug, product_code=PRODUCT_CODE_BASE + index, product_name=spec.name,
-                product_color=spec.color, product_category=categories[spec.category],
-                product_brand=brands[spec.brand], product_number=spec.stock, capability=spec.capability,
-                resolution=spec.camera, technology=spec.tech, platform_os=spec.os, bluetooth="دارد",
-                product_rate=Decimal(spec.rate), specifications=spec.specs,
-                product_description=f"{spec.desc}\n\n{NOTICE}", mini_description=spec.mini,
-                price=Decimal(spec.price), offer=spec.offer, time_send=DELIVERY_DAYS[index % len(DELIVERY_DAYS)],
-                product_inf=notice, pic=stored,
+                slug=spec.slug,
+                product_code=PRODUCT_CODE_BASE + index,
+                product_name=spec.name,
+                product_color=spec.color,
+                product_category=categories[spec.category],
+                product_brand=brands[spec.brand],
+                product_number=spec.stock,
+                capability=spec.capability,
+                resolution=spec.camera,
+                technology=spec.tech,
+                platform_os=spec.os,
+                bluetooth="دارد",
+                product_rate=Decimal(spec.rate),
+                specifications=spec.specs,
+                product_description=f"{spec.desc}\n\n{NOTICE}",
+                mini_description=spec.mini,
+                price=Decimal(spec.price),
+                offer=spec.offer,
+                time_send=DELIVERY_DAYS[index % len(DELIVERY_DAYS)],
+                product_inf=notice,
+                pic=stored,
             )
             product.full_clean()
             product.save()

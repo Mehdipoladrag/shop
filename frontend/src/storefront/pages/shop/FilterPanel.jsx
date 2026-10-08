@@ -58,7 +58,6 @@ function PriceForm({ range, price, onPriceChange, onPriceApply }) {
   return (
     <form
       className="shop-price"
-      noValidate
       onSubmit={(event) => {
         event.preventDefault();
         onPriceApply();
@@ -99,7 +98,7 @@ function PriceForm({ range, price, onPriceChange, onPriceApply }) {
         )
       )}
       <button type="submit" className="btn btn--secondary btn--sm btn--block" data-testid="shop-filter-price-apply">
-        اعمال بازه قیمت
+        اعمال
       </button>
     </form>
   );

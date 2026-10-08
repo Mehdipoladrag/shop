@@ -97,7 +97,9 @@ def _bar(layer: Layer, box: tuple, radius: float, face: Shape, paints: tuple, ri
     layer.shadow(outer, blur=5, offset=(0, 5), opacity=0.32)
     layer.fill(outer, paints[0])
     left, top, right, bottom = box
-    inner = rounded_rect((left + rim * 2, top + rim * 2, right - rim * 2, bottom - rim), radius - rim, 3.0).intersect(face)
+    inner = rounded_rect((left + rim * 2, top + rim * 2, right - rim * 2, bottom - rim), radius - rim, 3.0).intersect(
+        face
+    )
     layer.fill(inner, paints[1])
     sheen(layer, inner, gloss)
     return inner
@@ -138,7 +140,9 @@ def camera_single(layer, ox, oy, u, fin, face):
     halo = circle(ox + 0.185 * u, oy + 0.185 * u, 0.15 * u)
     layer.shadow(halo, blur=4, offset=(2, 4), opacity=0.3)
     layer.fill(halo, Linear.of(lighten(fin.module[0], 0.45), darken(fin.module[1], 0.25), angle=DIAGONAL))
-    layer.fill(circle(ox + 0.185 * u, oy + 0.185 * u, 0.138 * u), Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10))
+    layer.fill(
+        circle(ox + 0.185 * u, oy + 0.185 * u, 0.138 * u), Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10)
+    )
     _lens_set(layer, ox, oy, u, fin, [(0.185, 0.185)], 0.105)
     draw_flash(layer, ox + 0.42 * u, oy + 0.135 * u, 0.028 * u, fin.ring)
     draw_dot(layer, ox + 0.42 * u, oy + 0.225 * u, 0.011 * u)
@@ -146,10 +150,16 @@ def camera_single(layer, ox, oy, u, fin, face):
 
 def camera_air(layer, ox, oy, u, fin, face):
     """iPhone Air: a bar across the whole top edge with one lens and the flash on its right."""
-    paints = (Linear.of(lighten(fin.module[0], 0.35), darken(fin.module[1], 0.3), angle=DIAGONAL),
-              Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10))
+    paints = (
+        Linear.of(lighten(fin.module[0], 0.35), darken(fin.module[1], 0.3), angle=DIAGONAL),
+        Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10),
+    )
     _bar(layer, (ox, oy, ox + u, oy + 0.3 * u), 0.05 * u, face, paints, BAR_RIM, 0.18)
-    layer.fill(circle(ox + 0.215 * u, oy + 0.15 * u, 0.12 * u), Linear.of(darken(fin.module[1], 0.35), fin.module[0], angle=DIAGONAL), 0.35)
+    layer.fill(
+        circle(ox + 0.215 * u, oy + 0.15 * u, 0.12 * u),
+        Linear.of(darken(fin.module[1], 0.35), fin.module[0], angle=DIAGONAL),
+        0.35,
+    )
     _lens_set(layer, ox, oy, u, fin, [(0.215, 0.15)], 0.098)
     draw_flash(layer, ox + 0.79 * u, oy + 0.1 * u, 0.026 * u, fin.ring)
     draw_dot(layer, ox + 0.9 * u, oy + 0.17 * u, 0.011 * u)
@@ -165,8 +175,10 @@ def camera_bar(layer, ox, oy, u, fin, face):
 
 def camera_wide(layer, ox, oy, u, fin, face):
     """iPhone 17 Pro and Pro Max: an aluminium plateau across the whole back with three lenses."""
-    paints = (Linear.of(lighten(fin.frame[0], 0.2), darken(fin.frame[1], 0.2), angle=DIAGONAL),
-              Linear.of(fin.frame[0], mix(fin.frame[0], fin.frame[1], 0.8), angle=DIAGONAL + 10))
+    paints = (
+        Linear.of(lighten(fin.frame[0], 0.2), darken(fin.frame[1], 0.2), angle=DIAGONAL),
+        Linear.of(fin.frame[0], mix(fin.frame[0], fin.frame[1], 0.8), angle=DIAGONAL + 10),
+    )
     _bar(layer, (ox, oy, ox + u, oy + 0.66 * u), 0.07 * u, face, paints, BAR_RIM, 0.12)
     _lens_set(layer, ox, oy, u, fin, [(0.2, 0.2), (0.2, 0.46), (0.45, 0.33)], 0.112)
     draw_flash(layer, ox + 0.73 * u, oy + 0.16 * u, 0.032 * u, fin.ring)
@@ -211,8 +223,12 @@ MODELS = {
     "iphone-air": PhoneModel(74.7, 156.2, "air", corner=0.16, rail=3.0, bezel=3.4, camera_control=True),
     "iphone-17-pro": PhoneModel(71.9, 150.0, "wide", corner=0.14, bezel=3.4, camera_control=True),
     "iphone-17-pro-max": PhoneModel(78.0, 163.4, "wide", corner=0.14, bezel=3.4, camera_control=True),
-    "galaxy-s24-ultra": PhoneModel(79.0, 162.3, "ultra", corner=0.075, squareness=5.0, rail=3.0, bezel=3.8, front="punch", action_button=False),
-    "galaxy-s25-ultra": PhoneModel(77.6, 162.8, "ultra", corner=0.11, squareness=4.0, rail=3.0, bezel=3.2, front="punch", action_button=False),
+    "galaxy-s24-ultra": PhoneModel(
+        79.0, 162.3, "ultra", corner=0.075, squareness=5.0, rail=3.0, bezel=3.8, front="punch", action_button=False
+    ),
+    "galaxy-s25-ultra": PhoneModel(
+        77.6, 162.8, "ultra", corner=0.11, squareness=4.0, rail=3.0, bezel=3.2, front="punch", action_button=False
+    ),
 }
 
 # --------------------------------------------------------------------------- finishes
@@ -280,13 +296,22 @@ def _buttons(layer: Layer, box: tuple, model: PhoneModel, fin: Finish) -> None:
 def _rail(layer: Layer, outer: Shape, fin: Finish) -> None:
     """The metal side rail: a lit top left edge fading into a darker bottom right."""
     layer.fill(outer, Linear.of(fin.frame[0], fin.frame[1], angle=DIAGONAL))
-    stops = ((0.0, color("#ffffff", 210)), (0.3, color("#ffffff", 0)), (0.72, color("#000000", 0)), (1.0, color("#000000", 80)))
+    stops = (
+        (0.0, color("#ffffff", 210)),
+        (0.3, color("#ffffff", 0)),
+        (0.72, color("#000000", 0)),
+        (1.0, color("#000000", 80)),
+    )
     layer.fill(outer, Linear(stops, angle=DIAGONAL))
 
 
 def _seam(layer: Layer, box: tuple, radius: float, inset: float, squareness: float) -> Shape:
     """Returns the face shape and first draws the hairline gap that separates it from the rail."""
-    gap = rounded_rect((box[0] + inset - SEAM, box[1] + inset - SEAM, box[2] - inset + SEAM, box[3] - inset + SEAM), radius - inset + SEAM, squareness)
+    gap = rounded_rect(
+        (box[0] + inset - SEAM, box[1] + inset - SEAM, box[2] - inset + SEAM, box[3] - inset + SEAM),
+        radius - inset + SEAM,
+        squareness,
+    )
     layer.fill(gap, color("#000000", 70))
     return rounded_rect((box[0] + inset, box[1] + inset, box[2] - inset, box[3] - inset), radius - inset, squareness)
 
@@ -349,12 +374,24 @@ def draw_s_pen() -> Layer:
     body_bottom = top + length - tip_length
     barrel = Linear(((0.0, color("#5b5f69")), (0.3, color("#22242b")), (1.0, color("#050507"))), angle=0)
     body = capsule((cx, top + width / 2), (cx, body_bottom), width / 2)
-    cone = polygon([(cx - width / 2, body_bottom), (cx + width / 2, body_bottom), (cx + width * 0.08, top + length), (cx - width * 0.08, top + length)])
+    cone = polygon(
+        [
+            (cx - width / 2, body_bottom),
+            (cx + width / 2, body_bottom),
+            (cx + width * 0.08, top + length),
+            (cx - width * 0.08, top + length),
+        ]
+    )
     layer.fill(cone, Linear(((0.0, color("#4a4e58")), (1.0, color("#050507"))), angle=0))
     layer.fill(body, barrel)
     cap = capsule((cx, top + width / 2), (cx, top + length * 0.07), width / 2)
-    layer.fill(cap, Linear(((0.0, color("#f2f3f6")), (0.5, color("#aeb3bd")), (1.0, color("#6c727e"))), angle=0), clip=body)
-    layer.fill(rounded_rect((cx - width * 0.62, top + length * 0.2, cx - width * 0.2, top + length * 0.27), width * 0.18), color("#8a909c"))
+    layer.fill(
+        cap, Linear(((0.0, color("#f2f3f6")), (0.5, color("#aeb3bd")), (1.0, color("#6c727e"))), angle=0), clip=body
+    )
+    layer.fill(
+        rounded_rect((cx - width * 0.62, top + length * 0.2, cx - width * 0.2, top + length * 0.27), width * 0.18),
+        color("#8a909c"),
+    )
     layer.fill(circle(cx, top + length - width * 0.03, width * 0.09), color("#9aa1ae"))
     return layer
 
@@ -389,7 +426,9 @@ def compose_pair(model: PhoneModel, fin: Finish, wallpaper_key: str) -> Image.Im
     front_x = left + front_dx
     front_y = top + front_dy
     draw_ground_shadow(scene, front_x + front_w / 2, floor, front_w * 1.15, 38, 0.26)
-    front_box = rounded_rect((front_x, front_y, front_x + front_w, front_y + front_h), model.corner * front_w, model.squareness)
+    front_box = rounded_rect(
+        (front_x, front_y, front_x + front_w, front_y + front_h), model.corner * front_w, model.squareness
+    )
     scene.shadow(front_box, blur=13, offset=(-6, 14), opacity=0.34)
     scene.paste(front, front_x - SPRITE_MARGIN, front_y - SPRITE_MARGIN)
     if model.camera == "ultra":

@@ -15,6 +15,7 @@ export default function FilterSheet({ open, onClose, activeCount, onClear, apply
   const titleId = useId();
   const panelRef = useRef(null);
   const closeRef = useRef(null);
+  const applyRef = useRef(null);
   // The handler may change on every render; the open/close effect must not restart because of it.
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -80,11 +81,11 @@ export default function FilterSheet({ open, onClose, activeCount, onClear, apply
         </div>
         <div className="shop-sheet__body">{children}</div>
         <div className="shop-sheet__footer">
-          <button type="button" className="btn btn--primary" onClick={onApply} data-testid="shop-filter-apply">
+          <button type="button" className="btn btn--primary" onClick={onApply} ref={applyRef} data-testid="shop-filter-apply">
             {applyLabel}
           </button>
           {activeCount > 0 && (
-            <button type="button" className="btn btn--secondary" onClick={onClear} data-testid="shop-filter-sheet-clear">
+            <button type="button" className="btn btn--secondary" onClick={() => { onClear(); applyRef.current?.focus(); }} data-testid="shop-filter-sheet-clear">
               پاک کردن همه
             </button>
           )}

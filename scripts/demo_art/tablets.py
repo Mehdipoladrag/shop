@@ -98,9 +98,18 @@ def _outline(layer: Layer, box: tuple, radius: float, fin: Finish, rail: float) 
     """Draws the aluminium rail and returns the shape of the face inside it."""
     outer = rounded_rect(box, radius, 3.0)
     layer.fill(outer, Linear.of(fin.frame[0], fin.frame[1], angle=DIAGONAL))
-    stops = ((0.0, color("#ffffff", 210)), (0.3, color("#ffffff", 0)), (0.72, color("#000000", 0)), (1.0, color("#000000", 80)))
+    stops = (
+        (0.0, color("#ffffff", 210)),
+        (0.3, color("#ffffff", 0)),
+        (0.72, color("#000000", 0)),
+        (1.0, color("#000000", 80)),
+    )
     layer.fill(outer, Linear(stops, angle=DIAGONAL))
-    gap = rounded_rect((box[0] + rail - SEAM, box[1] + rail - SEAM, box[2] - rail + SEAM, box[3] - rail + SEAM), radius - rail + SEAM, 3.0)
+    gap = rounded_rect(
+        (box[0] + rail - SEAM, box[1] + rail - SEAM, box[2] - rail + SEAM, box[3] - rail + SEAM),
+        radius - rail + SEAM,
+        3.0,
+    )
     layer.fill(gap, color("#000000", 70))
     return rounded_rect((box[0] + rail, box[1] + rail, box[2] - rail, box[3] - rail), radius - rail, 3.0)
 
@@ -134,10 +143,23 @@ def draw_back(model: TabletModel, fin: Finish) -> Layer:
     short = min(size)
     lens_x, lens_y = box[0] + 0.09 * short, box[1] + 0.09 * short
     if model.back_camera == "plate":
-        plate = rounded_rect((lens_x - 0.065 * short, lens_y - 0.065 * short, lens_x + 0.15 * short, lens_y + 0.21 * short), 0.05 * short, 3.0)
+        plate = rounded_rect(
+            (lens_x - 0.065 * short, lens_y - 0.065 * short, lens_x + 0.15 * short, lens_y + 0.21 * short),
+            0.05 * short,
+            3.0,
+        )
         layer.shadow(plate, blur=4, offset=(2, 4), opacity=0.3)
         layer.fill(plate, Linear.of(lighten(fin.module[0], 0.45), darken(fin.module[1], 0.25), angle=DIAGONAL))
-        inner = rounded_rect((lens_x - 0.065 * short + 2, lens_y - 0.065 * short + 2, lens_x + 0.15 * short - 2, lens_y + 0.21 * short - 2), 0.05 * short - 2, 3.0)
+        inner = rounded_rect(
+            (
+                lens_x - 0.065 * short + 2,
+                lens_y - 0.065 * short + 2,
+                lens_x + 0.15 * short - 2,
+                lens_y + 0.21 * short - 2,
+            ),
+            0.05 * short - 2,
+            3.0,
+        )
         layer.fill(inner, Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10))
         draw_flash(layer, lens_x + 0.04 * short, lens_y + 0.155 * short, 0.02 * short, fin.ring)
     draw_lens(layer, lens_x + (0.04 * short if model.back_camera == "plate" else 0), lens_y, 0.045 * short, fin.ring)
@@ -153,8 +175,17 @@ def draw_pencil(scale: float = 1.0) -> Layer:
     tip_length = length * 0.13
     body_bottom = top + length - tip_length
     body = capsule((cx, top + width / 2), (cx, body_bottom), width / 2)
-    barrel = Linear(((0.0, color("#ffffff")), (0.35, color("#f4f6f9")), (0.8, color("#d5dae2")), (1.0, color("#b9c0cb"))), angle=0)
-    cone = polygon([(cx - width / 2, body_bottom), (cx + width / 2, body_bottom), (cx + width * 0.06, top + length), (cx - width * 0.06, top + length)])
+    barrel = Linear(
+        ((0.0, color("#ffffff")), (0.35, color("#f4f6f9")), (0.8, color("#d5dae2")), (1.0, color("#b9c0cb"))), angle=0
+    )
+    cone = polygon(
+        [
+            (cx - width / 2, body_bottom),
+            (cx + width / 2, body_bottom),
+            (cx + width * 0.06, top + length),
+            (cx - width * 0.06, top + length),
+        ]
+    )
     layer.fill(cone, Linear(((0.0, color("#ffffff")), (0.5, color("#eceff3")), (1.0, color("#b3bac6"))), angle=0))
     layer.fill(body, barrel)
     flat = capsule((cx + width * 0.3, top + width * 0.9), (cx + width * 0.3, body_bottom), width * 0.04)

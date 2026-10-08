@@ -95,6 +95,17 @@ export default function ShopPage({ mode }) {
   );
   const clearFilters = useCallback(() => update(CLEARED_FILTERS), [update]);
 
+  // A removed chip or button takes keyboard focus with it; the results region keeps it on the page.
+  const focusResults = () => resultsRef.current?.focus({ preventScroll: true });
+  const removeFilter = (changes) => {
+    update(changes);
+    focusResults();
+  };
+  const clearFromPage = () => {
+    clearFilters();
+    focusResults();
+  };
+
   // The price inputs are a draft until "apply"; they follow the URL when it changes (clear, back, forward).
   const [priceDraft, setPriceDraft] = useState({ min: filters.minPrice, max: filters.maxPrice });
   const [priceError, setPriceError] = useState("");
@@ -187,7 +198,7 @@ export default function ShopPage({ mode }) {
   } else if (!products.data) {
     body = <ResultsSkeleton />;
   } else if (products.data.results.length === 0) {
-    body = <EmptyResults mode={mode} hasFilters={activeCount > 0} query={filters.query} onClear={clearFilters} />;
+    body = <EmptyResults mode={mode} hasFilters={activeCount > 0} query={filters.query} onClear={clearFromPage} />;
   } else {
     body = (
       <>
@@ -239,17 +250,12 @@ export default function ShopPage({ mode }) {
                   <SlidersHorizontal size={18} aria-hidden="true" />
                   فیلترها
                 </h2>
-                {activeCount > 0 && (
-                  <button type="button" className="link-button shop-sidebar__clear" onClick={clearFilters} data-testid="shop-sidebar-clear">
-                    پاک کردن همه
-                  </button>
-                )}
               </div>
               {panel}
             </aside>
           )}
 
-          <section className="shop-results" aria-labelledby={resultsTitleId} ref={resultsRef} data-testid="shop-results">
+          <section className="shop-results" aria-labelledby={resultsTitleId} tabIndex={-1} ref={resultsRef} data-testid="shop-results">
             <h2 className="visually-hidden" id={resultsTitleId}>
               فهرست محصولات
             </h2>
@@ -265,7 +271,7 @@ export default function ShopPage({ mode }) {
               <SortBar ordering={filters.ordering} onChange={(ordering) => update({ ordering })} />
             </div>
 
-            <ActiveFilters filters={filters} brands={brands} onChange={update} onClear={clearFilters} />
+            <ActiveFilters filters={filters} brands={brands} onChange={removeFilter} onClear={clearFromPage} />
 
             <div className={`shop-results__body${refreshing ? " is-refreshing" : ""}`} aria-busy={refreshing} data-testid="shop-results-body">
               {refreshing && <span className="shop-progress" role="status" aria-label="در حال بارگذاری" data-testid="shop-progress" />}

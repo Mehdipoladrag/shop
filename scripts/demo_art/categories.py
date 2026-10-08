@@ -28,7 +28,11 @@ def _disc() -> Layer:
     disc = circle(center, center, DISC_RADIUS)
     layer.shadow(disc, blur=9, offset=(0, 8), opacity=0.25)
     layer.fill(disc, Linear.of(color("#2f5aa8"), color("#10275a"), angle=DIAGONAL + 20))
-    layer.fill(circle(center * 0.72, center * 0.6, DISC_RADIUS * 0.95), Radial.of(color("#6f9bff", 120), color("#6f9bff", 0)), clip=disc)
+    layer.fill(
+        circle(center * 0.72, center * 0.6, DISC_RADIUS * 0.95),
+        Radial.of(color("#6f9bff", 120), color("#6f9bff", 0)),
+        clip=disc,
+    )
     for radius, opacity in ((DISC_RADIUS - 22, 0.16), (DISC_RADIUS - 52, 0.09)):
         ring = (center - radius, center - radius, center + radius, center + radius)
         layer.fill(arc_band(ring, 0, 360, 2.2), WHITE, opacity, clip=disc)

@@ -25,7 +25,7 @@ export default function SortBar({ ordering, onChange }) {
         <ArrowUpDown size={16} />
         مرتب‌سازی:
       </span>
-      <div className="shop-sort__list" ref={listRef}>
+      <div className="shop-sort__list" ref={listRef} data-allow-overflow>
         {SORT_OPTIONS.map((option) => {
           const active = option.ordering === ordering;
           return (

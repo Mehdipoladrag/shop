@@ -7,6 +7,7 @@ even higher factor, so the final downscale gives smooth edges without any numpy 
 
 from __future__ import annotations
 
+import io
 import math
 from dataclasses import dataclass
 
@@ -405,12 +406,46 @@ def blurred_layer_fill(layer: Layer, shape: Shape, paint: Paint, blur: float, op
 # --------------------------------------------------------------------------- output
 
 
-def save_png(image: Image.Image, path, colors: int = 256) -> int:
-    """Writes an optimised PNG with a transparent background and returns its size in bytes.
+SIZE_BUDGET = 120 * 1024  # target maximum size of a PNG file in bytes
+COLOR_STEPS = (1, 2, 3, 4, 5, 6, 8)  # allowed color precision, finest first (1 keeps all 256 levels)
+ALPHA_STEP_LIMIT = 2  # transparency never gets coarser than this, soft shadows would show bands
 
-    The picture is reduced to an adaptive palette (alpha is kept in the palette), which keeps
-    illustrations with smooth gradients far below 120 KB without visible banding.
+
+def _precision_table(step: int) -> list[int]:
+    """Lookup table that rounds a channel to a multiple of `step`, keeping pure white exact."""
+    snap = MAX_LEVEL - step / 2
+    return [MAX_LEVEL if level >= snap else min(MAX_LEVEL, round(level / step) * step) for level in range(MAX_LEVEL + 1)]
+
+
+def _reduced(image: Image.Image, step: int) -> Image.Image:
+    """The picture with coarser color precision (alpha is reduced less) so that it compresses better."""
+    red, green, blue, alpha = image.split()
+    color_table = _precision_table(step)
+    alpha_table = _precision_table(min(step, ALPHA_STEP_LIMIT))
+    return Image.merge("RGBA", [red.point(color_table), green.point(color_table), blue.point(color_table), alpha.point(alpha_table)])
+
+
+def encode_png(image: Image.Image, budget: int = SIZE_BUDGET) -> tuple[bytes, int]:
+    """Encodes an optimised PNG; returns the bytes and the color step that was needed.
+
+    Smooth gradients are expensive in a truecolor PNG, so the color precision is lowered step by
+    step until the file fits the budget.  Most pictures need a step of only 2 or 3 (about 7 bits
+    per channel), which is not visible in the gradients.
     """
-    reduced = image.quantize(colors=colors, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
-    reduced.save(path, format="PNG", optimize=True)
-    return path.stat().st_size
+    best = (b"", 0)
+    for step in COLOR_STEPS:
+        buffer = io.BytesIO()
+        _reduced(image, step).save(buffer, format="PNG", optimize=True)
+        data = buffer.getvalue()
+        if not best[0] or len(data) < len(best[0]):
+            best = (data, step)
+        if len(data) <= budget:
+            break
+    return best
+
+
+def save_png(image: Image.Image, path, budget: int = SIZE_BUDGET) -> int:
+    """Writes an optimised PNG with a transparent background and returns its size in bytes."""
+    data, _ = encode_png(image, budget)
+    path.write_bytes(data)
+    return len(data)

@@ -21,10 +21,8 @@ from .parts import (
     sheen,
 )
 from .toolkit import (
-    WHITE,
     Layer,
     Linear,
-    Radial,
     Shape,
     capsule,
     circle,
@@ -63,11 +61,11 @@ class TabletModel:
 
 
 MODELS = {
-    "ipad-pro-13": TabletModel(281.6, 215.5, bezel=0.03, pencil=True),
-    "ipad-pro-11": TabletModel(249.7, 177.5, bezel=0.034, pencil=True),
-    "ipad-air-11": TabletModel(247.6, 178.5, bezel=0.05, pencil=True, back_camera="ring"),
-    "ipad-mini": TabletModel(195.4, 134.8, portrait=True, bezel=0.062, back_camera="ring", corner=0.085),
-    "ipad": TabletModel(248.6, 179.5, bezel=0.062, back_camera="ring"),
+    "ipad-pro-13": TabletModel(281.6, 215.5, bezel=0.024, pencil=True),
+    "ipad-pro-11": TabletModel(249.7, 177.5, bezel=0.026, pencil=True),
+    "ipad-air-11": TabletModel(247.6, 178.5, bezel=0.042, pencil=True, back_camera="ring"),
+    "ipad-mini": TabletModel(195.4, 134.8, portrait=True, bezel=0.054, back_camera="ring", corner=0.085),
+    "ipad": TabletModel(248.6, 179.5, bezel=0.056, back_camera="ring"),
 }
 
 FINISHES = {
@@ -196,7 +194,6 @@ def _lean_pencil(scene: Layer, tip_x: float, tip_y: float) -> None:
     center_x = tip_x - (length / 2) * math.sin(angle)
     center_y = tip_y - (length / 2) * math.cos(angle)
     # The sprite margin is symmetric, so the sprite center is the center of the pencil.
-    shadow = Layer(turned.width, turned.height)
     scene.shadow(_pencil_footprint(tip_x, tip_y, length, angle), blur=6, offset=(8, 4), opacity=0.25)
     scene.paste_centered(turned, center_x, center_y)
 

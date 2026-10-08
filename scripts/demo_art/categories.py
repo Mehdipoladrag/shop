@@ -6,7 +6,6 @@ from PIL import Image
 
 from .parts import DIAGONAL
 from .toolkit import (
-    SUPERSAMPLE,
     WHITE,
     Layer,
     Linear,

@@ -1,186 +1,288 @@
-"""Populate the local shop with real models and explicitly marked demo commerce data."""
+"""Populate the shop with a demo catalog of phones, tablets and AirPods released in 2023 or later.
 
+Model names and specifications follow the manufacturers' public information.  Prices, stock,
+discounts, ratings and delivery times are sample data, and the pictures are original
+illustrations drawn by scripts/generate_demo_art.py (they are not official product photos).
+
+The command is idempotent (existing slugs are skipped) and atomic.  `--prune-old` additionally
+removes the products created by the previous version of this seed; without it nothing is deleted.
+"""
+
+import shutil
+from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
-import shutil
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+from shop.management.commands._demo_catalog_data import (
+    APPLE,
+    AUDIO,
+    COLORS,
+    MODELS,
+    MOBILE,
+    SAMSUNG,
+    TABLET,
+    VARIANTS,
+)
 from shop.models import Brand, Category, Info, Product
 
-
 NOTICE = (
-    "کاتالوگ نمایشی: مدل و مشخصات فنی واقعی‌اند؛ قیمت‌ها به تومان، موجودی، "
-    "تخفیف، امتیاز و زمان ارسال دادهٔ نمونه هستند و پیشنهاد فروش واقعی نیستند. "
-    "تصاویر از فایل‌های موجود پروژه هستند. سیستم‌عامل ذکرشده مربوط به زمان عرضه است."
+    "کاتالوگ نمایشی تک‌شاپ: نام مدل‌ها و مشخصات فنی بر پایهٔ اطلاعات عمومی سازندگان است. "
+    "قیمت (به تومان)، موجودی، تخفیف، امتیاز و زمان ارسال دادهٔ نمونه هستند و پیشنهاد فروش واقعی نیستند. "
+    "تصاویر، تصویرسازی هستند و عکس رسمی محصولات نیستند؛ رنگ‌ها نیز تقریبی‌اند. "
+    "سیستم‌عامل ذکرشده مربوط به زمان عرضه است."
 )
 
-CATALOG = [
-    dict(slug="apple-iphone-13-128-blue", name="اپل iPhone 13 ظرفیت ۱۲۸ گیگابایت", brand="Apple", image="p_21.jpg",
-         color="آبی", price=42000000, offer=8, stock=12, rate="4.6", camera=12, os="iOS 15", tech="Apple A15 Bionic / 5G", capability="Face ID",
-         mini="نمایشگر OLED، تراشه A15 و دوربین دوگانه",
-         specs="حافظه داخلی: ۱۲۸ گیگابایت\nنمایشگر: ۶٫۱ اینچ Super Retina XDR OLED\nتراشه: A15 Bionic\nدوربین پشت: دو دوربین ۱۲ مگاپیکسلی\nشبکه: 5G\nدرگاه: Lightning",
-         desc="آیفون ۱۳ با نمایشگر OLED و تراشه A15 برای استفاده روزمره، عکاسی و اجرای برنامه‌ها طراحی شده است. دوربین دوگانه آن از حالت سینمایی پشتیبانی می‌کند.",
-         source="https://support.apple.com/en-us/111872"),
-    dict(slug="apple-iphone-13-256-blue", name="اپل iPhone 13 ظرفیت ۲۵۶ گیگابایت", brand="Apple", image="p_21.jpg",
-         color="آبی", price=48000000, offer=5, stock=7, rate="4.7", camera=12, os="iOS 15", tech="Apple A15 Bionic / 5G", capability="Face ID",
-         mini="۲۵۶ گیگابایت حافظه برای عکس و ویدیو",
-         specs="حافظه داخلی: ۲۵۶ گیگابایت\nنمایشگر: ۶٫۱ اینچ Super Retina XDR OLED\nتراشه: A15 Bionic\nدوربین پشت: دو دوربین ۱۲ مگاپیکسلی\nشبکه: 5G\nدرگاه: Lightning",
-         desc="این نسخه از آیفون ۱۳ فضای بیشتری برای عکس، ویدیو و برنامه‌ها دارد. نمایشگر، پردازنده و دوربین آن با نسخه ۱۲۸ گیگابایتی یکسان است.",
-         source="https://support.apple.com/en-us/111872"),
-    dict(slug="apple-iphone-13-pro-256-silver", name="اپل iPhone 13 Pro ظرفیت ۲۵۶ گیگابایت", brand="Apple", image="p_8.jpg",
-         color="نقره‌ای", price=68000000, offer=10, stock=5, rate="4.8", camera=12, os="iOS 15", tech="Apple A15 Bionic / 5G", capability="ProMotion / Face ID",
-         mini="نمایشگر ۱۲۰ هرتز و دوربین سه‌گانه",
-         specs="حافظه داخلی: ۲۵۶ گیگابایت\nنمایشگر: ۶٫۱ اینچ OLED با ProMotion تا ۱۲۰ هرتز\nتراشه: A15 Bionic\nدوربین پشت: سه دوربین ۱۲ مگاپیکسلی\nویژگی دوربین: عکاسی ماکرو و Apple ProRAW\nشبکه: 5G",
-         desc="آیفون ۱۳ پرو با نمایشگر ProMotion و دوربین‌های واید، اولتراواید و تله‌فوتو عرضه شده است. قابلیت عکاسی ماکرو و ProRAW امکانات بیشتری برای ثبت و ویرایش تصویر فراهم می‌کنند.",
-         source="https://support.apple.com/en-us/111871"),
-    dict(slug="apple-iphone-12-pro-256-graphite", name="اپل iPhone 12 Pro ظرفیت ۲۵۶ گیگابایت", brand="Apple", image="p_22.jpg",
-         color="گرافیتی", price=39000000, offer=12, stock=4, rate="4.5", camera=12, os="iOS 14", tech="Apple A14 Bionic / 5G", capability="LiDAR / Face ID",
-         mini="تراشه A14، دوربین سه‌گانه و حسگر LiDAR",
-         specs="حافظه داخلی: ۲۵۶ گیگابایت\nنمایشگر: ۶٫۱ اینچ Super Retina XDR OLED\nتراشه: A14 Bionic\nدوربین پشت: سه دوربین ۱۲ مگاپیکسلی\nحسگر: LiDAR\nشبکه: 5G",
-         desc="آیفون ۱۲ پرو ترکیبی از بدنه با قاب فولادی، نمایشگر OLED و دوربین سه‌گانه است. حسگر LiDAR برای تشخیص عمق و برخی کاربردهای واقعیت افزوده به کار می‌رود.",
-         source="https://support.apple.com/en-us/111875"),
-    dict(slug="samsung-galaxy-a52-128-peach", name="سامسونگ Galaxy A52 ظرفیت ۱۲۸ گیگابایت", brand="Samsung", image="p_17.jpg",
-         color="هلویی", price=14500000, offer=15, stock=18, rate="4.3", camera=64, os="Android 11 / One UI 3.1", tech="Snapdragon 720G / 4G", capability="لرزش‌گیر اپتیکال",
-         mini="نمایشگر AMOLED و دوربین ۶۴ مگاپیکسلی",
-         specs="مدل: Galaxy A52 4G\nحافظه داخلی: ۱۲۸ گیگابایت\nنمایشگر: ۶٫۵ اینچ Super AMOLED، نرخ ۹۰ هرتز\nتراشه: Snapdragon 720G\nدوربین اصلی: ۶۴ مگاپیکسل با OIS\nباتری: ۴۵۰۰ میلی‌آمپرساعت\nپشتیبانی از شارژ: ۲۵ وات\nمقاومت: IP67",
-         desc="گلکسی A52 نسخه 4G دارای نمایشگر AMOLED و دوربین اصلی مجهز به لرزش‌گیر اپتیکال است. باتری ۴۵۰۰ میلی‌آمپرساعتی و مقاومت IP67 از ویژگی‌های این مدل هستند.",
-         source="https://news.samsung.com/in/samsung-launches-galaxy-a52-and-galaxy-a72-in-india-makes-exciting-innovations-accessible-to-all"),
-    dict(slug="samsung-galaxy-s21-ultra-256-black", name="سامسونگ Galaxy S21 Ultra ظرفیت ۲۵۶ گیگ", brand="Samsung", image="p_23.jpg",
-         color="مشکی", price=45000000, offer=7, stock=6, rate="4.7", camera=108, os="Android 11 / One UI 3.1", tech="Exynos 2100 / 5G", capability="پشتیبانی از S Pen",
-         mini="دوربین ۱۰۸ مگاپیکسل و نمایشگر ۱۲۰ هرتز",
-         specs="نسخه: بین‌المللی با Exynos 2100\nحافظه داخلی: ۲۵۶ گیگابایت\nنمایشگر: ۶٫۸ اینچ Dynamic AMOLED 2X، تا ۱۲۰ هرتز\nدوربین اصلی: ۱۰۸ مگاپیکسل\nتله‌فوتو: بزرگ‌نمایی اپتیکال ۳ و ۱۰ برابر\nباتری: ۵۰۰۰ میلی‌آمپرساعت\nشبکه: 5G\nقلم S Pen: پشتیبانی می‌شود، جداگانه",
-         desc="گلکسی S21 Ultra نمایشگر بزرگ و مجموعه دوربین متنوعی دارد. دو دوربین تله‌فوتو برای بزرگ‌نمایی اپتیکال به کار می‌روند و دستگاه از قلم S Pen پشتیبانی می‌کند.",
-         source="https://news.samsung.com/global/samsung-galaxy-s21-ultra-the-ultimate-smartphone-experience-designed-to-be-epic-in-every-way"),
-    dict(slug="poco-x4-pro-5g-256-black", name="پوکو X4 Pro 5G ظرفیت ۲۵۶ گیگابایت", brand="Xiaomi / POCO", image="p_9.jpg",
-         color="مشکی", price=16500000, offer=10, stock=14, rate="4.4", camera=108, os="Android 11 / MIUI 13 for POCO", tech="Snapdragon 695 / 5G", capability="شارژ سریع ۶۷ وات",
-         mini="AMOLED ۱۲۰ هرتز، رم ۸ و شارژ ۶۷ وات",
-         specs="نسخه: جهانی\nحافظه داخلی: ۲۵۶ گیگابایت\nرم: ۸ گیگابایت LPDDR4X\nنمایشگر: ۶٫۶۷ اینچ AMOLED، نرخ ۱۲۰ هرتز\nتراشه: Snapdragon 695\nدوربین اصلی: ۱۰۸ مگاپیکسل\nباتری: ۵۰۰۰ میلی‌آمپرساعت\nشارژ سریع: ۶۷ وات\nبلوتوث: ۵٫۱",
-         desc="پوکو X4 Pro 5G نسخه جهانی دارای نمایشگر AMOLED با نرخ نوسازی ۱۲۰ هرتز، اسپیکرهای دوگانه و دوربین اصلی ۱۰۸ مگاپیکسلی است. شارژ سریع ۶۷ وات از امکانات آن است.",
-         source="https://www.po.co/global/product/poco-x4-pro-5g/specs/"),
-    dict(slug="sony-playstation-5-disc-825", name="کنسول سونی PlayStation 5 دیسک‌خور ۸۲۵ گیگ", brand="Sony", image="p_11.jpg", category="gaming",
-         color="سفید", price=39000000, offer=6, stock=8, rate="4.8", camera=0, os="نرم‌افزار سیستم PS5", tech="AMD Zen 2 / RDNA 2", capability="4K / Ray Tracing",
-         mini="نسخه اصلی دیسک‌خور با کنترلر DualSense",
-         specs="مدل: PS5 اصلی دیسک‌خور، نه Slim\nحافظه SSD: ۸۲۵ گیگابایت\nحافظه RAM: ۱۶ گیگابایت GDDR6\nپردازنده: AMD Zen 2، هشت هسته\nگرافیک: AMD RDNA 2\nدرایو: Ultra HD Blu-ray\nکنترلر: DualSense\nبلوتوث: ۵٫۱\nدوربین: ندارد",
-         desc="نسخه اصلی پلی‌استیشن ۵ دیسک‌خور از بازی‌های فیزیکی و دیجیتال پشتیبانی می‌کند. SSD پرسرعت و کنترلر DualSense با بازخورد لمسی و تریگرهای تطبیقی از ویژگی‌های آن هستند. فضای قابل استفاده کمتر از ظرفیت اسمی است.",
-         source="https://sonyinteractive.com/en/press-releases/2020/playstation-5-launches-this-november-at-399-for-ps5-digital-edition-and-499-for-ps5-with-ultra-hd-blu-ray-disc-drive/"),
+# Folder (below MEDIA_ROOT) that holds every picture copied by this seed.
+DEMO_FOLDER = "images/demo-catalog"
+# Illustrations drawn by scripts/generate_demo_art.py (below the static image folder).
+ART_FOLDER = "product_img/new"
+BRAND_FOLDER = "brands"
+
+PRODUCT_CODE_BASE = 94000  # the previous seed used 93001-93016
+DELIVERY_DAYS = (1, 2, 3)  # sample delivery times, handed out in turn
+OFFER_RANGE = (0, 15)  # sample discounts stay between 0 and 15 percent
+
+CATEGORIES = [
+    (MOBILE, "گوشی موبایل", 91001),
+    (TABLET, "تبلت", 91003),
+    (AUDIO, "هدفون و ایرپاد", 91004),
 ]
+# (name, code, picture in static/assets/img/brands, categories it sells in)
+BRANDS = [
+    (APPLE, 92001, "brand-3.jpg", (MOBILE, TABLET, AUDIO)),
+    (SAMSUNG, 92002, "brand-8.jpg", (MOBILE,)),
+]
+BRAND_NAMES_FA = {APPLE: "اپل", SAMSUNG: "سامسونگ"}
+STORAGE_LABELS = {128: "۱۲۸ گیگابایت", 256: "۲۵۶ گیگابایت", 512: "۵۱۲ گیگابایت", 1024: "۱ ترابایت", 2048: "۲ ترابایت"}
+GIGABYTES_PER_TERABYTE = 1024
+
+# Products created by the previous version of this seed (iPhone 12/13/14, Galaxy A52 and S21 Ultra,
+# POCO X4 Pro and PlayStation 5).  Only `--prune-old` touches them.
+LEGACY_SLUGS = (
+    "apple-iphone-13-128-blue",
+    "apple-iphone-13-256-blue",
+    "apple-iphone-13-pro-256-silver",
+    "apple-iphone-12-pro-256-graphite",
+    "samsung-galaxy-a52-128-peach",
+    "samsung-galaxy-s21-ultra-256-black",
+    "poco-x4-pro-5g-256-black",
+    "sony-playstation-5-disc-825",
+    "apple-iphone-14-128-blue",
+    "apple-iphone-14-plus-128-blue",
+    "apple-iphone-14-pro-256-silver",
+    "apple-iphone-14-pro-max-256-silver",
+    "apple-iphone-13-pro-max-256-gold",
+    "apple-iphone-13-mini-128-blue",
+    "apple-iphone-12-pro-max-256-graphite",
+    "apple-iphone-12-128-blue",
+)
 
 
-APPLE_COMPARE = "https://www.apple.com/iphone/compare/"
+@dataclass(frozen=True)
+class ProductSpec:
+    """Everything needed to create one product."""
+
+    slug: str
+    name: str
+    brand: str
+    category: str
+    color: str
+    image: str  # file name of the illustration
+    price: int
+    offer: int
+    stock: int
+    rate: str
+    camera: int
+    os: str
+    tech: str
+    capability: str
+    mini: str
+    specs: str
+    desc: str
+    year: int
 
 
-def _iphone(slug, title, storage, color, image, price, offer, stock, rate, camera, os, chip, capability, mini, display, rear, extra, desc):
-    return dict(
-        slug=slug, name=f"اپل iPhone {title} ظرفیت {storage} گیگابایت", brand="Apple", image=image,
-        color=color, price=price, offer=offer, stock=stock, rate=rate, camera=camera, os=os,
-        tech=f"{chip} / 5G", capability=capability, mini=mini,
-        specs=f"حافظه داخلی: {storage} گیگابایت\nنمایشگر: {display}\nتراشه: {chip}\nدوربین پشت: {rear}\n{extra}\nشبکه: 5G",
-        desc=desc, source=APPLE_COMPARE,
+def _storage_slug(gigabytes):
+    if gigabytes >= GIGABYTES_PER_TERABYTE:
+        return f"{gigabytes // GIGABYTES_PER_TERABYTE}tb"
+    return str(gigabytes)
+
+
+def build_spec(variant):
+    """Turns a model plus one variant (storage, color, commerce data) into a ProductSpec."""
+    model = MODELS[variant.model]
+    if model.storages and variant.storage not in model.storages:
+        raise ValueError(f"{model.title} has no {variant.storage} GB version")
+    if not model.storages and variant.storage is not None:
+        raise ValueError(f"{model.title} has no storage")
+    if not OFFER_RANGE[0] <= variant.offer <= OFFER_RANGE[1]:
+        raise ValueError(f"offer of {model.title} is out of range")
+    color = COLORS[variant.color]
+
+    slug_parts = [model.key]
+    name = f"{BRAND_NAMES_FA[model.brand]} {model.title}"
+    lines = []
+    if variant.storage:
+        slug_parts.append(_storage_slug(variant.storage))
+        name += f" ظرفیت {STORAGE_LABELS[variant.storage]}"
+        lines.append(f"حافظه داخلی: {STORAGE_LABELS[variant.storage]}")
+    image = model.art
+    if model.has_colors:
+        slug_parts.append(variant.color)
+        image += f"-{variant.color}"
+    lines += list(model.specs) + [f"رنگ: {color}"]
+    return ProductSpec(
+        slug="-".join(slug_parts), name=name, brand=model.brand, category=model.category, color=color,
+        image=f"{image}.png", price=variant.price, offer=variant.offer, stock=variant.stock, rate=variant.rate,
+        camera=model.camera, os=model.os, tech=f"{model.chip} / {model.network}", capability=model.capability,
+        mini=model.mini, specs="\n".join(lines) + f"\n\nمنبع مشخصات سازنده: {model.source}", desc=model.desc,
+        year=model.year,
     )
 
 
-CATALOG += [
-    _iphone("apple-iphone-14-128-blue", "14", "۱۲۸", "آبی", "p_21.jpg", 52000000, 6, 10, "4.7", 12, "iOS 16", "A15 Bionic",
-            "Face ID / SOS", "نمایشگر OLED، حالت اکشن و تشخیص تصادف", "۶٫۱ اینچ Super Retina XDR OLED",
-            "دو دوربین ۱۲ مگاپیکسلی", "درگاه: Lightning",
-            "آیفون ۱۴ با نمایشگر OLED و تراشه A15 عرضه شد و قابلیت‌هایی مانند تشخیص تصادف و حالت اکشن برای فیلم‌برداری دارد."),
-    _iphone("apple-iphone-14-plus-128-blue", "14 Plus", "۱۲۸", "آبی", "p_21.jpg", 59000000, 5, 6, "4.6", 12, "iOS 16", "A15 Bionic",
-            "نمایشگر بزرگ", "نمایشگر ۶٫۷ اینچی و باتری قوی‌تر", "۶٫۷ اینچ Super Retina XDR OLED",
-            "دو دوربین ۱۲ مگاپیکسلی", "درگاه: Lightning",
-            "آیفون ۱۴ پلاس همان تراشه و دوربین آیفون ۱۴ را در بدنه‌ای بزرگ‌تر با نمایشگر ۶٫۷ اینچی ارائه می‌کند."),
-    _iphone("apple-iphone-14-pro-256-silver", "14 Pro", "۲۵۶", "نقره‌ای", "p_8.jpg", 78000000, 9, 5, "4.8", 48, "iOS 16", "A16 Bionic",
-            "Dynamic Island", "دوربین ۴۸ مگاپیکسل و Dynamic Island", "۶٫۱ اینچ OLED با ProMotion و Always-On",
-            "سه دوربین؛ اصلی ۴۸ مگاپیکسل", "درگاه: Lightning",
-            "آیفون ۱۴ پرو با تراشه A16 Bionic، دوربین اصلی ۴۸ مگاپیکسلی، نمایشگر Always-On و Dynamic Island عرضه شده است."),
-    _iphone("apple-iphone-14-pro-max-256-silver", "14 Pro Max", "۲۵۶", "نقره‌ای", "p_8.jpg", 88000000, 8, 4, "4.9", 48, "iOS 16", "A16 Bionic",
-            "Dynamic Island", "بزرگ‌ترین نمایشگر خانواده ۱۴ با A16", "۶٫۷ اینچ OLED با ProMotion و Always-On",
-            "سه دوربین؛ اصلی ۴۸ مگاپیکسل", "درگاه: Lightning",
-            "آیفون ۱۴ پرو مکس همان امکانات ۱۴ پرو را با نمایشگر ۶٫۷ اینچی و باتری بزرگ‌تر ارائه می‌دهد."),
-    _iphone("apple-iphone-13-pro-max-256-gold", "13 Pro Max", "۲۵۶", "طلایی", "p_7.jpg", 74000000, 10, 5, "4.8", 12, "iOS 15", "A15 Bionic",
-            "ProMotion / Face ID", "نمایشگر ۶٫۷ اینچ ۱۲۰ هرتز", "۶٫۷ اینچ OLED با ProMotion تا ۱۲۰ هرتز",
-            "سه دوربین ۱۲ مگاپیکسلی", "ویژگی دوربین: ماکرو و Apple ProRAW",
-            "آیفون ۱۳ پرو مکس نسخه بزرگ آیفون ۱۳ پرو با نمایشگر ProMotion و دوربین سه‌گانه است."),
-    _iphone("apple-iphone-13-mini-128-blue", "13 mini", "۱۲۸", "آبی", "p_21.jpg", 36000000, 12, 9, "4.5", 12, "iOS 15", "A15 Bionic",
-            "Face ID / جمع‌وجور", "کوچک‌ترین آیفون ۱۳ با تراشه A15", "۵٫۴ اینچ Super Retina XDR OLED",
-            "دو دوربین ۱۲ مگاپیکسلی", "درگاه: Lightning",
-            "آیفون ۱۳ مینی با نمایشگر ۵٫۴ اینچی برای کسانی مناسب است که گوشی جمع‌وجور می‌خواهند."),
-    _iphone("apple-iphone-12-pro-max-256-graphite", "12 Pro Max", "۲۵۶", "گرافیتی", "p_22.jpg", 46000000, 11, 3, "4.6", 12, "iOS 14", "A14 Bionic",
-            "LiDAR / Face ID", "نمایشگر ۶٫۷ اینچ، A14 و LiDAR", "۶٫۷ اینچ Super Retina XDR OLED",
-            "سه دوربین ۱۲ مگاپیکسلی", "حسگر: LiDAR",
-            "آیفون ۱۲ پرو مکس قاب فولادی، نمایشگر ۶٫۷ اینچی و دوربین سه‌گانه همراه با حسگر LiDAR دارد."),
-    _iphone("apple-iphone-12-128-blue", "12", "۱۲۸", "آبی", "p_21.jpg", 30000000, 14, 8, "4.4", 12, "iOS 14", "A14 Bionic",
-            "5G / Face ID", "اولین آیفون 5G با نمایشگر OLED", "۶٫۱ اینچ Super Retina XDR OLED",
-            "دو دوربین ۱۲ مگاپیکسلی", "درگاه: Lightning",
-            "آیفون ۱۲ اولین نسل آیفون با پشتیبانی 5G است و نمایشگر OLED و تراشه A14 دارد."),
-]
+CATALOG = [build_spec(variant) for variant in VARIANTS]  # newest products first
+
+
+def static_images():
+    return Path(settings.BASE_DIR) / "static" / "assets" / "img"
+
+
+def art_file(name):
+    return static_images() / ART_FOLDER / name
+
+
+def missing_assets():
+    """Names of the bundled picture files that are needed but not present."""
+    needed = {art_file(spec.image) for spec in CATALOG}
+    needed |= {art_file(f"category-{slug}.png") for slug, _, _ in CATEGORIES}
+    needed |= {static_images() / BRAND_FOLDER / picture for _, _, picture, _ in BRANDS}
+    return sorted(str(path) for path in needed if not path.is_file())
+
+
+def copy_picture(source, destination):
+    """Copies a bundled picture into MEDIA_ROOT/images/demo-catalog and returns the name stored in the database."""
+    target = Path(settings.MEDIA_ROOT) / DEMO_FOLDER / destination
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
+    return f"{DEMO_FOLDER}/{destination}"
+
+
+def owns_picture(field_file):
+    """True when a picture is missing or was put there by a seed, so that it may be replaced."""
+    return not field_file or field_file.name.startswith(f"{DEMO_FOLDER}/")
+
+
+def prune_legacy_products():
+    """Deletes the products of the previous seed; returns how many were removed and their picture names.
+
+    Only products that still use a picture from the demo folder are touched, and the picture
+    files themselves are removed by the caller after the database change has been committed.
+    Deleting a product also deletes its comments; order items keep their data (the product link is cleared).
+    """
+    legacy = Product.objects.filter(slug__in=LEGACY_SLUGS, pic__startswith=f"{DEMO_FOLDER}/")
+    pictures = [product.pic.name for product in legacy]
+    count = legacy.count()
+    legacy.delete()
+    return count, pictures
 
 
 class Command(BaseCommand):
-    help = "Add real product models with local photos and marked demo prices; preserve existing products."
+    help = (
+        "Add the 2023+ demo catalog (iPhone, Galaxy, iPad, AirPods) with illustrations and marked sample "
+        "commerce data. Existing products are kept; --prune-old removes the previous seed's products."
+    )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--prune-old", action="store_true",
+            help="Also delete the products created by the previous version of this seed, with their pictures.",
+        )
 
     def handle(self, *args, **options):
-        static = Path(settings.BASE_DIR) / "static" / "assets" / "img"
+        missing = missing_assets()
+        if missing:
+            raise CommandError(
+                "Missing picture files (run `python scripts/generate_demo_art.py`):\n" + "\n".join(missing)
+            )
+        new_files, old_pictures = [], []
+        removed = 0
+        try:
+            with transaction.atomic():
+                categories = self.ensure_categories()
+                brands = self.ensure_brands(categories)
+                notice, _ = Info.objects.get_or_create(product_info=NOTICE)
+                created = self.create_products(categories, brands, notice, new_files)
+                if options["prune_old"]:
+                    removed, old_pictures = prune_legacy_products()
+        except Exception:
+            for path in new_files:  # keep the media folder in step with the rolled back database
+                path.unlink(missing_ok=True)
+            raise
+        for name in old_pictures:
+            (Path(settings.MEDIA_ROOT) / name).unlink(missing_ok=True)
+        self.stdout.write(self.style.SUCCESS(f"Created {created} products; {len(CATALOG) - created} already existed."))
+        if options["prune_old"]:
+            self.stdout.write(self.style.SUCCESS(f"Removed {removed} legacy products and {len(old_pictures)} picture files."))
 
-        def picture(relative, destination):
-            source = static / relative
-            target = Path(settings.MEDIA_ROOT) / "images" / "demo-catalog" / destination
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(source, target)
-            return target.relative_to(settings.MEDIA_ROOT).as_posix()
+    def ensure_categories(self):
+        categories = {}
+        for slug, name, code in CATEGORIES:
+            source = art_file(f"category-{slug}.png")
+            category = Category.objects.filter(category_slug=slug).first()
+            if category is None:
+                category = Category(category_slug=slug, category_name=name, category_code=code)
+                category.category_pic = copy_picture(source, f"category-{slug}.png")
+                category.full_clean()
+                category.save()
+            elif owns_picture(category.category_pic):
+                category.category_pic = copy_picture(source, f"category-{slug}.png")
+                category.save(update_fields=["category_pic"])
+            categories[slug] = category
+        return categories
 
-        # Validate bundled assets before making database changes.
-        for row in CATALOG:
-            if not (static / "product_img" / row["image"]).is_file():
-                raise FileNotFoundError(row["image"])
+    def ensure_brands(self, categories):
+        brands = {}
+        for name, code, picture, category_slugs in BRANDS:
+            source = static_images() / BRAND_FOLDER / picture
+            brand = Brand.objects.filter(brand_name=name).first()
+            if brand is None:
+                brand = Brand(brand_name=name, brand_code=code)
+                brand.brand_pic = copy_picture(source, f"brand-{code}.jpg")
+                brand.full_clean(exclude=["category_brand"])
+                brand.save()
+            elif owns_picture(brand.brand_pic):
+                brand.brand_pic = copy_picture(source, f"brand-{code}.jpg")
+                brand.save(update_fields=["brand_pic"])
+            brand.category_brand.add(*[categories[slug] for slug in category_slugs])
+            brands[name] = brand
+        return brands
 
+    def create_products(self, categories, brands, notice, new_files):
+        """Creates the missing products, oldest first, so that the newest get the latest creation date
+        and therefore come first in the default (newest first) ordering of the shop."""
         created = 0
-        with transaction.atomic():
-            categories = {}
-            for slug, name, code, image in [
-                ("mobile", "گوشی موبایل", 91001, "img-11.png"),
-                ("gaming", "کنسول بازی", 91002, "img-7.png"),
-            ]:
-                category, _ = Category.objects.get_or_create(category_slug=slug, defaults={
-                    "category_name": name, "category_code": code,
-                    "category_pic": picture(f"Masai/bigicon/{image}", f"category-{slug}.png"),
-                })
-                categories[slug] = category
-            brands = {}
-            for code, name, image in [
-                (92001, "Apple", "brand-3.jpg"),
-                (92002, "Samsung", "brand-8.jpg"),
-                (92003, "Xiaomi / POCO", "brand-2.jpg"),
-                (92004, "Sony", None),
-            ]:
-                defaults = {"brand_code": code}
-                if image:
-                    defaults["brand_pic"] = picture(f"brands/{image}", f"brand-{code}.jpg")
-                brands[name], _ = Brand.objects.get_or_create(brand_name=name, defaults=defaults)
-            notice, _ = Info.objects.get_or_create(product_info=NOTICE)
-            for index, row in enumerate(CATALOG, start=1):
-                category = categories[row.get("category", "mobile")]
-                brand = brands[row["brand"]]
-                brand.category_brand.add(category)
-                if Product.objects.filter(slug=row["slug"]).exists():
-                    continue
-                product = Product(
-                    slug=row["slug"], product_code=93000 + index,
-                    product_name=row["name"], product_color=row["color"],
-                    product_category=category, product_brand=brand,
-                    product_number=row["stock"], capability=row["capability"],
-                    resolution=row["camera"], technology=row["tech"],
-                    platform_os=row["os"], bluetooth="دارد",
-                    product_rate=Decimal(row["rate"]),
-                    specifications=row["specs"] + "\n\nمنبع مشخصات سازنده: " + row["source"],
-                    product_description=row["desc"] + "\n\n" + NOTICE,
-                    mini_description=row["mini"], price=Decimal(row["price"]),
-                    offer=row["offer"], time_send=2, product_inf=notice,
-                    pic=picture(f"product_img/{row['image']}", row["slug"] + ".jpg"),
-                )
-                product.full_clean()
-                product.save()
-                created += 1
-        self.stdout.write(self.style.SUCCESS(f"Created {created} products; retained {len(CATALOG) - created} existing catalog entries."))
+        numbered = list(enumerate(CATALOG, start=1))
+        for index, spec in reversed(numbered):
+            if Product.objects.filter(slug=spec.slug).exists():
+                continue
+            picture = art_file(spec.image)
+            stored = copy_picture(picture, f"{spec.slug}.png")
+            new_files.append(Path(settings.MEDIA_ROOT) / stored)
+            product = Product(
+                slug=spec.slug, product_code=PRODUCT_CODE_BASE + index, product_name=spec.name,
+                product_color=spec.color, product_category=categories[spec.category],
+                product_brand=brands[spec.brand], product_number=spec.stock, capability=spec.capability,
+                resolution=spec.camera, technology=spec.tech, platform_os=spec.os, bluetooth="دارد",
+                product_rate=Decimal(spec.rate), specifications=spec.specs,
+                product_description=f"{spec.desc}\n\n{NOTICE}", mini_description=spec.mini,
+                price=Decimal(spec.price), offer=spec.offer, time_send=DELIVERY_DAYS[index % len(DELIVERY_DAYS)],
+                product_inf=notice, pic=stored,
+            )
+            product.full_clean()
+            product.save()
+            created += 1
+        return created

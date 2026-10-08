@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 from PIL import Image
@@ -26,8 +25,8 @@ from .toolkit import (
 
 CANVAS = 900
 SPRITE_MARGIN = 40
-BUD_SCALE = 1.4  # earbuds are drawn larger than life so that they stay readable next to the case
-CASE_SCALE = 1.12
+BUD_SCALE = 1.62  # earbuds are drawn larger than life so that they stay readable next to the case
+CASE_SCALE = 1.3
 PLASTIC = (color("#ffffff"), color("#eceff4"), color("#c2c8d3"))
 SHADE_OVERLAY = ((0.0, color("#ffffff", 150)), (0.35, color("#ffffff", 0)), (0.72, color("#0b1630", 0)), (1.0, color("#0b1630", 46)))
 
@@ -160,14 +159,14 @@ def compose_earbuds(key: str) -> Image.Image:
     case = draw_case(case_style, CASE_SCALE)
     bud = draw_earbud(bud_style, BUD_SCALE)
     scene = Layer(CANVAS, CANVAS)
-    case_cx, case_cy = 318, 610
+    case_cx, case_cy = 318, 625
     floor = case_cy + case_style.height * CASE_SCALE / 2 + 28
     draw_ground_shadow(scene, case_cx + 10, floor, case_style.width * CASE_SCALE * 1.05, 42, 0.26)
     scene.paste_centered(case, case_cx, case_cy)
     right_bud = bud.rotated(-12)
     left_bud = bud.flipped().rotated(12)
-    scene.paste_centered(left_bud, 630, 400)
-    scene.paste_centered(right_bud, 742, 580)
+    scene.paste_centered(left_bud, 612, 335)
+    scene.paste_centered(right_bud, 722, 588)
     return scene.output((CANVAS, CANVAS))
 
 
@@ -175,8 +174,6 @@ def compose_earbuds(key: str) -> Image.Image:
 
 MAX_FINISHES = {
     "midnight": finish("#555964", "#2a2c34", "#767b87", "#1d1e24"),
-    "starlight": finish("#f1eee6", "#cfcabe", "#faf8f2", "#b8b3a6"),
-    "blue": finish("#a9c3dd", "#7c9bbc", "#c1d4e8", "#6c8bad"),
     "orange": finish("#f4a560", "#d97e2e", "#f8bb85", "#c2691f"),
 }
 STEEL = (color("#f6f7f9"), color("#b7bcc6"), color("#7f8794"))

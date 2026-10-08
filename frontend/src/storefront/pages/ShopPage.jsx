@@ -1,325 +1,285 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { catalogApi } from "../api/endpoints";
+import { SearchX, SlidersHorizontal } from "lucide-react";
 import { useApi } from "../../shared/useApi";
-import { toRelativeUrl } from "../format";
-import { ProductBox } from "../components/ProductItem";
+import { catalogApi } from "../api/endpoints";
+import Breadcrumb from "../components/Breadcrumb";
 import Pagination from "../components/Pagination";
-import { Loading, LoadError } from "../components/States";
+import ProductCard from "../components/ProductCard";
+import { EmptyState, LoadError } from "../components/States";
+import { useDocumentTitle } from "../components/useDocumentTitle";
+import ActiveFilters from "./shop/ActiveFilters";
+import FilterPanel from "./shop/FilterPanel";
+import FilterSheet from "./shop/FilterSheet";
+import ResultsSkeleton from "./shop/ResultsSkeleton";
+import SortBar from "./shop/SortBar";
+import { CLEARED_FILTERS, PAGE_SIZE, countActiveFilters, productQuery, readFilters } from "./shop/filterState";
+import { useMediaQuery } from "./shop/useMediaQuery";
+import { useStickyOffset } from "./shop/useStickyOffset";
+import "./shop.css";
 
-const PAGE_SIZE = 12;
-const CATEGORY_TILE_LIMIT = 12;
+// From this width the filters sit in a sticky sidebar; below it they open from a button.
+const SIDEBAR_QUERY = "(min-width: 992px)";
+const PRICE_ORDER_ERROR = "حداقل قیمت نباید از حداکثر بیشتر باشد.";
 
-// Each tab of the listing is a sort order of the product API.
-const SORT_TABS = [
-  { ordering: "-product_rate", label: "پیشنهاد خریداران" },
-  { ordering: "-create_date", label: "جدیدترین" },
-  { ordering: "price", label: "ارزان‌ترین" },
-  { ordering: "-price", label: "گران‌ترین" },
-  { ordering: "time_send", label: "سریع‌ترین ارسال" },
-];
-const DEFAULT_ORDERING = SORT_TABS[0].ordering;
-
-// Swatch colors for the usual Persian color names; unknown names get a neutral grey.
-const COLOR_SWATCHES = {
-  مشکی: "#000",
-  سفید: "#fff",
-  قرمز: "#ff0000",
-  زرد: "#ffd800",
-  آبی: "#0000ff",
-  سبز: "#28a745",
-  نقره‌ای: "#c0c0c0",
-  طلایی: "#d4af37",
-};
-const FALLBACK_SWATCH = "#999";
-
-const splitList = (value) => (value ? value.split(",") : []);
-
-/** Toggles `item` in a comma separated URL value. */
-function toggleListValue(current, item) {
-  const values = splitList(current);
-  const next = values.includes(item) ? values.filter((value) => value !== item) : [...values, item];
-  return next.join(",");
+function formatCount(value) {
+  return Number(value).toLocaleString("en-US");
 }
 
-function CategoryTiles({ categories }) {
-  return (
-    <div className="col-12 hidden-xs">
-      <div className="brand-slider card border_all">
-        <header className="card-header">
-          <h3 className="card-title">
-            <span>دسته بندی ها</span>
-          </h3>
-        </header>
-        <div className="row">
-          <div className="col-12">
-            <div className="row">
-              {categories.slice(0, CATEGORY_TILE_LIMIT).map((category) => (
-                <div className="col-6 col-md-2 contact-bigicon" key={category.id}>
-                  <Link to={`/category/${category.category_slug}`}>
-                    <img className="img-responsive imgpad" src={toRelativeUrl(category.category_pic)} alt="" />
-                    <b className="title-3 light-black">{category.category_name}</b>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FilterBox({ title, children }) {
-  return (
-    <div className="box">
-      <header className="card-header">
-        <h3 className="card-title">
-          <span className="space-right-10">{title}</span>
-        </h3>
-      </header>
-      <div className="box-content">{children}</div>
-    </div>
-  );
-}
-
-function CheckboxRow({ id, label, checked, onChange, swatch }) {
-  return (
-    <div className="form-account-agree">
-      <label className="checkbox-form checkbox-primary">
-        <input type="checkbox" id={id} checked={checked} onChange={onChange} />
-        <span className="checkbox-check" />
-      </label>
-      <label htmlFor={id}>{label}</label>
-      {swatch && <span className="color_pro_sel" style={{ backgroundColor: swatch }} />}
-    </div>
-  );
-}
-
-function PriceFilter({ range, minPrice, maxPrice, onApply }) {
-  const [min, setMin] = useState(minPrice);
-  const [max, setMax] = useState(maxPrice);
-
-  // Keep the inputs in sync when the URL changes (for example "clear filters").
-  useEffect(() => {
-    setMin(minPrice);
-    setMax(maxPrice);
-  }, [minPrice, maxPrice]);
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    onApply(min, max);
+/** Nothing matched: offer the way out that fits what the visitor did. */
+function EmptyResults({ mode, hasFilters, query, onClear }) {
+  let text = "چند لحظه بعد دوباره سر بزنید یا دسته‌بندی دیگری را ببینید.";
+  if (hasFilters) text = "فیلترها را کم کنید یا بازه قیمت را بازتر کنید.";
+  else if (mode === "search") {
+    text = (
+      <>
+        نتیجه‌ای برای «<bdi>{query}</bdi>» پیدا نشد. عبارت دیگری را جستجو کنید.
+      </>
+    );
   }
 
   return (
-    <form className="box-content space-15" onSubmit={handleSubmit}>
-      <input
-        type="number"
-        min="0"
-        className="input_second input_all"
-        placeholder={`از ${Math.round(range.min_price)} تومان`}
-        aria-label="حداقل قیمت"
-        value={min}
-        onChange={(event) => setMin(event.target.value)}
-      />
-      <input
-        type="number"
-        min="0"
-        className="input_second input_all"
-        style={{ marginTop: 8 }}
-        placeholder={`تا ${Math.round(range.max_price)} تومان`}
-        aria-label="حداکثر قیمت"
-        value={max}
-        onChange={(event) => setMax(event.target.value)}
-      />
-      <button type="submit" className="btn btn-main-masai" style={{ marginTop: 8 }}>
-        اعمال
-      </button>
-    </form>
+    <div data-testid="shop-empty">
+      <EmptyState title="محصولی با این مشخصات پیدا نشد" text={text}>
+        {hasFilters && (
+          <button type="button" className="btn btn--primary" onClick={onClear} data-testid="shop-empty-clear">
+            پاک کردن فیلترها
+          </button>
+        )}
+        <Link to={mode === "all" ? "/" : "/products"} className={`btn ${hasFilters ? "btn--secondary" : "btn--primary"}`} data-testid="shop-empty-link">
+          {mode === "all" ? "صفحه نخست" : "مشاهده همه محصولات"}
+        </Link>
+      </EmptyState>
+    </div>
   );
 }
 
 /**
- * Product listing used by three routes: all products, one category and search
- * results. Filters, sort order and page live in the URL, so every view can be
- * shared and the back button works.
+ * Product listing used by four routes: all products, one category and search
+ * results (`mode` is "all", "category" or "search"). Page, sort order and every
+ * filter live in the URL, so each view can be shared and back/forward work.
  */
 export default function ShopPage({ mode }) {
   const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const filters = useMemo(() => readFilters(searchParams), [searchParams]);
+  const sidebar = useMediaQuery(SIDEBAR_QUERY);
+  const resultsTitleId = useId();
 
-  const query = searchParams.get("q") ?? "";
-  const page = Number(searchParams.get("page")) || 1;
-  const ordering = searchParams.get("ordering") || DEFAULT_ORDERING;
-  const brandIds = searchParams.get("brand") ?? "";
-  const colors = searchParams.get("color") ?? "";
-  const minPrice = searchParams.get("min_price") ?? "";
-  const maxPrice = searchParams.get("max_price") ?? "";
-  const inStock = searchParams.get("in_stock") === "1";
+  const rootRef = useRef(null);
+  const resultsRef = useRef(null);
+  useStickyOffset(rootRef);
 
   const categories = useApi(catalogApi.categories);
   const brands = useApi(catalogApi.brands);
-  const filters = useApi(catalogApi.productFilters);
-
+  const options = useApi(catalogApi.productFilters);
   const products = useApi(
-    () =>
-      catalogApi.products({
-        category: mode === "category" ? slug : undefined,
-        search: mode === "search" ? query : undefined,
-        page,
-        page_size: PAGE_SIZE,
-        ordering,
-        brand: brandIds,
-        color: colors,
-        min_price: minPrice,
-        max_price: maxPrice,
-        in_stock: inStock ? 1 : undefined,
-      }),
-    [mode, slug, query, page, ordering, brandIds, colors, minPrice, maxPrice, inStock]
+    () => catalogApi.products(productQuery(mode, slug, filters)),
+    [mode, slug, filters.query, filters.page, filters.ordering, filters.brand, filters.color, filters.minPrice, filters.maxPrice, filters.inStock, filters.hasOffer]
   );
 
   // Changing a filter or the sort order always returns to the first page.
-  function updateParams(changes, { keepPage = false } = {}) {
-    const next = new URLSearchParams(searchParams);
-    Object.entries(changes).forEach(([key, value]) => {
-      if (value === "" || value === undefined || value === null) next.delete(key);
-      else next.set(key, value);
-    });
-    if (!keepPage) next.delete("page");
-    setSearchParams(next);
-  }
+  const update = useCallback(
+    (changes, { keepPage = false } = {}) => {
+      setSearchParams((previous) => {
+        const next = new URLSearchParams(previous);
+        Object.entries(changes).forEach(([key, value]) => {
+          if (value === "" || value === undefined || value === null) next.delete(key);
+          else next.set(key, value);
+        });
+        if (!keepPage) next.delete("page");
+        return next;
+      });
+    },
+    [setSearchParams]
+  );
+  const clearFilters = useCallback(() => update(CLEARED_FILTERS), [update]);
+
+  // The price inputs are a draft until "apply"; they follow the URL when it changes (clear, back, forward).
+  const [priceDraft, setPriceDraft] = useState({ min: filters.minPrice, max: filters.maxPrice });
+  const [priceError, setPriceError] = useState("");
+  useEffect(() => {
+    setPriceDraft({ min: filters.minPrice, max: filters.maxPrice });
+    setPriceError("");
+  }, [filters.minPrice, filters.maxPrice]);
+
+  const changePriceDraft = (field, value) => {
+    setPriceDraft((draft) => ({ ...draft, [field]: value }));
+    setPriceError("");
+  };
+
+  /** Writes the price draft to the URL; false when the range is wrong. */
+  const applyPrice = () => {
+    const min = priceDraft.min.trim();
+    const max = priceDraft.max.trim();
+    if (min && max && Number(min) > Number(max)) {
+      setPriceError(PRICE_ORDER_ERROR);
+      return false;
+    }
+    if (min !== filters.minPrice || max !== filters.maxPrice) update({ min_price: min, max_price: max });
+    return true;
+  };
+
+  // Filters of the small-screen sheet apply as soon as they are touched; the button only closes it.
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
+  useEffect(() => {
+    if (sidebar) setSheetOpen(false);
+  }, [sidebar]);
+
+  const goToPage = (target) => {
+    update({ page: String(target) }, { keepPage: true });
+    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const categoryName = categories.data?.find((category) => category.category_slug === slug)?.category_name;
-  const heading =
-    mode === "search" ? `نتایج جستجو برای «${query}»` : mode === "category" ? categoryName : null;
-  const pageCount = Math.ceil((products.data?.count ?? 0) / PAGE_SIZE);
+  let title = "همه محصولات";
+  if (mode === "search") title = filters.query ? `نتایج جستجو برای «${filters.query}»` : "جستجوی محصولات";
+  else if (mode === "category") title = categoryName ?? (categories.data ? "دسته‌بندی پیدا نشد" : categories.error ? "دسته‌بندی" : null);
+  useDocumentTitle(title ?? "دسته‌بندی");
+
+  const breadcrumb =
+    mode === "all"
+      ? [{ label: "فروشگاه" }]
+      : [{ label: "فروشگاه", to: "/products" }, { label: mode === "search" ? "جستجو" : title ?? "دسته‌بندی" }];
+
+  const activeCount = countActiveFilters(filters);
+  const count = products.data?.count;
+  const pageCount = Math.ceil((count ?? 0) / PAGE_SIZE);
+  const refreshing = products.loading && Boolean(products.data);
+  const pageMissing = products.error?.status === 404 && filters.page > 1;
+
+  let applyLabel = "نمایش کالاها";
+  if (count === 0) applyLabel = "بستن";
+  else if (count > 0 && !refreshing) applyLabel = `نمایش ${formatCount(count)} کالا`;
+
+  const panel = (
+    <FilterPanel
+      mode={mode}
+      slug={slug}
+      filters={filters}
+      categories={categories}
+      brands={brands}
+      options={options}
+      price={{ ...priceDraft, error: priceError }}
+      onChange={update}
+      onPriceChange={changePriceDraft}
+      onPriceApply={applyPrice}
+      onNavigate={closeSheet}
+    />
+  );
+
+  let body;
+  if (products.error) {
+    body = pageMissing ? (
+      <div data-testid="shop-page-missing">
+        <EmptyState title="این صفحه وجود ندارد" text="تعداد صفحه‌های نتایج کمتر است. از اولین صفحه شروع کنید.">
+          <button type="button" className="btn btn--primary" onClick={() => update({ page: "" }, { keepPage: true })} data-testid="shop-first-page">
+            رفتن به صفحه اول
+          </button>
+        </EmptyState>
+      </div>
+    ) : (
+      <div data-testid="shop-error">
+        <LoadError error={products.error} onRetry={products.reload} />
+      </div>
+    );
+  } else if (!products.data) {
+    body = <ResultsSkeleton />;
+  } else if (products.data.results.length === 0) {
+    body = <EmptyResults mode={mode} hasFilters={activeCount > 0} query={filters.query} onClear={clearFilters} />;
+  } else {
+    body = (
+      <>
+        <ul className="product-grid shop-grid" data-testid="shop-grid">
+          {products.data.results.map((product) => (
+            <li className="shop-grid__item" key={product.id} data-testid="shop-product">
+              <ProductCard product={product} />
+            </li>
+          ))}
+        </ul>
+        <div data-testid="shop-pagination">
+          <Pagination page={filters.page} pageCount={pageCount} onChange={goToPage} />
+        </div>
+      </>
+    );
+  }
 
   return (
-    <main className="search-page default space-top-30">
+    <main className="page shop" data-testid="shop-page" ref={rootRef}>
       <div className="container">
-        <div className="row">
-          {mode !== "search" && categories.data && <CategoryTiles categories={categories.data} />}
+        <Breadcrumb items={breadcrumb} />
 
-          <aside className="sidebar-page col-12 col-sm-12 col-md-4 col-lg-3">
-            {filters.data?.colors.length > 0 && (
-              <FilterBox title="رنگ">
-                {filters.data.colors.map((color) => (
-                  <CheckboxRow
-                    key={color}
-                    id={`color-${color}`}
-                    label={color}
-                    swatch={COLOR_SWATCHES[color] ?? FALLBACK_SWATCH}
-                    checked={splitList(colors).includes(color)}
-                    onChange={() => updateParams({ color: toggleListValue(colors, color) })}
-                  />
-                ))}
-              </FilterBox>
+        <header className="shop-head">
+          <h1 className="shop-head__title" data-testid="shop-title">
+            {mode === "search" && filters.query ? (
+              <>
+                نتایج جستجو برای «<bdi>{filters.query}</bdi>»
+              </>
+            ) : (
+              title ?? <span className="skeleton shop-head__title-skeleton" role="status" aria-label="در حال بارگذاری" />
             )}
+          </h1>
+          <p className="shop-head__count" role="status" data-testid="shop-result-count">
+            {products.data ? (
+              <>
+                <strong>{formatCount(count)}</strong> کالا
+              </>
+            ) : (
+              !products.error && <span className="skeleton shop-head__count-skeleton" />
+            )}
+          </p>
+        </header>
 
-            {filters.data && (
-              <div className="box">
-                <header className="card-header">
-                  <h3 className="card-title">
-                    <span className="space-right-10">قیمت</span>
-                  </h3>
-                </header>
-                <PriceFilter
-                  range={filters.data}
-                  minPrice={minPrice}
-                  maxPrice={maxPrice}
-                  onApply={(min, max) => updateParams({ min_price: min, max_price: max })}
-                />
+        <div className="shop-layout">
+          {sidebar && (
+            <aside className="shop-sidebar card" aria-labelledby={`${resultsTitleId}-filters`} data-testid="shop-filters">
+              <div className="shop-sidebar__head">
+                <h2 className="shop-sidebar__title" id={`${resultsTitleId}-filters`}>
+                  <SlidersHorizontal size={18} aria-hidden="true" />
+                  فیلترها
+                </h2>
+                {activeCount > 0 && (
+                  <button type="button" className="link-button shop-sidebar__clear" onClick={clearFilters} data-testid="shop-sidebar-clear">
+                    پاک کردن همه
+                  </button>
+                )}
               </div>
-            )}
+              {panel}
+            </aside>
+          )}
 
-            {brands.data?.length > 0 && (
-              <FilterBox title="لیست برند ها">
-                {brands.data.map((brand) => (
-                  <CheckboxRow
-                    key={brand.id}
-                    id={`brand-${brand.id}`}
-                    label={brand.brand_name}
-                    checked={splitList(brandIds).includes(String(brand.id))}
-                    onChange={() => updateParams({ brand: toggleListValue(brandIds, String(brand.id)) })}
-                  />
-                ))}
-              </FilterBox>
-            )}
+          <section className="shop-results" aria-labelledby={resultsTitleId} ref={resultsRef} data-testid="shop-results">
+            <h2 className="visually-hidden" id={resultsTitleId}>
+              فهرست محصولات
+            </h2>
 
-            <div className="box">
-              <div className="box-content">
-                <CheckboxRow
-                  id="in-stock"
-                  label="موجود در انبار مسای"
-                  checked={inStock}
-                  onChange={() => updateParams({ in_stock: inStock ? "" : "1" })}
-                />
-              </div>
-            </div>
-          </aside>
-
-          <div className="col-12 col-sm-12 col-md-8 col-lg-9">
-            <div className="listing default">
-              {heading && (
-                <header className="card-header">
-                  <h3 className="card-title">
-                    <span>{heading}</span>
-                  </h3>
-                </header>
+            <div className="shop-toolbar">
+              {!sidebar && (
+                <button type="button" className="btn btn--secondary shop-toolbar__filters" aria-haspopup="dialog" onClick={() => setSheetOpen(true)} data-testid="shop-filter-open">
+                  <SlidersHorizontal size={18} aria-hidden="true" />
+                  فیلترها
+                  {activeCount > 0 && <span className="shop-toolbar__badge">{activeCount}</span>}
+                </button>
               )}
-              <div className="listing-header default marg_all0">
-                <ul className="Search_list nav nav-tabs" role="tablist">
-                  {SORT_TABS.map((tab) => (
-                    <li key={tab.ordering}>
-                      <a
-                        href={`?ordering=${tab.ordering}`}
-                        className={ordering === tab.ordering ? "active" : ""}
-                        role="tab"
-                        aria-selected={ordering === tab.ordering}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          updateParams({ ordering: tab.ordering });
-                        }}
-                      >
-                        {tab.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="tab-content default text-center">
-                <div className="tab-pane active" role="tabpanel">
-                  {products.loading && !products.data && <Loading />}
-                  {products.error && <LoadError error={products.error} onRetry={products.reload} />}
-                  {products.data && (
-                    <div className="row listing-items">
-                      {products.data.results.map((product) => (
-                        <ProductBox product={product} key={product.id} />
-                      ))}
-                      {products.data.results.length === 0 && (
-                        <p className="col-12" style={{ padding: "60px 0", color: "var(--color-primary)" }}>
-                          محصولی با این مشخصات پیدا نشد.
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-sm-9 padding-right">
-                  <Pagination
-                    page={page}
-                    pageCount={pageCount}
-                    onChange={(target) => updateParams({ page: String(target) }, { keepPage: true })}
-                  />
-                </div>
-              </div>
+              <SortBar ordering={filters.ordering} onChange={(ordering) => update({ ordering })} />
             </div>
-          </div>
+
+            <ActiveFilters filters={filters} brands={brands} onChange={update} onClear={clearFilters} />
+
+            <div className={`shop-results__body${refreshing ? " is-refreshing" : ""}`} aria-busy={refreshing} data-testid="shop-results-body">
+              {refreshing && <span className="shop-progress" role="status" aria-label="در حال بارگذاری" data-testid="shop-progress" />}
+              {body}
+            </div>
+          </section>
         </div>
       </div>
+
+      {!sidebar && (
+        <FilterSheet open={sheetOpen} onClose={closeSheet} activeCount={activeCount} onClear={clearFilters} applyLabel={applyLabel} onApply={() => applyPrice() && closeSheet()}>
+          {panel}
+        </FilterSheet>
+      )}
     </main>
   );
 }

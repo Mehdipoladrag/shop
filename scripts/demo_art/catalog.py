@@ -14,7 +14,7 @@ from .parts import WALLPAPER_ORDER
 PHONE_PICTURES = [
     ("iphone-17-pro-max", "cosmic-orange"), ("iphone-17-pro-max", "deep-blue"), ("iphone-17-pro-max", "silver"),
     ("iphone-17-pro", "silver"), ("iphone-17-pro", "deep-blue"),
-    ("iphone-air", "sky-blue"), ("iphone-air", "space-black"),
+    ("iphone-air", "sky-blue"), ("iphone-air", "space-black"), ("iphone-air", "light-gold"),
     ("iphone-17", "lavender"), ("iphone-17", "black"), ("iphone-17", "mist-blue"),
     ("iphone-16e", "black"), ("iphone-16e", "white"),
     ("iphone-16-pro-max", "desert-titanium"),
@@ -36,7 +36,7 @@ TABLET_PICTURES = [
     ("ipad", "yellow"), ("ipad", "pink"),
 ]
 EARBUD_PICTURES = ["airpods-pro-3", "airpods-pro-2", "airpods-4", "airpods-4-anc"]
-MAX_PICTURES = ["midnight", "orange", "blue"]
+MAX_PICTURES = ["midnight", "orange"]
 
 # Hero illustrations used inside the category tiles.
 CATEGORY_HEROES = {

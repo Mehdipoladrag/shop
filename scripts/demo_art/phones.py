@@ -26,8 +26,6 @@ from .parts import (
     sheen,
 )
 from .toolkit import (
-    WHITE,
-    Color,
     Layer,
     Linear,
     Shape,
@@ -39,14 +37,13 @@ from .toolkit import (
     mix,
     polygon,
     rounded_rect,
-    with_alpha,
 )
 
 CANVAS = 900
 PX_PER_MM = 4.5
 SPRITE_MARGIN = 46  # transparent border around a phone sprite, room for its shadow
 FRONT_SCALE = 0.94  # the front phone is drawn a little smaller than the back one
-FRONT_OVERLAP = 0.62  # horizontal offset of the front phone, as a fraction of the back phone width
+FRONT_OVERLAP = 0.80  # horizontal offset of the front phone, as a fraction of the back phone width
 FRONT_DROP = 0.07  # vertical offset of the front phone, as a fraction of the back phone height
 GROUND_MARGIN = 58  # free space kept below the phones for the floor shadow
 S_PEN_LENGTH_MM = 108.0
@@ -54,6 +51,7 @@ S_PEN_WIDTH_MM = 5.8
 S_PEN_LEAN = 11.0  # degrees the S Pen leans towards the phone
 S_PEN_INSET = 0.04  # distance of its tip from the front phone's right edge, as a fraction of the phone width
 SEAM = 0.9  # width of the dark hairline between rail and face
+BAR_RIM = 1.6  # bright rim around a full width camera bar, in px
 
 
 @dataclass(frozen=True)
@@ -89,13 +87,20 @@ def _plate(layer: Layer, box: tuple, radius: float, fin: Finish, squareness: flo
     return inner
 
 
-def _band(layer: Layer, bar: Shape, fin: Finish, glossy: bool) -> None:
-    """Fills a full width camera bar with a metal or glass finish."""
-    layer.fill(bar, Linear.of(lighten(fin.module[0], 0.35), darken(fin.module[1], 0.3), angle=DIAGONAL))
-    inner = bar.moved(0, 0)
-    layer.fill(inner, Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10))
-    if glossy:
-        sheen(layer, bar, 0.18)
+def _bar(layer: Layer, box: tuple, radius: float, face: Shape, paints: tuple, rim: float, gloss: float) -> Shape:
+    """A camera bar that runs to the edges of the back: bright rim, face paint and a soft reflection.
+
+    `paints` holds the rim paint and the surface paint.  The bar is clipped to the back `face`,
+    so its top corners follow the corners of the phone.
+    """
+    outer = rounded_rect(box, radius, 3.0).intersect(face)
+    layer.shadow(outer, blur=5, offset=(0, 5), opacity=0.32)
+    layer.fill(outer, paints[0])
+    left, top, right, bottom = box
+    inner = rounded_rect((left + rim * 2, top + rim * 2, right - rim * 2, bottom - rim), radius - rim, 3.0).intersect(face)
+    layer.fill(inner, paints[1])
+    sheen(layer, inner, gloss)
+    return inner
 
 
 def _lens_set(layer, ox, oy, u, fin, lenses, radius) -> None:
@@ -141,9 +146,9 @@ def camera_single(layer, ox, oy, u, fin, face):
 
 def camera_air(layer, ox, oy, u, fin, face):
     """iPhone Air: a bar across the whole top edge with one lens and the flash on its right."""
-    bar = rounded_rect((ox, oy, ox + u, oy + 0.3 * u), 0.05 * u, 3.0).intersect(face)
-    layer.shadow(bar, blur=5, offset=(0, 5), opacity=0.3)
-    _band(layer, bar, fin, glossy=True)
+    paints = (Linear.of(lighten(fin.module[0], 0.35), darken(fin.module[1], 0.3), angle=DIAGONAL),
+              Linear.of(fin.module[0], fin.module[1], angle=DIAGONAL + 10))
+    _bar(layer, (ox, oy, ox + u, oy + 0.3 * u), 0.05 * u, face, paints, BAR_RIM, 0.18)
     layer.fill(circle(ox + 0.215 * u, oy + 0.15 * u, 0.12 * u), Linear.of(darken(fin.module[1], 0.35), fin.module[0], angle=DIAGONAL), 0.35)
     _lens_set(layer, ox, oy, u, fin, [(0.215, 0.15)], 0.098)
     draw_flash(layer, ox + 0.79 * u, oy + 0.1 * u, 0.026 * u, fin.ring)
@@ -160,12 +165,9 @@ def camera_bar(layer, ox, oy, u, fin, face):
 
 def camera_wide(layer, ox, oy, u, fin, face):
     """iPhone 17 Pro and Pro Max: an aluminium plateau across the whole back with three lenses."""
-    bar = rounded_rect((ox, oy, ox + u, oy + 0.66 * u), 0.07 * u, 3.0).intersect(face)
-    layer.shadow(bar, blur=6, offset=(0, 6), opacity=0.34)
-    layer.fill(bar, Linear.of(lighten(fin.frame[0], 0.2), darken(fin.frame[1], 0.2), angle=DIAGONAL))
-    inner = rounded_rect((ox + 2.4, oy + 2.4, ox + u - 2.4, oy + 0.66 * u - 2.4), 0.065 * u, 3.0).intersect(face)
-    layer.fill(inner, Linear.of(fin.frame[0], mix(fin.frame[0], fin.frame[1], 0.8), angle=DIAGONAL + 10))
-    sheen(layer, inner, 0.12)
+    paints = (Linear.of(lighten(fin.frame[0], 0.2), darken(fin.frame[1], 0.2), angle=DIAGONAL),
+              Linear.of(fin.frame[0], mix(fin.frame[0], fin.frame[1], 0.8), angle=DIAGONAL + 10))
+    _bar(layer, (ox, oy, ox + u, oy + 0.66 * u), 0.07 * u, face, paints, BAR_RIM, 0.12)
     _lens_set(layer, ox, oy, u, fin, [(0.2, 0.2), (0.2, 0.46), (0.45, 0.33)], 0.112)
     draw_flash(layer, ox + 0.73 * u, oy + 0.16 * u, 0.032 * u, fin.ring)
     draw_lidar(layer, ox + 0.73 * u, oy + 0.5 * u, 0.034 * u, fin.ring)
@@ -174,12 +176,12 @@ def camera_wide(layer, ox, oy, u, fin, face):
 
 def camera_ultra(layer, ox, oy, u, fin, face):
     """Galaxy Ultra: separate lenses without a plateau, three in a vertical stack."""
-    column = 0.155
-    for fy in (0.11, 0.255, 0.4):
-        draw_glass_lens(layer, ox + column * u, oy + fy * u, 0.066 * u, fin.ring)
-    draw_glass_lens(layer, ox + 0.31 * u, oy + 0.325 * u, 0.056 * u, fin.ring)
-    draw_flash(layer, ox + 0.31 * u, oy + 0.1 * u, 0.02 * u, fin.ring)
-    draw_dot(layer, ox + 0.31 * u, oy + 0.18 * u, 0.011 * u)
+    column = 0.16
+    for fy in (0.105, 0.272, 0.439):
+        draw_glass_lens(layer, ox + column * u, oy + fy * u, 0.07 * u, fin.ring)
+    draw_glass_lens(layer, ox + 0.33 * u, oy + 0.356 * u, 0.058 * u, fin.ring)
+    draw_flash(layer, ox + 0.33 * u, oy + 0.1 * u, 0.02 * u, fin.ring)
+    draw_dot(layer, ox + 0.33 * u, oy + 0.185 * u, 0.011 * u)
 
 
 CAMERA_LAYOUTS = {
@@ -220,14 +222,12 @@ FINISHES = {
     "blue": finish("#cddbe5", "#9fb6c7", "#e0e9ef", "#8ea5b7"),
     "pink": finish("#f4dedc", "#dcb9b7", "#f8e9e7", "#cfaaa8"),
     "green": finish("#d4e1d0", "#aac0a7", "#e3ece0", "#9bb198"),
-    "yellow": finish("#f3ecc9", "#dccf9f", "#f7f2da", "#cdbf8a"),
     "black": finish("#4d5056", "#2a2c31", "#6d7178", "#1f2125"),
     "white": finish("#f7f7f6", "#dadbde", "#ffffff", "#c8c9cd"),
     "ultramarine": finish("#8597f2", "#5668cc", "#9dacf5", "#4859b8"),
     "teal": finish("#a8d6d2", "#6fabA7", "#bfe3df", "#5f9792"),
     "lavender": finish("#d4c8e7", "#a99dca", "#e3dbf1", "#9b8fbe"),
     "mist-blue": finish("#bed4e5", "#8faec9", "#d1e1ed", "#7f9fbb"),
-    "sage": finish("#c0cdb2", "#94a788", "#d3ddc7", "#879b7b"),
     "natural-titanium": finish("#bfb8ac", "#8e877b", "#d7d1c6", "#7b7469"),
     "blue-titanium": finish("#5b667c", "#343e51", "#77849b", "#262f3f"),
     "white-titanium": finish("#e8e6e1", "#c0bdb6", "#f5f3ef", "#aaa7a1"),
@@ -239,13 +239,9 @@ FINISHES = {
     "sky-blue": finish("#c6dcef", "#98b9d5", "#a8c2dc", "#6e8eaf", "#a3bed9", "#7b9bbd"),
     "space-black": finish("#3b3d42", "#212226", "#54565c", "#17181b", "#2c2e32", "#18191c"),
     "light-gold": finish("#f0e1c7", "#d3be97", "#e5d3af", "#b9a275", "#ddcba2", "#c1a97c"),
-    "cloud-white": finish("#f5f5f4", "#dadbdd", "#e9eaeb", "#babcc0", "#e3e4e6", "#c4c6ca"),
     "titanium-gray": finish("#a5a6ac", "#7b7c82", "#bfc0c5", "#6a6b70"),
     "titanium-black": finish("#37393d", "#1e1f22", "#585a5f", "#141517"),
-    "titanium-violet": finish("#afa4c5", "#8778a2", "#c4bbd6", "#76698f"),
-    "titanium-yellow": finish("#e7daa9", "#c1ae77", "#efe5c3", "#aa9763"),
     "titanium-silverblue": finish("#b5c3d5", "#8598b1", "#cbd6e4", "#74869f"),
-    "titanium-whitesilver": finish("#eeeeec", "#c8c9ca", "#f8f8f6", "#b2b3b5"),
 }
 
 # --------------------------------------------------------------------------- drawing

@@ -149,6 +149,7 @@
 }
 
 .carousel__dot {
+    position: relative;
     width: 8px;
     height: 8px;
     padding: 0;
@@ -162,4 +163,16 @@
 .carousel__dot.is-active {
     width: 26px;
     background: #fff;
+}
+
+/* Bigger touch area than the 8px dot itself. */
+.carousel__dot::before {
+    position: absolute;
+    inset: -12px -5px;
+    content: "";
+}
+
+/* A few brands sit in the middle instead of leaving a hole at one end. */
+.carousel--brands .carousel__track {
+    justify-content: safe center;
 }

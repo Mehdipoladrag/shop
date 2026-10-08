@@ -2,10 +2,13 @@ import { Link } from "react-router-dom";
 import { LayoutGrid } from "lucide-react";
 import FormField from "../../components/FormField";
 import { formatPrice } from "../../format";
-import FilterGroup from "./FilterGroup";
+import FilterGroup, { LimitedList } from "./FilterGroup";
 import { shopCategoryIcon } from "./categoryIcon";
 import { cleanPriceInput, showPriceInput, toggleListValue } from "./filterState";
 import { swatchColor } from "./swatches";
+
+// Long brand and colour lists show this many entries until "show all" is pressed.
+const OPTION_LIMIT = 6;
 
 function SwitchRow({ label, checked, onChange, testId }) {
   return (
@@ -18,7 +21,7 @@ function SwitchRow({ label, checked, onChange, testId }) {
 
 function CategoryLinks({ categories, mode, slug, onNavigate }) {
   return (
-    <ul className="shop-cats">
+    <ul>
       <li>
         <Link
           to="/products"
@@ -141,8 +144,13 @@ export default function FilterPanel({ mode, slug, filters, categories, brands, o
       {showBrands && (
         <FilterGroup title="برند" state={brands} testId="shop-filter-brands">
           {(list) => (
-            <ul className="shop-options">
-              {list.map((brand) => (
+            <LimitedList
+              items={list}
+              limit={OPTION_LIMIT}
+              isSelected={(brand) => filters.brands.includes(String(brand.id))}
+              className="shop-options"
+              testId="shop-filter-brands"
+              renderItem={(brand) => (
                 <li key={brand.id}>
                   <label className="check shop-option">
                     <input
@@ -154,8 +162,8 @@ export default function FilterPanel({ mode, slug, filters, categories, brands, o
                     <span>{brand.brand_name}</span>
                   </label>
                 </li>
-              ))}
-            </ul>
+              )}
+            />
           )}
         </FilterGroup>
       )}
@@ -163,25 +171,28 @@ export default function FilterPanel({ mode, slug, filters, categories, brands, o
       {showColors && (
         <FilterGroup title="رنگ" state={options} testId="shop-filter-colors">
           {(data) => (
-            <ul className="shop-swatches">
-              {data.colors.map((color) => (
+            <LimitedList
+              items={data.colors}
+              limit={OPTION_LIMIT}
+              isSelected={(color) => filters.colors.includes(color)}
+              className="shop-options"
+              testId="shop-filter-colors"
+              renderItem={(color) => (
                 <li key={color}>
-                  <label className="shop-swatch" style={{ "--swatch": swatchColor(color) }}>
+                  <label className="shop-option shop-color" style={{ "--swatch": swatchColor(color) }}>
                     <input
                       type="checkbox"
-                      className="shop-swatch__input"
+                      className="shop-color__input"
                       checked={filters.colors.includes(color)}
                       onChange={() => onChange({ color: toggleListValue(filters.color, color) })}
                       data-testid={`shop-filter-color-${color}`}
                     />
-                    <span className="shop-swatch__chip">
-                      <span className="shop-swatch__dot" aria-hidden="true" />
-                      {color}
-                    </span>
+                    <span className="shop-color__dot" aria-hidden="true" />
+                    <span className="shop-color__name">{color}</span>
                   </label>
                 </li>
-              ))}
-            </ul>
+              )}
+            />
           )}
         </FilterGroup>
       )}

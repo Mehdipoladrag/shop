@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 function GroupSkeleton() {
@@ -40,5 +41,25 @@ export default function FilterGroup({ title, state, testId, children }) {
       </summary>
       <div className="shop-group__body">{body}</div>
     </details>
+  );
+}
+
+/**
+ * A long list that shows its first `limit` entries (and any selected one) with a
+ * "show all" toggle. `renderItem(item)` returns the `<li>` of one entry.
+ */
+export function LimitedList({ items, limit, isSelected, className, renderItem, testId }) {
+  const [expanded, setExpanded] = useState(false);
+  const shown = expanded ? items : items.filter((item, index) => index < limit || isSelected(item));
+
+  return (
+    <>
+      <ul className={className}>{shown.map(renderItem)}</ul>
+      {items.length > limit && (
+        <button type="button" className="link-button shop-more" aria-expanded={expanded} onClick={() => setExpanded((value) => !value)} data-testid={`${testId}-more`}>
+          {expanded ? "نمایش کمتر" : `نمایش همه (${items.length})`}
+        </button>
+      )}
+    </>
   );
 }

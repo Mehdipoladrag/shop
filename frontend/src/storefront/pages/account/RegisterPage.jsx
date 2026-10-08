@@ -1,29 +1,31 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { AtSign, Mail, User } from "lucide-react";
+import { BRAND } from "../../../shared/brand";
 import { customerApi } from "../../api/endpoints";
 import { fieldErrors } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import FormField, { FormError } from "../../components/FormField";
 import { useFlash } from "../../components/Flash";
+import { useDocumentTitle } from "../../components/useDocumentTitle";
+import AuthShell from "./AuthShell";
+import PasswordField from "./PasswordField";
+import SubmitButton from "./SubmitButton";
+import "../account.css";
 
 const EMPTY_FORM = { username: "", email: "", first_name: "", last_name: "", password1: "", password2: "" };
 
-const FIELDS = [
-  { name: "username", label: "نام کاربری", placeholder: "لطفا نام کاربری مورد نظر خود را وارد کنید (با @ شروع شود)", autoComplete: "username" },
-  { name: "email", label: "ایمیل", type: "email", placeholder: "لطفا ایمیل خود را وارد کنید", autoComplete: "email" },
-  { name: "first_name", label: "نام", placeholder: "لطفا نام را وارد کنید", autoComplete: "given-name" },
-  { name: "last_name", label: "نام خانوادگی", placeholder: "لطفا نام خانوادگی را وارد کنید", autoComplete: "family-name" },
-  { name: "password1", label: "رمزعبور", type: "password", placeholder: "لطفا رمز عبور را وارد کنید (حداقل ۸ کاراکتر)", autoComplete: "new-password" },
-  { name: "password2", label: "تکرار رمز عبور", type: "password", placeholder: "لطفا رمز را دوباره وارد کنید", autoComplete: "new-password" },
-];
+const TERMS_ERROR = "برای ثبت نام باید شرایط و قوانین را بپذیرید.";
 
 export default function RegisterPage() {
+  useDocumentTitle("ثبت نام");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const flash = useFlash();
   const [values, setValues] = useState(EMPTY_FORM);
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState({});
+  const [termsError, setTermsError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   if (isAuthenticated) return <Navigate to="/account" replace />;
@@ -33,11 +35,13 @@ export default function RegisterPage() {
   async function handleSubmit(event) {
     event.preventDefault();
     if (!agreed) {
-      setErrors({ _form: "برای ثبت نام باید شرایط و قوانین را بپذیرید." });
+      setErrors({});
+      setTermsError(TERMS_ERROR);
       return;
     }
     setSubmitting(true);
     setErrors({});
+    setTermsError("");
     try {
       await customerApi.register({ ...values, username: values.username.trim() });
       flash.show("حساب کاربری با موفقیت ساخته شد");
@@ -49,55 +53,121 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="wrapper default">
-      <div className="container">
-        <div className="row">
-          <div className="main-content login_content col-12 col-md-7 col-lg-5 mx-auto">
-            <header className="card-header">
-              <h3 className="card-title">
-                <span>ایجاد حساب کاربری</span>
-              </h3>
-            </header>
-            <div className="login_box">
-              <form onSubmit={handleSubmit} noValidate>
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <FormError message={errors._form} />
-                    {FIELDS.map((field) => (
-                      <FormField
-                        key={field.name}
-                        {...field}
-                        value={values[field.name]}
-                        onChange={update}
-                        error={errors[field.name]}
-                      />
-                    ))}
-                  </div>
-                  <div className="col-12">
-                    <div className="form-account-agree">
-                      <label className="checkbox-form checkbox-primary">
-                        <input type="checkbox" id="agree" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
-                        <span className="checkbox-check" />
-                      </label>
-                      <label htmlFor="agree">تمامی شرایط و قوانین استفاده از سرویس‌های سایت مَسای را به دقت مطالعه کرده‌ام و می‌پذیرم</label>
-                    </div>
-                  </div>
-                  <div className="col-12 text--center">
-                    <button type="submit" className="btn big_btn btn-main-masai" disabled={submitting}>
-                      {submitting ? "در حال ثبت…" : "عضویت"}
-                    </button>
-                  </div>
-                  <div className="col-12 footer_login_reg text--center">
-                    <p>
-                      <span>قبلا ثبت نام کرده اید؟</span> <Link to="/login">ورود</Link>
-                    </p>
-                  </div>
-                </div>
-              </form>
-            </div>
+    <AuthShell
+      testId="register-page"
+      title="ایجاد حساب کاربری"
+      subtitle="چند ثانیه وقت بگذارید و حساب خود را بسازید."
+      lead={`به ${BRAND.name} بپیوندید`}
+      footer={
+        <>
+          <span>قبلا ثبت نام کرده اید؟</span>{" "}
+          <Link to="/login" data-testid="register-login-link">
+            ورود
+          </Link>
+        </>
+      }
+    >
+      <form className="auth-form" onSubmit={handleSubmit} noValidate data-testid="register-form">
+        {errors._form && (
+          <div data-testid="register-error">
+            <FormError message={errors._form} />
           </div>
+        )}
+        <FormField
+          label="نام کاربری"
+          name="username"
+          icon={<AtSign size={18} />}
+          className="input account-input-ltr"
+          autoComplete="username"
+          placeholder="@ali"
+          hint="نام کاربری باید با @ شروع شود."
+          value={values.username}
+          onChange={update}
+          error={errors.username}
+          data-testid="register-username"
+        />
+        <FormField
+          label="ایمیل"
+          name="email"
+          type="email"
+          icon={<Mail size={18} />}
+          className="input account-input-ltr"
+          autoComplete="email"
+          placeholder="name@example.com"
+          value={values.email}
+          onChange={update}
+          error={errors.email}
+          data-testid="register-email"
+        />
+        <div className="auth-form__row">
+          <FormField
+            label="نام"
+            name="first_name"
+            icon={<User size={18} />}
+            autoComplete="given-name"
+            placeholder="نام"
+            value={values.first_name}
+            onChange={update}
+            error={errors.first_name}
+            data-testid="register-first-name"
+          />
+          <FormField
+            label="نام خانوادگی"
+            name="last_name"
+            icon={<User size={18} />}
+            autoComplete="family-name"
+            placeholder="نام خانوادگی"
+            value={values.last_name}
+            onChange={update}
+            error={errors.last_name}
+            data-testid="register-last-name"
+          />
         </div>
-      </div>
-    </main>
+        <PasswordField
+          label="رمزعبور"
+          name="password1"
+          autoComplete="new-password"
+          placeholder="حداقل ۸ کاراکتر"
+          value={values.password1}
+          onChange={update}
+          error={errors.password1}
+          testId="register-password1"
+        />
+        <PasswordField
+          label="تکرار رمز عبور"
+          name="password2"
+          autoComplete="new-password"
+          placeholder="رمز را دوباره وارد کنید"
+          value={values.password2}
+          onChange={update}
+          error={errors.password2}
+          testId="register-password2"
+        />
+        <label className="check auth-terms">
+          <input
+            type="checkbox"
+            id="agree"
+            checked={agreed}
+            aria-invalid={Boolean(termsError)}
+            data-testid="register-terms"
+            onChange={(event) => setAgreed(event.target.checked)}
+          />
+          <span>تمامی شرایط و قوانین استفاده از سرویس‌های سایت {BRAND.name} را به دقت مطالعه کرده‌ام و می‌پذیرم</span>
+        </label>
+        {termsError && (
+          <div data-testid="register-terms-error">
+            <FormError message={termsError} />
+          </div>
+        )}
+        <SubmitButton
+          className="btn btn--primary btn--lg btn--block"
+          loading={submitting}
+          loadingText="در حال ثبت…"
+          data-testid="register-submit"
+        >
+          عضویت
+        </SubmitButton>
+      </form>
+    </AuthShell>
   );
 }

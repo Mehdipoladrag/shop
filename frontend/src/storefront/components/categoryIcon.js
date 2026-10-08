@@ -3,10 +3,10 @@ import { Camera, Gamepad2, Headphones, Laptop, Monitor, Smartphone, Tablet, Tag,
 // First matching keyword wins. Categories are free text entered by the shop
 // owner, so the icon is chosen from the slug and the name.
 const ICON_RULES = [
+  [/headphone|earphone|earbud|airpod|audio|هدفون|هندزفری|ایرپاد|صوتی/i, Headphones],
   [/mobile|phone|گوشی|موبایل/i, Smartphone],
   [/gaming|game|console|کنسول|بازی/i, Gamepad2],
   [/watch|ساعت/i, Watch],
-  [/headphone|earphone|audio|هدفون|هندزفری|صوتی/i, Headphones],
   [/camera|دوربین/i, Camera],
   [/tablet|تبلت/i, Tablet],
   [/laptop|notebook|لپ‌تاپ|لپ تاپ|لپتاپ/i, Laptop],

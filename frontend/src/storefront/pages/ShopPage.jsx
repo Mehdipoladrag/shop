@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { SearchX, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { useApi } from "../../shared/useApi";
 import { catalogApi } from "../api/endpoints";
 import Breadcrumb from "../components/Breadcrumb";

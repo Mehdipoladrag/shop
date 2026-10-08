@@ -1,222 +1,133 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
 import { useCart } from "../cart/CartContext";
-import { staticUrl } from "../config";
-import { formatPrice, toRelativeUrl } from "../format";
+import { useFlash } from "../components/Flash";
+import { EmptyState, LoadError } from "../components/States";
+import { useDocumentTitle } from "../components/useDocumentTitle";
+import CartItem from "./cart/CartItem";
+import CartSkeleton from "./cart/CartSkeleton";
+import CartSteps from "./cart/CartSteps";
+import CartSummary from "./cart/CartSummary";
+import { UPDATE_FAILED_MESSAGE } from "./cart/constants";
+import "./cart.css";
 
-const QUANTITY_OPTIONS = Array.from({ length: 9 }, (_, index) => index + 1);
+const REMOVED_MESSAGE = "کالا از سبد خرید حذف شد";
 
-function EmptyCart() {
-  return (
-    <main className="cart default">
-      <div className="container text-center cart_empty">
-        <img src={staticUrl("img/empty-cart.png")} alt="" />
-        <h6>سبد خرید شما در حال حاضر خالی است.</h6>
-        <Link to="/" className="btn btn-main-masai">
-          صفحه نخست
-        </Link>
-      </div>
-    </main>
-  );
+/** What the customer saves through discounts: the old price minus the price charged, for every piece. */
+function discountSaving(items) {
+  return items.reduce((sum, item) => {
+    const hasOffer = Number(item.product.offer) > 0;
+    return hasOffer ? sum + (Number(item.product.price) - Number(item.unit_price)) * item.product_count : sum;
+  }, 0);
 }
 
-function CartRow({ item, onChangeCount, onRemove }) {
-  const { product } = item;
-  const hasOffer = Boolean(product.offer);
-
+function CartList({ cart, pending, onChangeCount, onRemove }) {
   return (
-    <tr className="cart_item">
-      <td>
-        <img src={toRelativeUrl(product.pic)} alt={product.product_name} />
-        <a
-          href="#remove"
-          aria-label={`حذف ${product.product_name} از سبد`}
-          onClick={(event) => {
-            event.preventDefault();
-            onRemove(product.id);
-          }}
-        >
-          <i className="fa fa-times" aria-hidden="true" />
-        </a>
-      </td>
-      <td>
-        <h3 className="cart_title">
-          <Link to={`/products/${product.slug}`}>{product.product_name}</Link>
-        </h3>
-        <div className="cart_content">
-          <div>
-            <span>برند </span>
-            <span className="item_property">{product.brand}</span>
-          </div>
-          <span className="cart_divider" />
-          <div>
-            <span>رنگ </span>
-            <span className="item_property">{item.product_color}</span>
-          </div>
-        </div>
-      </td>
-      <td>
-        <div className="cart_price">
-          {hasOffer && (
-            <del>
-              <span>
-                {formatPrice(product.price)}
-                <span>تومان</span>
-              </span>
-            </del>
-          )}
-          {hasOffer ? (
-            <ins>
-              <span>
-                {formatPrice(item.unit_price)}
-                <span>تومان</span>
-              </span>
-            </ins>
-          ) : (
-            <>
-              {formatPrice(item.unit_price)} <span>تومان</span>
-            </>
-          )}
-        </div>
-      </td>
-      <td>
-        <select
-          value={item.product_count}
-          aria-label={`تعداد ${product.product_name}`}
-          onChange={(event) => onChangeCount(product.id, Number(event.target.value))}
-        >
-          {QUANTITY_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+    <section className="cart-layout" aria-labelledby="cart-items-title">
+      <div className="cart-items">
+        <h2 className="visually-hidden" id="cart-items-title">
+          کالاهای سبد خرید
+        </h2>
+        <ul className="cart-list" data-testid="cart-items">
+          {cart.items.map((item) => (
+            <CartItem
+              key={item.product.id}
+              item={item}
+              pending={pending.has(item.product.id)}
+              onChangeCount={onChangeCount}
+              onRemove={onRemove}
+            />
           ))}
-        </select>
-      </td>
-      <td className="price_alltd">
-        {formatPrice(item.total_price)} <span>تومان</span>
-      </td>
-    </tr>
+        </ul>
+      </div>
+      <CartSummary cart={cart} saving={discountSaving(cart.items)} />
+    </section>
   );
 }
 
 export default function CartPage() {
-  const { cart, loaded, setItemCount, removeItem } = useCart();
-  const [error, setError] = useState("");
+  useDocumentTitle("سبد خرید");
+  const { cart, loaded, reload, setItemCount, removeItem } = useCart();
+  const flash = useFlash();
+  const [refresh, setRefresh] = useState({ failed: null });
+  const [pending, setPending] = useState(() => new Set());
 
-  async function run(action) {
-    setError("");
+  // The cart is fetched again on every visit, so stock and prices are current and a failed first load can be retried.
+  const refreshCart = useCallback(() => {
+    setRefresh({ failed: null });
+    return reload().catch((error) => setRefresh({ failed: error }));
+  }, [reload]);
+
+  useEffect(() => {
+    refreshCart();
+  }, [refreshCart]);
+
+  async function run(productId, action, doneMessage) {
+    setPending((current) => new Set(current).add(productId));
     try {
       await action();
+      if (doneMessage) flash.show(doneMessage);
     } catch {
-      setError("به‌روزرسانی سبد خرید انجام نشد. دوباره تلاش کنید.");
+      flash.show(UPDATE_FAILED_MESSAGE, "error");
+    } finally {
+      setPending((current) => {
+        const next = new Set(current);
+        next.delete(productId);
+        return next;
+      });
     }
   }
 
-  if (!loaded) return null;
-  if (cart.items.length === 0) return <EmptyCart />;
+  const changeCount = (productId, count) => run(productId, () => setItemCount(productId, count));
+  const remove = (productId) => run(productId, () => removeItem(productId), REMOVED_MESSAGE);
+
+  const hasItems = cart.items.length > 0;
+
+  let body;
+  if (!loaded) {
+    body = (
+      <div className="container">
+        <CartSkeleton />
+      </div>
+    );
+  } else if (!hasItems && refresh.failed) {
+    body = <LoadError error={refresh.failed} onRetry={refreshCart} />;
+  } else if (!hasItems) {
+    body = (
+      <EmptyState icon={ShoppingCart} title="سبد خرید شما در حال حاضر خالی است." text="محصولات مورد علاقه‌تان را پیدا کنید و به سبد اضافه کنید.">
+        <Link to="/products" className="btn btn--primary" data-testid="cart-empty-shop">
+          مشاهده محصولات
+        </Link>
+        <Link to="/" className="btn btn--secondary" data-testid="cart-empty-home">
+          صفحه نخست
+        </Link>
+      </EmptyState>
+    );
+  } else {
+    body = (
+      <div className="container">
+        <CartList cart={cart} pending={pending} onChangeCount={changeCount} onRemove={remove} />
+      </div>
+    );
+  }
 
   return (
-    <main className="cart-page default space-top-30">
+    <main className="page cart-view" data-testid="cart-page">
       <div className="container">
-        <div className="row">
-          <div className="col-12 text-center">
-            <ul className="order-steps">
-              <li>
-                <a href="/cart" className="active" onClick={(event) => event.preventDefault()}>
-                  <span>سبدخرید</span>
-                </a>
-              </li>
-              <li>
-                <a href="/cart" onClick={(event) => event.preventDefault()}>
-                  <span>پرداخت</span>
-                </a>
-              </li>
-              <li>
-                <a href="/cart" onClick={(event) => event.preventDefault()}>
-                  <span>اتمام خرید و ارسال</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="cart_content col-xl-12 col-lg-12 col-md-12">
-            <header className="card-header">
-              <h3 className="card-title">
-                <span>سبد خرید شما</span>
-              </h3>
-            </header>
-            {error && (
-              <p className="txt_note" role="alert">
-                {error}
-              </p>
+        <header className="cart-head">
+          <h1 className="cart-head__title">
+            سبد خرید
+            {loaded && hasItems && (
+              <span className="badge cart-head__count" data-testid="cart-head-count">
+                {cart.total_count} کالا
+              </span>
             )}
-            <div className="table-responsive default">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th scope="col">محصول</th>
-                    <th scope="col">سبد خرید شما</th>
-                    <th scope="col">قیمت واحد</th>
-                    <th scope="col">تعداد</th>
-                    <th scope="col">قیمت نهایی</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cart.items.map((item) => (
-                    <CartRow
-                      key={item.product.id}
-                      item={item}
-                      onChangeCount={(id, count) => run(() => setItemCount(id, count))}
-                      onRemove={(id) => run(() => removeItem(id))}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="cart-page-content col-xl-12 col-lg-12 col-md-12">
-            <div className="row cart_details">
-              <div className="cart-page-content col-xl-8 col-lg-7 col-md-7">
-                <div className="text_details">
-                  <p>ارسال رایگان برای سفارش‌های بالای 1 میلیون و 400 هزار تومان</p>
-                  <p>
-                    افزودن کالا به سبد خرید به معنی رزرو آن نیست با توجه به محدودیت موجودی سبد خود را ثبت و خرید را
-                    نهایی کنید.
-                  </p>
-                </div>
-              </div>
-              <div className="cart-page-aside col-xl-4 col-lg-5 col-md-5 divider_details">
-                <table className="table table_details">
-                  <tbody>
-                    <tr>
-                      <td>تعداد کالا:</td>
-                      <td>{cart.total_count}</td>
-                    </tr>
-                    <tr>
-                      <td>بسته‌بندی و ارسال:</td>
-                      <td>وابسته به نوع ارسال</td>
-                    </tr>
-                    <tr className="all">
-                      <td>قیمت قابل پرداخت:</td>
-                      <td>
-                        {formatPrice(cart.total_price)} <span>تومان</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colSpan="2">
-                        <Link to="/checkout" className="btn big_btn btn-main-masai">
-                          گام بعدی
-                        </Link>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+          </h1>
+          {(!loaded || hasItems) && <CartSteps current={1} />}
+        </header>
       </div>
+      {body}
     </main>
   );
 }

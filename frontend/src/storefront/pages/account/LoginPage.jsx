@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
+import { BRAND } from "../../../shared/brand";
 import { fieldErrors } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import FormField, { FormError } from "../../components/FormField";
 import { useFlash } from "../../components/Flash";
+import { useDocumentTitle } from "../../components/useDocumentTitle";
+import AuthShell from "./AuthShell";
+import PasswordField from "./PasswordField";
+import SubmitButton from "./SubmitButton";
+import "../account.css";
 
 export default function LoginPage() {
+  useDocumentTitle("ورود");
   const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,56 +43,57 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="wrapper default">
-      <div className="container">
-        <div className="row">
-          <div className="main-content login_content col-12 col-md-7 col-lg-5 mx-auto">
-            <header className="card-header">
-              <h3 className="card-title">
-                <span>ورود به حساب کاربری</span>
-              </h3>
-            </header>
-            <div className="login_box">
-              <form onSubmit={handleSubmit} noValidate>
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <FormError message={errors._form} />
-                    <FormField
-                      label="نام کاربری"
-                      name="username"
-                      autoComplete="username"
-                      placeholder="لطفا نام کاربری را وارد کنید"
-                      value={values.username}
-                      onChange={update}
-                      error={errors.username}
-                    />
-                    <FormField
-                      label="رمزعبور"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      placeholder="لطفا رمز را وارد کنید"
-                      value={values.password}
-                      onChange={update}
-                      error={errors.password}
-                    />
-                  </div>
-                  <div className="col-12 text--center">
-                    <button type="submit" className="btn big_btn btn-main-masai" disabled={submitting}>
-                      {submitting ? "در حال ورود…" : "ورود"}
-                    </button>
-                  </div>
-                  <div className="col-12 footer_login_reg text--center">
-                    <p>
-                      <span>کاربر جدید هستید؟</span> <Link to="/register">ثبت نام</Link>
-                    </p>
-                  </div>
-                </div>
-              </form>
-            </div>
+    <AuthShell
+      testId="login-page"
+      title="ورود به حساب کاربری"
+      subtitle={location.state?.from ? "برای ادامه، وارد حساب کاربری خود شوید." : "نام کاربری و رمز عبور خود را وارد کنید."}
+      lead={`خوش آمدید به ${BRAND.name}`}
+      footer={
+        <>
+          <span>کاربر جدید هستید؟</span>{" "}
+          <Link to="/register" data-testid="login-register-link">
+            ثبت نام
+          </Link>
+        </>
+      }
+    >
+      <form className="auth-form" onSubmit={handleSubmit} noValidate data-testid="login-form">
+        {errors._form && (
+          <div data-testid="login-error">
+            <FormError message={errors._form} />
           </div>
-        </div>
-      </div>
-    </main>
+        )}
+        <FormField
+          label="نام کاربری"
+          name="username"
+          icon={<User size={18} />}
+          className="input account-input-ltr"
+          autoComplete="username"
+          placeholder="لطفا نام کاربری را وارد کنید"
+          value={values.username}
+          onChange={update}
+          error={errors.username}
+          data-testid="login-username"
+        />
+        <PasswordField
+          label="رمزعبور"
+          name="password"
+          autoComplete="current-password"
+          placeholder="لطفا رمز را وارد کنید"
+          value={values.password}
+          onChange={update}
+          error={errors.password}
+          testId="login-password"
+        />
+        <SubmitButton
+          className="btn btn--primary btn--lg btn--block"
+          loading={submitting}
+          loadingText="در حال ورود…"
+          data-testid="login-submit"
+        >
+          ورود
+        </SubmitButton>
+      </form>
+    </AuthShell>
   );
 }

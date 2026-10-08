@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { CircleAlert, SearchX } from "lucide-react";
 import "./States.css";
@@ -25,9 +26,10 @@ export function Loading({ variant = "page" }) {
 }
 
 /** Centered message with an icon and optional action, used for errors, empty lists and 404. */
-export function EmptyState({ icon: Icon = SearchX, title, text, children, tone = "neutral" }) {
+export function EmptyState({ icon: Icon = SearchX, title, text, children, tone = "neutral", contained = true }) {
+  const Wrapper = contained ? "div" : Fragment;
   return (
-    <div className="container">
+    <Wrapper {...(contained ? { className: "container" } : {})}>
       <div className={`empty-state empty-state--${tone}`}>
         <span className="empty-state__icon">
           <Icon size={36} aria-hidden="true" />
@@ -36,14 +38,14 @@ export function EmptyState({ icon: Icon = SearchX, title, text, children, tone =
         {text && <p className="empty-state__text">{text}</p>}
         {children && <div className="empty-state__actions">{children}</div>}
       </div>
-    </div>
+    </Wrapper>
   );
 }
 
-export function LoadError({ error, onRetry }) {
+export function LoadError({ error, onRetry, contained = true }) {
   return (
     <div role="alert">
-      <EmptyState icon={CircleAlert} tone="danger" title="مشکلی پیش آمد" text={error?.message || "خطایی رخ داد."}>
+      <EmptyState icon={CircleAlert} tone="danger" title="مشکلی پیش آمد" text={error?.message || "خطایی رخ داد."} contained={contained}>
         {onRetry && (
           <button type="button" className="btn btn--primary" onClick={onRetry}>
             تلاش دوباره

@@ -1,97 +1,118 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { CalendarDays, ChevronLeft, PackageOpen } from "lucide-react";
 import { customerApi } from "../../api/endpoints";
 import { useApi } from "../../../shared/useApi";
 import { formatJalaliDate, formatPrice, toRelativeUrl } from "../../format";
 import Pagination from "../../components/Pagination";
-import { AsyncContent } from "../../components/States";
+import { EmptyState, LoadError } from "../../components/States";
+import { useDocumentTitle } from "../../components/useDocumentTitle";
+import { CardsSkeleton } from "./AccountSkeleton";
+import PageHead from "./PageHead";
+import StatusBadge from "./StatusBadge";
+import "../account.css";
 
 const ORDERS_PAGE_SIZE = 10;
+const MAX_THUMBNAILS = 4;
 
-export const STATUS_ICONS = {
-  pending: "fa-clock",
-  completed: "fa-check-circle",
-  failed: "fa-times-circle",
-};
+function OrderCard({ order }) {
+  // Items whose product was deleted have no page to link to, so they get no thumbnail.
+  const linkable = order.items.filter((item) => item.product_slug);
+  const shown = linkable.slice(0, MAX_THUMBNAILS);
+  const hidden = linkable.length - shown.length;
+  const unitCount = order.items.reduce((sum, item) => sum + Number(item.product_count || 0), 0);
 
-export function StatusBadge({ order }) {
   return (
-    <span className={`status-badge status-badge--${order.status}`}>
-      <i className={`fa ${STATUS_ICONS[order.status]}`} aria-hidden="true" /> {order.status_label}
-    </span>
+    <article className="account-order card" data-testid="order-card" data-order-id={order.id}>
+      <header className="account-order__head">
+        <div className="account-order__meta">
+          <h2 className="account-order__title">
+            کد سفارش <bdi data-testid="order-card-id">{order.id}</bdi>
+          </h2>
+          <span className="account-order__date">
+            <CalendarDays size={16} aria-hidden="true" />
+            <bdi dir="ltr">{formatJalaliDate(order.order_date, { withTime: true })}</bdi>
+          </span>
+        </div>
+        <StatusBadge order={order} testId="order-card-status" />
+      </header>
+
+      <div className="account-order__body">
+        {linkable.length > 0 && (
+          <ul className="account-order__thumbs">
+            {shown.map((item) => (
+              <li key={item.id}>
+                <Link to={`/products/${item.product_slug}`} className="account-order__thumb">
+                  <img src={toRelativeUrl(item.product_pic)} alt={item.product_name} width="56" height="56" loading="lazy" />
+                </Link>
+              </li>
+            ))}
+            {hidden > 0 && (
+              <li className="account-order__more" aria-label={`و ${hidden} کالای دیگر`}>
+                <span aria-hidden="true">+{hidden}</span>
+              </li>
+            )}
+          </ul>
+        )}
+        <dl className="account-order__facts">
+          <div>
+            <dt>تعداد کالا</dt>
+            <dd>{unitCount}</dd>
+          </div>
+          <div>
+            <dt>مجموع سبد</dt>
+            <dd className="account-order__total">
+              {formatPrice(order.total_cost)} <small>تومان</small>
+            </dd>
+          </div>
+        </dl>
+        <Link to={`/account/orders/${order.id}`} className="btn btn--secondary btn--sm account-order__link" data-testid="order-card-link">
+          مشاهده وضعیت سفارش
+          <ChevronLeft size={16} aria-hidden="true" />
+        </Link>
+      </div>
+    </article>
   );
 }
 
 export default function OrdersPage() {
+  useDocumentTitle("سفارشات من");
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const state = useApi(() => customerApi.orders(page), [page]);
 
-  return (
-    <div className="row">
-      <div className="col-lg-12">
-        <header className="card-header">
-          <h3 className="card-title">
-            <span>سفارشات من</span>
-          </h3>
-        </header>
-        <AsyncContent state={state}>
-          {({ results, count }) => (
-            <>
-              {results.length === 0 && (
-                <div className="content-section default text-center">
-                  <p>هنوز سفارشی ثبت نکرده‌اید.</p>
-                  <Link to="/products" className="btn btn-main-masai">
-                    رفتن به فروشگاه
-                  </Link>
-                </div>
-              )}
-              {results.map((order) => (
-                <div className="content-section default" key={order.id}>
-                  <div className="row">
-                    <div className="col-md-12 col-sm-12 order_delivered_sec">
-                      <div className="profile-recent-fav-row">
-                        <div className="col-12">
-                          <h4 className="profile-recent-fav-name">
-                            <StatusBadge order={order} />
-                          </h4>
-                          <ul>
-                            <li>{formatJalaliDate(order.order_date, { withTime: true })}</li>
-                            <li>
-                              کد سفارش <b>{order.id}</b>
-                            </li>
-                            <li>
-                              مجموع سبد <b>{formatPrice(order.total_cost)} تومان</b>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="col-12">
-                          <div className="row">
-                            {order.items.filter((item) => item.product_slug).map((item) => (
-                              <Link to={`/products/${item.product_slug}`} key={item.id}>
-                                <img src={toRelativeUrl(item.product_pic)} alt={item.product_name} />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="col-12 text-left">
-                          <Link to={`/account/orders/${order.id}`} className="btn btn-main-masai">
-                            مشاهده وضعیت سفارش
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <Pagination
-                page={page}
-                pageCount={Math.ceil(count / ORDERS_PAGE_SIZE)}
-                onChange={(target) => setSearchParams({ page: String(target) })}
-              />
-            </>
-          )}
-        </AsyncContent>
+  let content;
+  if (state.loading && !state.data) {
+    content = <CardsSkeleton count={3} height="account-skeleton__order" />;
+  } else if (state.error) {
+    content = <LoadError error={state.error} onRetry={state.reload} />;
+  } else if (state.data.results.length === 0) {
+    content = (
+      <div data-testid="orders-empty">
+        <EmptyState icon={PackageOpen} title="هنوز سفارشی ثبت نکرده‌اید." text="بعد از ثبت اولین سفارش، آن را اینجا پیگیری می‌کنید.">
+          <Link to="/products" className="btn btn--primary">
+            رفتن به فروشگاه
+          </Link>
+        </EmptyState>
       </div>
+    );
+  } else {
+    const { results, count } = state.data;
+    content = (
+      <>
+        <div className="account-cards" data-testid="orders-list">
+          {results.map((order) => (
+            <OrderCard order={order} key={order.id} />
+          ))}
+        </div>
+        <Pagination page={page} pageCount={Math.ceil(count / ORDERS_PAGE_SIZE)} onChange={(target) => setSearchParams({ page: String(target) })} />
+      </>
+    );
+  }
+
+  return (
+    <div className="account-page-body">
+      <PageHead title="سفارشات من" />
+      {content}
     </div>
   );
 }

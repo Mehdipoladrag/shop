@@ -51,3 +51,11 @@
 .section-header__link:hover {
     color: var(--navy-800);
 }
+
+@media (max-width: 639px) {
+    /* Extra content (a countdown) takes its own line instead of squeezing the title. */
+    .section-header > :not(.section-header__titles):not(.section-header__link) {
+        order: 3;
+        flex: 1 1 100%;
+    }
+}

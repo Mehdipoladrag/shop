@@ -862,9 +862,12 @@
     }
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 768px) {
+    /* Cards share the row evenly whatever the number of categories (no lonely last card). */
     .home-catgrid {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 210px));
+        gap: var(--space-3);
+        justify-content: center;
     }
 }
 

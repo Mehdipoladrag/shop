@@ -254,14 +254,9 @@
 
 /* Brand checkboxes */
 
-.shop-options {
-    max-height: 16rem;
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
 .shop-option {
     display: flex;
+    align-items: center;
     gap: var(--space-3);
     min-height: 44px;
     padding-inline: var(--space-2);
@@ -272,21 +267,14 @@
     background: var(--navy-50);
 }
 
-/* Colour chips */
+/* Colour rows: a dot of the colour, then its name. The checkbox covers the row. */
 
-.shop-swatches {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
-    gap: var(--space-2);
-    padding-inline: var(--space-2);
-}
-
-.shop-swatch {
+.shop-color {
     position: relative;
-    display: block;
+    cursor: pointer;
 }
 
-.shop-swatch__input {
+.shop-color__input {
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -297,44 +285,40 @@
     cursor: pointer;
 }
 
-.shop-swatch__chip {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    min-height: 40px;
-    padding-inline: var(--space-3);
-    color: var(--color-text);
-    font-size: var(--fs-sm);
-    background: var(--color-surface);
-    border: 1px solid var(--color-line-strong);
-    border-radius: var(--radius-pill);
-    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+.shop-color__dot {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-inline: 1px;
+    background: var(--swatch, var(--navy-100));
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(var(--navy-900-rgb), 0.28);
+    transition: box-shadow var(--dur) var(--ease);
 }
 
-.shop-swatch:hover .shop-swatch__chip {
-    border-color: var(--navy-400);
+.shop-color__input:checked + .shop-color__dot {
+    box-shadow: inset 0 0 0 1px rgba(var(--navy-900-rgb), 0.28), 0 0 0 2px var(--color-surface), 0 0 0 4px var(--navy-600);
 }
 
-.shop-swatch__input:checked + .shop-swatch__chip {
+.shop-color__input:checked ~ .shop-color__name {
     color: var(--navy-900);
     font-weight: 700;
-    background: var(--navy-50);
-    border-color: var(--navy-600);
-    box-shadow: inset 0 0 0 1px var(--navy-600);
 }
 
-.shop-swatch__input:focus-visible + .shop-swatch__chip {
+.shop-color:has(.shop-color__input:checked) {
+    background: var(--navy-50);
+}
+
+.shop-color:has(.shop-color__input:focus-visible) {
     outline: 2px solid var(--navy-500);
     outline-offset: 2px;
 }
 
-.shop-swatch__dot {
-    flex: none;
-    width: 16px;
-    height: 16px;
-    background: var(--swatch, var(--navy-100));
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 1px rgba(var(--navy-900-rgb), 0.28);
+.shop-more {
+    min-height: 40px;
+    margin-inline-start: var(--space-2);
+    font-size: var(--fs-sm);
+    font-weight: 600;
 }
 
 /* Price range */

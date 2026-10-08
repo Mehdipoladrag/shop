@@ -1,82 +1,108 @@
+import { useEffect, useRef } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { LockKeyhole, MapPin, PackageSearch, UserPen, UserRound } from "lucide-react";
 import { customerApi } from "../../api/endpoints";
 import { useApi } from "../../../shared/useApi";
-import { toRelativeUrl } from "../../format";
-import { AsyncContent } from "../../components/States";
+import Breadcrumb from "../../components/Breadcrumb";
+import { LoadError } from "../../components/States";
+import Avatar from "./Avatar";
+import { AccountSkeleton } from "./AccountSkeleton";
+import "../account.css";
 
 const MENU = [
-  { to: "/account/orders", label: "لیست سفارشات من", icon: "fa-cart-arrow-down" },
-  { to: "/account/address", label: "آدرس ها", icon: "fa-map" },
-  { to: "/account", label: "پروفایل", icon: "fa-user-large", end: true },
-  { to: "/account/edit", label: "ویرایش اطلاعات", icon: "fa-pencil" },
-  { to: "/account/password", label: "امنیت و تغییر رمز", icon: "fa-shield" },
+  { to: "/account", label: "پروفایل", icon: UserRound, end: true, testId: "profile" },
+  { to: "/account/orders", label: "لیست سفارشات من", icon: PackageSearch, testId: "orders" },
+  { to: "/account/address", label: "آدرس ها", icon: MapPin, testId: "address" },
+  { to: "/account/edit", label: "ویرایش اطلاعات", icon: UserPen, testId: "edit" },
+  { to: "/account/password", label: "امنیت و تغییر رمز", icon: LockKeyhole, testId: "password" },
 ];
 
 function ProfileCard({ profile }) {
+  const fullName = `${profile.first_name ?? ""} ${profile.last_name ?? ""}`.trim();
   return (
-    <div className="profile-card-1">
-      <div className="img">{profile.customer_image && <img src={toRelativeUrl(profile.customer_image)} alt="" />}</div>
-      <div className="mid-section">
-        <div className="name">
-          {/* Usernames start with "@", which would jump to the end in right-to-left text. */}
-          <bdi>{profile.username}</bdi>
-        </div>
-        <div className="description">
-          <a href="#top" className="btn btn-main-masai" onClick={(event) => event.preventDefault()}>
-            افزایش موجودی
-          </a>
-          <a href="#top" className="btn btn-second-masai" onClick={(event) => event.preventDefault()}>
-            مسای کلاب
-          </a>
-        </div>
-        <div className="line" />
-        <div className="stats">
-          <div className="stat">
-            {profile.orders_count}
-            <div className="subtext">سفارش‌ها</div>
-          </div>
-          <div className="stat">
-            {profile.completed_orders_count}
-            <div className="subtext">تحویل داده</div>
-          </div>
-        </div>
+    <section className="account-profile card" aria-label="مشخصات شما" data-testid="account-profile-card">
+      <Avatar profile={profile} size="lg" testId="account-avatar" />
+      <div className="account-profile__id">
+        {fullName && <p className="account-profile__name">{fullName}</p>}
+        {/* Usernames start with "@", which would jump to the end in right-to-left text. */}
+        <p className="account-profile__username">
+          <bdi data-testid="account-username">{profile.username}</bdi>
+        </p>
       </div>
-    </div>
+      <dl className="account-profile__stats">
+        <div className="account-profile__stat">
+          <dt>سفارش‌ها</dt>
+          <dd data-testid="account-stat-orders">{profile.orders_count}</dd>
+        </div>
+        <div className="account-profile__stat">
+          <dt>تکمیل‌شده</dt>
+          <dd data-testid="account-stat-completed">{profile.completed_orders_count}</dd>
+        </div>
+      </dl>
+    </section>
   );
 }
 
-/** Frame of the customer area: the page on one side, profile card and menu on the other. */
+/** Sidebar menu on desktop, a row of scrollable pills on phones. */
+function AccountMenu({ pathname }) {
+  const listRef = useRef(null);
+
+  // On phones the row scrolls sideways: keep the current page's pill in view.
+  useEffect(() => {
+    const list = listRef.current;
+    const active = list?.querySelector('[aria-current="page"]');
+    if (list && active && list.scrollWidth > list.clientWidth) {
+      active.scrollIntoView({ inline: "center", block: "nearest" });
+    }
+  }, [pathname]);
+
+  return (
+    <nav className="account-menu" aria-label="منوی حساب کاربری" data-testid="account-menu">
+      <ul className="account-menu__list" ref={listRef} data-allow-overflow>
+        {MENU.map(({ to, label, icon: Icon, end, testId }) => (
+          <li key={to}>
+            <NavLink to={to} end={end} className="account-menu__link" data-testid={`account-menu-${testId}`}>
+              <Icon size={20} aria-hidden="true" />
+              <span>{label}</span>
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+function breadcrumbFor(pathname) {
+  const current = MENU.find((item) => !item.end && pathname.startsWith(item.to));
+  const root = { label: "حساب کاربری", to: "/account" };
+  return current ? [root, { label: current.label }] : [{ label: root.label }];
+}
+
+/** Frame of the customer area: profile card and menu on one side, the page on the other. */
 export default function AccountLayout() {
   const { pathname } = useLocation();
   const state = useApi(customerApi.profile);
-  const listing = pathname.startsWith("/account/orders") || pathname === "/account/address";
+  const profile = state.data;
 
   return (
-    <main className={`${listing ? "order-delivered" : "profile-user-page"} default space-top-30`}>
+    <main className="page account-page" data-testid="account-layout">
       <div className="container">
-        <AsyncContent state={state}>
-          {(profile) => (
-            <div className="row">
-              <div className="col-xl-9 col-lg-8 col-md-12 order-2">
-                <Outlet context={{ profile, reloadProfile: state.reload }} />
-              </div>
-              <div className="profile-page-aside col-xl-3 col-lg-4 col-md-6 center-section order-1">
-                <ProfileCard profile={profile} />
-                <div className="profile-menu">
-                  <ul className="profile-menu-items">
-                    {MENU.map((item) => (
-                      <li key={item.to}>
-                        <NavLink to={item.to} end={item.end} className="dropdown-item">
-                          <i className={`fa ${item.icon} colormain`} aria-hidden="true" /> {item.label}
-                        </NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+        <Breadcrumb items={breadcrumbFor(pathname)} />
+        {state.loading && !profile ? (
+          <AccountSkeleton />
+        ) : state.error ? (
+          <LoadError error={state.error} onRetry={state.reload} />
+        ) : (
+          <div className="account-layout">
+            <aside className="account-aside">
+              <ProfileCard profile={profile} />
+              <AccountMenu pathname={pathname} />
+            </aside>
+            <div className="account-main">
+              <Outlet context={{ profile, reloadProfile: state.reload }} />
             </div>
-          )}
-        </AsyncContent>
+          </div>
+        )}
       </div>
     </main>
   );

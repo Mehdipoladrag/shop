@@ -113,6 +113,7 @@
 
 .product-card__footer {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
     gap: var(--space-2);
@@ -157,6 +158,10 @@
 @media (max-width: 479px) {
     .product-card__body {
         padding-inline: var(--space-3);
+    }
+
+    .product-card .price__final strong {
+        font-size: var(--fs-md);
     }
 
     .product-card__add {

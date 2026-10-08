@@ -514,7 +514,7 @@ table {
 .skeleton {
     display: block;
     min-height: 1em;
-    background: linear-gradient(90deg, var(--navy-50) 25%, var(--navy-100) 37%, var(--navy-50) 63%);
+    background: linear-gradient(90deg, var(--navy-100) 25%, var(--navy-50) 37%, var(--navy-100) 63%);
     background-size: 400% 100%;
     border-radius: var(--radius-md);
     animation: skeleton-shimmer 1.4s ease infinite;

@@ -24,7 +24,7 @@ export default function DesignKit() {
     <main className="page">
       <div className="container">
         <Breadcrumb items={[{ label: "فروشگاه", to: "/products" }, { label: "کیت طراحی" }]} />
-        <h1 className="page-title">کیت طراحی مَسای</h1>
+        <h1 className="page-title">کیت طراحی تک‌شاپ</h1>
 
         <section className="section card card--pad">
           <h2 className="card__title">دکمه‌ها و نشان‌ها</h2>

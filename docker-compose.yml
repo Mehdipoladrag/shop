@@ -59,13 +59,13 @@ services:
 
   rabbitmq:
     image: rabbitmq:management
-    container_name: massay_rabbitmq
+    container_name: techshop_rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
 
   celery:
-    container_name: massay_celery
+    container_name: techshop_celery
     build:
       context: ./shop
       dockerfile: Dockerfile
@@ -89,7 +89,7 @@ services:
       - db
 
   celery_beat:
-    container_name: massay_celery_beat
+    container_name: techshop_celery_beat
     build:
       context: ./shop
       dockerfile: Dockerfile

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { BRAND } from "../../shared/brand";
 
 const NAV_ITEMS = [
   { to: "/", label: "داشبورد", end: true },
@@ -32,7 +33,7 @@ export default function AdminLayout() {
         >
           ☰
         </button>
-        <span className="topbar__brand">پنل مدیریت مسای</span>
+        <span className="topbar__brand">{`پنل مدیریت ${BRAND.name}`}</span>
         <button type="button" className="btn btn--ghost topbar__logout" onClick={logout}>
           خروج
         </button>

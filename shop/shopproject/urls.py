@@ -13,9 +13,9 @@ from rest_framework_simplejwt.views import (
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Massay API",
+        title="TechShop API",
         default_version="v1",
-        description="This is a Massay Api page",
+        description="REST API of the TechShop online store",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="mehdipoladrag1382@gmail.com"),
     ),

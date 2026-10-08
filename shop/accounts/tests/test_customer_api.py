@@ -96,7 +96,7 @@ def test_login_success_starts_session_and_rotates_csrf(csrf_client, user):
     assert response.status_code == 200
     assert response.json()["username"] == "@ali"
     assert csrf_client.cookies["csrftoken"].value != old_token
-    assert "sessionid" in csrf_client.cookies or "massay_session_cookie" in csrf_client.cookies
+    assert "sessionid" in csrf_client.cookies or "techshop_sessionid" in csrf_client.cookies
     sync_csrf(csrf_client)
     assert csrf_client.get(f"{BASE}/profile/").status_code == 200
 

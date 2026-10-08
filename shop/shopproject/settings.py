@@ -235,9 +235,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 JAZZMIN_SETTINGS = {
     "site_title": "پنل ادمین",
     "site_header": "ادمین",
-    "site_brand": "مسای شاپ",
-    "site_logo": "assets/img/logo.png",
-    "login_logo": "assets/img/logo.png",
+    "site_brand": "تک‌شاپ",
+    "site_logo": "assets/img/techshop-mark.svg",
+    "login_logo": "assets/img/techshop-mark.svg",
     "site_logo_classes": "img-circle",
     # Welcome text on the login screen
     "welcome_sign": "به پنل ادمین خوش آمدید",
@@ -278,7 +278,7 @@ SESSION_CACHE_ALIAS = "default"  # Use the 'default' cache for sessions
 SESSION_COOKIE_AGE = 3600  # Session cookie age in seconds (1 hour)
 SESSION_COOKIE_SECURE = not DEBUG  # Ensure cookies are sent over HTTPS only
 SESSION_COOKIE_NAME = (
-    "massay_session_cookie"  # Define a custom name for the session cookie.
+    "techshop_sessionid"  # Define a custom name for the session cookie.
 )
 SESSION_COOKIE_SAMESITE = "Lax"  # Set SameSite attribute of session cookies to 'Lax' to limit cross-site request behavior.
 CSRF_COOKIE_SECURE = not DEBUG  # Ensure CSRF cookies are sent over HTTPS only

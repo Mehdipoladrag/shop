@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUp, Check, Headphones, RotateCcw, ShieldCheck, Truck, Wallet } from "lucide-react";
+import { BRAND } from "../../shared/brand";
 import Logo from "./Logo";
 import "./Footer.css";
 
@@ -72,7 +73,7 @@ export default function Footer() {
           <section className="site-footer__about">
             <Logo variant="light" />
             <p>
-              مَسای شاپ فروشگاه اینترنتی کالای دیجیتال است؛ گوشی، تبلت، لوازم جانبی و کنسول بازی با ضمانت اصالت، قیمت منصفانه و ارسال سریع.
+              {BRAND.name} فروشگاه اینترنتی کالای دیجیتال است؛ گوشی، تبلت، لوازم جانبی و کنسول بازی با ضمانت اصالت، قیمت منصفانه و ارسال سریع.
             </p>
           </section>
 

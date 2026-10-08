@@ -38,8 +38,30 @@ POSTS = [
 ]
 
 
+EDITOR_USERNAME = "techshop_editor"
+EDITOR_NAME = "تحریریه تک‌شاپ"
+# The editor account created before the shop was renamed.
+LEGACY_EDITOR_USERNAME = "masai_editor"
+
+
 class Command(BaseCommand):
-    help = "Add three demo blog posts (author: masai_editor)."
+    help = "Add three demo blog posts (author: techshop_editor)."
+
+    @staticmethod
+    def get_editor():
+        """The editor account; an account that still has the old shop name is renamed, not duplicated."""
+        legacy = CustomUser.objects.filter(username=LEGACY_EDITOR_USERNAME).first()
+        if legacy and not CustomUser.objects.filter(username=EDITOR_USERNAME).exists():
+            legacy.username = EDITOR_USERNAME
+            legacy.first_name = EDITOR_NAME
+            legacy.save(update_fields=["username", "first_name"])
+            return legacy
+        editor, made = CustomUser.objects.get_or_create(
+            username=EDITOR_USERNAME, defaults={"is_staff": True, "first_name": EDITOR_NAME})
+        if made:
+            editor.set_unusable_password()
+            editor.save()
+        return editor
 
     def handle(self, *args, **options):
         static = Path(settings.BASE_DIR) / "static" / "assets" / "img" / "blog"
@@ -48,11 +70,7 @@ class Command(BaseCommand):
                 raise FileNotFoundError(row["image"])
         created = 0
         with transaction.atomic():
-            author, made = CustomUser.objects.get_or_create(
-                username="masai_editor", defaults={"is_staff": True, "first_name": "تحریریه مَسای"})
-            if made:
-                author.set_unusable_password()
-                author.save()
+            author = self.get_editor()
             category, _ = Category_blog.objects.get_or_create(
                 slug_cat="mobile-guide", defaults={"name": "راهنمای موبایل"})
             for row in POSTS:
